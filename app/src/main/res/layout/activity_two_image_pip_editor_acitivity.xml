@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:context="com.tekskills.sampleapp.ui.poster.PIPEditor">
+
+        <RelativeLayout
+            android:id="@+id/editor_view_to_save"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/editor_recycler_view"
+            android:gravity="center">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/editor_mask_image"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@id/editor_mask_image"
+                android:orientation="horizontal"
+                android:weightSum="2.0">
+
+                <FrameLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1.0">
+
+                    <com.tekskills.sampleapp.ui.poster.collegeview.CollageView
+                        android:id="@+id/editor_foreground_image_left"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="start" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1.0">
+
+                    <com.tekskills.sampleapp.ui.poster.collegeview.CollageView
+                        android:id="@+id/editor_foreground_image_right"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="end" />
+
+                </FrameLayout>
+            </LinearLayout>
+
+
+            <ImageView
+                android:id="@+id/editor_mask_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY" />
+
+            <ImageView
+                android:id="@+id/editor_frame_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/editor_mask_image"
+                android:layout_alignParentEnd="true" />
+
+            <RadioGroup
+                android:id="@+id/editor_selector_for_editing_images"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_alignParentBottom="true"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                android:weightSum="3.0">
+
+                <RadioButton
+                    android:id="@+id/editor_foregroundimageLeftonly"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1.0"
+                    android:background="@drawable/selector_for_editing_image"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:onClick="setImageToApplyEffect"
+                    android:text="Left"
+                    android:textColor="@color/white" />
+
+                <RadioButton
+                    android:id="@+id/editor_bothimages"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1.0"
+                    android:background="@drawable/selector_for_editing_image"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:checked="true"
+                    android:onClick="setImageToApplyEffect"
+                    android:text="Both"
+                    android:textColor="@color/white" />
+
+                <RadioButton
+                    android:id="@+id/editor_foregroundimageRightonly"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1.0"
+                    android:background="@drawable/selector_for_editing_image"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:onClick="setImageToApplyEffect"
+                    android:text="Right"
+                    android:textColor="@color/white" />
+
+            </RadioGroup>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/editor_container_for_seek_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_margin="16dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:weightSum="1.0">
+
+            <SeekBar
+                android:id="@+id/editor_blur_intensity_seekbar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.9"
+                android:progress="25" />
+
+            <ImageButton
+                android:id="@+id/editor_hide_seekbar_container"
+                android:layout_width="0dp"
+                android:layout_height="24dp"
+                android:layout_weight="0.1"
+                android:background="@drawable/tik"
+                android:gravity="start" />
+
+        </LinearLayout>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/editor_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="85dp"
+            android:layout_above="@id/editor_bottom"
+            android:orientation="horizontal"
+            android:visibility="visible" />
+
+
+        <LinearLayout
+            android:id="@+id/editor_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentStart="true"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:weightSum="5.0">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="2dp"
+                android:layout_weight="1.0"
+                android:gravity="center">
+
+                <ImageButton
+                    android:id="@+id/editor_pip"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:background="@drawable/ic_home" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="2dp"
+                android:layout_weight="1.0"
+                android:gravity="center">
+
+                <ImageButton
+                    android:id="@+id/editor_replace"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/bg" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="2dp"
+                android:layout_weight="1.0"
+                android:gravity="center">
+
+                <ImageButton
+                    android:id="@+id/editor_filters"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/filter" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="2dp"
+                android:layout_weight="1.0"
+                android:gravity="center">
+
+                <ImageButton
+                    android:id="@+id/editor_sticker"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/stickers" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="2dp"
+                android:layout_weight="1.0"
+                android:gravity="center">
+
+                <ImageButton
+                    android:id="@+id/editor_text"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/text" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

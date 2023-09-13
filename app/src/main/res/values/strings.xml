@@ -1,0 +1,79 @@
+<resources>
+    <string name="app_name">VMR</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="only">Only</string>
+    <string name="news">News</string>
+    <string name="bookmarks">Bookmarks</string>
+
+    <string name="drawer_item_home">Home</string>
+    <string name="drawer_item_about_us">About Us</string>
+    <string name="drawer_item_contact_us">Contact Us</string>
+    <string name="drawer_item_section_header">Section Header</string>
+    <string name="drawer_item_settings">Settings</string>
+    <string name="drawer_item_help">Help</string>
+    <string name="drawer_item_open_source">Open Source</string>
+    <string name="drawer_item_contact">Contact</string>
+    <string name="drawer_item_language">Language</string>
+    <string name="drawer_item_free_play">Free Play</string>
+    <string name="drawer_item_custom">Custom</string>
+    <string name="screen_captured_permission_missing">Permission required in order to capture screenshots.</string>
+    <string name="running">Running</string>
+    <string name="setting_sharing_msg_default">Missing Default Msg</string>
+    <string name="file_provider">com.tekskills.ottapplication.fileprovider</string>
+    <string name="sharing_file">Sharing %s</string>
+    <string name="default_language">Default Language</string>
+    <string name="select_language">Select Language</string>
+    <string name="item_selected">Selected</string>
+    <string name="off_subtitle">Off Subtitle</string>
+    <string name="select_subtitle">Select SubTitle</string>
+    <string name="subtitle_off">Off SubTitle</string>
+    <string name="months">6 Months</string>
+    <string name="video_quality">Video Quality</string>
+    <string name="good">Good</string>
+    <string name="video_resolution">Video Resolution</string>
+    <string name="resolution480p">480p</string>
+    <string name="video_screens">Screens you can watch</string>
+    <string name="screens2">2</string>
+    <string name="video_cancel">Cancel anytime</string>
+    <string name="buy_now">Buy Now</string>
+    <string name="subscription_price">Rs.750</string>
+    <string name="better">Better</string>
+    <string name="sample_video">Sample Video: </string>
+
+
+    <string name="editor_menu_blur">blur</string>
+    <string name="editor_menu_save">save</string>
+    <string name="previous">Previous</string>
+    <string name="backward_10sec">10sec</string>
+    <string name="play">Play</string>
+    <string name="forward_10sec">10sec</string>
+    <string name="next">Next</string>
+    <string name="lock">Lock</string>
+    <string name="sub_title">Sub Title</string>
+    <string name="mute">Mute</string>
+    <string name="screen_rotation">Screen Rotation</string>
+    <string name="full_screen">Full screen</string>
+    <string name="audio_track">Audio track</string>
+    <string name="loading_video">Loading Video...</string>
+    <string-array name="intro_title_list">
+        <item>All</item>
+        <item>News</item>
+        <item>Wishes</item>
+        <item>Posters</item>
+        <item>Short\nNews</item>
+        <!--        <item>About VMR</item>-->
+    </string-array>
+
+    <string-array name="fonts">
+        <item>advanture</item>
+        <item>ashley</item>
+        <item>balloon</item>
+        <item>bangers</item>
+        <item>cookie</item>
+        <item>lily</item>
+        <item>lucky</item>
+        <item>victorian</item>
+    </string-array>
+
+</resources>
