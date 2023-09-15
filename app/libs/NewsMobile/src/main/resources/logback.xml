@@ -1,0 +1,43 @@
+<configuration>
+
+    <!-- Appenders -->
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d %yellow(${springAppName},%X{trcId},%X{spnId}) [%thread] %highlight(%-5level) %cyan(%-50logger{40}) - %msg%n</pattern>
+        </encoder>
+    </appender>
+	<appender name="RollingFile"
+			class="ch.qos.logback.core.rolling.RollingFileAppender">
+			<file>C:\Newsproject\logs\MobileNews.log</file>
+			<encoder>
+				<pattern>%d %yellow(${springAppName},%X{trcId},%X{spnId}) [%thread] %highlight(%-5level) %cyan(%-50logger{40}) - %msg%n</pattern>
+			</encoder>
+			<rollingPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+				<fileNamePattern>C:\Newsproject\logs\MobileNews-%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+				<maxFileSize>10MB</maxFileSize>
+				<maxHistory>20</maxHistory>
+				<totalSizeCap>100MB</totalSizeCap>
+				<cleanHistoryOnStart>true</cleanHistoryOnStart>
+			</rollingPolicy>
+		</appender>
+    <!-- Root Logger -->
+    	<logger name="com.microsoft.sqlserver" level="INFO" />
+		<logger name="org.apache.http" level="INFO" />
+		<logger name="org.apache.hc" level="INFO" />
+		<logger name="org.apache.tiles" level="INFO" />
+		<logger name="org.apache.commons" level="INFO" />
+		<logger name="org.springframework" level="INFO" />
+		<logger name="org.springframework.web" level="INFO" />
+		<logger name="org.springframework.security" level="INFO" />
+		<logger name="org.springframework.boot" level="INFO" />
+		<logger name="org.hibernate" level="INFO" />
+		<logger name="org.hibernate.SQL" level="DEBUG" />
+		<logger name="com.NewsMobile" level="DEBUG" />
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="RollingFile" />
+    </root>
+
+</configuration>

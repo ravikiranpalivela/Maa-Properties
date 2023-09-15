@@ -1,0 +1,6 @@
+logging:
+  config: classpath:logback.xml
+  
+spring:
+  application:
+    name: NewsMobile
