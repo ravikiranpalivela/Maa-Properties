@@ -3,9 +3,7 @@ package com.tekskills.sampleapp.ui.poster.collegeview
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
-import com.tekskills.sampleapp.ui.poster.PIPEditor
-import com.tekskills.sampleapp.ui.poster.PosterEditorFragment
-import com.tekskills.sampleapp.ui.poster.TwoImagePipEditorAcitivity
+import com.tekskills.sampleapp.ui.articledetails.PosterEditorFragment
 
 class MultiTouchListener : OnTouchListener {
     var isRotateEnabled = true
@@ -17,35 +15,20 @@ class MultiTouchListener : OnTouchListener {
     private var mPrevX = 0f
     private var mPrevY = 0f
     private var mScaleGestureDetector: ScaleGestureDetector
-    private var pipEditor: PIPEditor? = null
     private var posterEditor: PosterEditorFragment? = null
-    private var twoImagePipEditorAcitivity: TwoImagePipEditorAcitivity? = null
 
-    constructor(pipEditor: PIPEditor?) {
-        this.pipEditor = pipEditor
-        mScaleGestureDetector = ScaleGestureDetector(ScaleGestureListener())
-    }
 
     constructor(posterEditorFragment: PosterEditorFragment?) {
         this.posterEditor = posterEditorFragment
         mScaleGestureDetector = ScaleGestureDetector(ScaleGestureListener())
     }
 
-    constructor(twoImagePipEditorAcitivity: TwoImagePipEditorAcitivity?) {
-        this.twoImagePipEditorAcitivity = twoImagePipEditorAcitivity
-        mScaleGestureDetector = ScaleGestureDetector(ScaleGestureListener())
-    }
-
     override fun onTouch(view: View, event: MotionEvent): Boolean {
-        if (pipEditor != null) {
-            pipEditor!!.hideControl()
-        }
+
         if (posterEditor != null) {
             posterEditor!!.hideControl()
         }
-        if (twoImagePipEditorAcitivity != null) {
-            twoImagePipEditorAcitivity!!.hideControl()
-        }
+
         mScaleGestureDetector.onTouchEvent(view, event)
         if (!isTranslateEnabled) {
             return true

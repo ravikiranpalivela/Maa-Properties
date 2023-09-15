@@ -39,7 +39,7 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
         article: AllNewsItem,
         clickListener: (AllNewsItem, ImageView) -> Unit,
         doubleClickListener: (AllNewsItem, ImageView) -> Unit,
-        longClickListener: (AllNewsItem, ImageView) -> Unit,
+        readMoreClickListener: (AllNewsItem, ImageView) -> Unit,
         shareClickListener: (AllNewsItem, View) -> Unit
     ) {
 
@@ -67,8 +67,7 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
             }
 
             readMoreArticle.setOnClickListener {
-                longClickListener(article, articleImage)
-                true
+                readMoreClickListener(article, articleImage)
             }
 
 //            root.setOnClickListener(object : DoubleClickListener() {

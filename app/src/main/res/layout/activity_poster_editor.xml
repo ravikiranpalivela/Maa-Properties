@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewModel"
             type="com.tekskills.sampleapp.ui.main.MainViewModel" />
@@ -14,24 +15,28 @@
         android:layout_height="match_parent"
         android:background="@color/colorPrimary">
 
-        <RelativeLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/rl_editor"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:visibility="gone"
             tools:visibility="visible">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/editor_view_to_save"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:layout_alignParentTop="true"
-                android:gravity="center">
+                android:gravity="center"
+                app:layout_constraintBottom_toTopOf="@+id/rl_social"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <FrameLayout
                     android:id="@+id/frame_editor"
@@ -41,10 +46,11 @@
                     android:layout_alignBottom="@id/editor_mask_image"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentEnd="true"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent">
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
                     <com.tekskills.sampleapp.ui.poster.collegeview.CollageView
                         android:id="@+id/editor_foreground_image"
                         android:layout_width="match_parent"
@@ -55,10 +61,10 @@
                     android:id="@+id/editor_mask_image"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
                     android:id="@+id/editor_frame_image"
@@ -67,10 +73,10 @@
                     android:layout_alignBottom="@id/editor_mask_image"
                     android:layout_alignParentEnd="true"
                     android:scaleType="fitXY"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
                     android:id="@+id/iv_banner_logo"
@@ -109,72 +115,117 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentStart="true"
-                android:layout_margin="2dp"
-                android:layout_weight="1.0"
-                android:gravity="center"
-                android:padding="4dp">
-
-                <ImageButton
-                    android:id="@+id/editor_text"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:background="@drawable/text" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_margin="2dp"
                 android:layout_weight="1.0"
                 android:gravity="center"
-                android:padding="4dp">
+                android:padding="4dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <ImageButton
                     android:id="@+id/iv_cancel"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:background="@drawable/del"
-                    />
+                    android:background="@drawable/del" />
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:id="@+id/rl_social"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/editor_view_to_save"
                 android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:layout_margin="2dp"
-                >
+                android:padding="4dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <ImageButton
+                    android:id="@+id/editor_text"
+                    android:layout_width="@dimen/widget_size_40"
+                    android:layout_height="@dimen/widget_size_40"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/text" />
+
+                <ImageView
+                    android:id="@+id/like"
+                    android:layout_width="@dimen/widget_size_40"
+                    android:layout_height="@dimen/widget_size_40"
+                    android:layout_marginStart="10dp"
+                    android:layout_toEndOf="@id/editor_text"
+                    android:background="@drawable/ic_like"
+                    android:backgroundTint="@color/yellow" />
+
+                <TextView
+                    android:id="@+id/likes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_toEndOf="@id/like"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="#C3CBCE"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/comment"
+                    android:layout_width="@dimen/widget_size_40"
+                    android:layout_height="@dimen/widget_size_40"
+                    android:layout_marginStart="10dp"
+                    android:layout_toEndOf="@id/likes"
+                    android:background="@drawable/icons_comment" />
+
+                <TextView
+                    android:id="@+id/comments"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_toEndOf="@id/comment"
+                    android:text="0"
+                    android:textColor="#C3CBCE"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/save"
+                    android:layout_width="@dimen/widget_size_40"
+                    android:layout_height="@dimen/widget_size_40"
+                    android:layout_marginEnd="@dimen/widget_size_16"
+                    android:layout_toStartOf="@id/iv_share"
+                    android:background="@drawable/ic_save"
+                    android:backgroundTint="@color/black" />
+
                 <ImageView
                     android:id="@+id/iv_share"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_width="@dimen/widget_size_40"
+                    android:layout_height="@dimen/widget_size_40"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="@dimen/widget_size_16"
                     android:layout_marginBottom="8dp"
                     android:background="@drawable/ic_round_share"
-                    android:backgroundTint="@color/colorAccent"
-                    app:layout_constraintBottom_toBottomOf="@+id/cl_artical_view"
-                    app:layout_constraintEnd_toEndOf="@+id/cl_artical_view" />
-            </LinearLayout>
+                    android:backgroundTint="@color/colorAccent" />
 
-        </RelativeLayout>
+            </RelativeLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipeRefreshLayout_editor"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:refreshing="@{viewModel.isLoading()}"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:refreshing="@{viewModel.isLoading()}"
             tools:visibility="gone">
+
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/editor_pager"
                 android:layout_width="match_parent"

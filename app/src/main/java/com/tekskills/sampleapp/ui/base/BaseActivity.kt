@@ -7,6 +7,8 @@ import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
+import com.tekskills.sampleapp.data.local.BookmarksDatabase
+import com.tekskills.sampleapp.data.local.BookmarksRepository
 import com.tekskills.sampleapp.data.prefrences.AppPreferences
 import com.tekskills.sampleapp.ui.main.MainViewModelFactory
 
@@ -27,10 +29,13 @@ abstract class BaseActivity<binding : ViewDataBinding, viewModel : ViewModel, vi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = getViewBinding()
+        val database: BookmarksDatabase =
+            BookmarksDatabase.getInstance(context = applicationContext)
+        val dao = database.dao
+        val repository = BookmarksRepository(dao)
 
         prefrences = AppPreferences(this)
-
-        val factory = MainViewModelFactory(prefrences)
+        val factory = MainViewModelFactory(repository, prefrences)
         viewModel = ViewModelProvider(getViewModelStoreOwner(), factory)[getViewModel()]
     }
 }

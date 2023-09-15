@@ -7,7 +7,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.tekskills.sampleapp.R
 import com.tekskills.sampleapp.ui.articledetails.ArticlesFragment
 import com.tekskills.sampleapp.ui.articledetails.ShortsFragment
-import com.tekskills.sampleapp.ui.poster.PosterEditorFragment
+import com.tekskills.sampleapp.ui.articledetails.PosterEditorFragment
 
 class ViewPagerAdapter(fragmentActivity: FragmentActivity, val context: Context) :
     FragmentStateAdapter(fragmentActivity) {

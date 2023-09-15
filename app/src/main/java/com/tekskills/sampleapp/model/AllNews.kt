@@ -47,5 +47,5 @@ data class AllNewsItem(
     val videoUrl: String,
     @SerializedName("websiteUrl")
     val websiteUrl: String,
-    @SerializedName("source") val source: Source,
+//    @SerializedName("source") val source: Source,
 ) : Serializable

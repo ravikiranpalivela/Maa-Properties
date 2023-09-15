@@ -24,7 +24,6 @@ import com.tekskills.sampleapp.R
 import com.tekskills.sampleapp.ui.poster.sticker.model.BubblePropertyModel
 import com.tekskills.sampleapp.ui.poster.sticker.utils.DensityUtils.dip2px
 
-
 class BubbleTextView : AppCompatImageView {
     private var deleteBitmap: Bitmap? = null
     private var flipVBitmap: Bitmap? = null

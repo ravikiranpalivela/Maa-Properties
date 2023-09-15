@@ -4,11 +4,14 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
+import androidx.activity.addCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityOptionsCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -18,6 +21,8 @@ import androidx.lifecycle.asLiveData
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.transition.MaterialFadeThrough
 import com.tekskills.sampleapp.R
+import com.tekskills.sampleapp.data.local.BookmarksDatabase
+import com.tekskills.sampleapp.data.local.BookmarksRepository
 import com.tekskills.sampleapp.data.prefrences.AppPreferences
 import com.tekskills.sampleapp.databinding.FragmentArticlesBinding
 import com.tekskills.sampleapp.model.AllNewsItem
@@ -46,7 +51,10 @@ class ShortsFragment : Fragment() {
         preferences =
             AppPreferences(requireContext())
 
-        val factory = MainViewModelFactory(preferences)
+        val database: BookmarksDatabase = BookmarksDatabase.getInstance(context = requireContext())
+        val dao = database.dao
+        val repository = BookmarksRepository(dao)
+        val factory = MainViewModelFactory(repository,preferences)
         viewModel = ViewModelProvider(requireActivity(), factory).get(MainViewModel::class.java)
 
         binding.viewModel = viewModel
@@ -54,6 +62,31 @@ class ShortsFragment : Fragment() {
         defineViews()
         enterTransition = MaterialFadeThrough()
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Handle the back button press
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            showExitConfirmationDialog()
+        }
+    }
+
+    private fun showExitConfirmationDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Exit Application")
+        builder.setMessage("Are you sure you want to exit the application?")
+        builder.setPositiveButton("Yes") { _, _ ->
+            // User clicked Yes, so exit the application
+            requireActivity().finish()
+        }
+        builder.setNegativeButton("No") { dialog, _ ->
+            // User clicked No, so dismiss the dialog
+            dialog.dismiss()
+        }
+        val dialog = builder.create()
+        dialog.show()
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -95,10 +128,10 @@ class ShortsFragment : Fragment() {
 //                        .filter { it.newsId == 772 }
                         .sortedByDescending { sort -> sort.newsId }
                         .let { articles ->
-                        isLoading = true
-                        newsListAdapter.setArticleList(articles)
-                        isLoading = true
-                    }
+                            isLoading = true
+                            newsListAdapter.setArticleList(articles)
+                            isLoading = true
+                        }
                 }
             }
         })
@@ -124,7 +157,7 @@ class ShortsFragment : Fragment() {
                 lifecycle,
                 { article: AllNewsItem, imageView: ImageView ->
                     goToArticleDetailActivity(article, imageView)
-                },{ article: AllNewsItem, imageView: ImageView ->
+                }, { article: AllNewsItem, imageView: ImageView ->
                     (activity as MainActivity?)!!.appBarLayoutHandle(true)
                 },
                 { article: AllNewsItem, imageView: ImageView ->
@@ -157,12 +190,23 @@ class ShortsFragment : Fragment() {
                     if (!article.websiteUrl.isNullOrEmpty() && article.websiteUrl != "null") {
                         val html =
                             "${article.title} \n\nFull article at : ${article.websiteUrl}>${article.websiteUrl}"
-                        ShareLayout.simpleLayoutShare(requireContext(), itemView, html,activityOptions)
+                        ShareLayout.simpleLayoutShare(
+                            requireContext(),
+                            itemView,
+                            html,
+                            activityOptions
+                        )
                     } else
-                        ShareLayout.simpleLayoutShare(requireContext(), itemView, article.title,activityOptions)
+                        ShareLayout.simpleLayoutShare(
+                            requireContext(),
+                            itemView,
+                            article.title,
+                            activityOptions
+                        )
                 })
 
         binding.pager.orientation = ViewPager2.ORIENTATION_VERTICAL
+        binding.pager.registerOnPageChangeCallback(onPageChangeCallback)
 
         viewModel.appPreferences.viewtype.asLiveData()
             .observe(viewLifecycleOwner, Observer { viewType ->
@@ -172,6 +216,27 @@ class ShortsFragment : Fragment() {
         binding.pager.setPageTransformer(CardTransformer(1.2f))
 
     }
+
+    private val onPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
+        override fun onPageScrollStateChanged(state: Int) {
+            super.onPageScrollStateChanged(state)
+            Log.d("Event", "action response page scroll ${state}")
+            when (state) {
+                ViewPager2.SCROLL_STATE_DRAGGING -> {
+
+                }
+
+                ViewPager2.SCROLL_STATE_IDLE -> {
+                    (activity as MainActivity?)!!.appBarLayoutHandle(false)
+                }
+
+                ViewPager2.SCROLL_STATE_SETTLING -> {
+                    // Pager is automatically settling to the current page.
+                }
+            }
+        }
+    }
+
 
     class CardTransformer(scalingStart: Float) : ViewPager2.PageTransformer {
         private val scalingStart: Float

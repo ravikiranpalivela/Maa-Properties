@@ -174,5 +174,10 @@ dependencies {
 
     implementation 'com.github.ratty3697:android-smart-animation-library:1.6'
 
-
+//  room
+    def room_version = "2.5.0"
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+    // optional - Kotlin Extensions and Coroutines support for Room
+    implementation "androidx.room:room-ktx:$room_version"
 }

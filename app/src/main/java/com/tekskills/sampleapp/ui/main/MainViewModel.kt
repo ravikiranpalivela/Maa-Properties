@@ -4,9 +4,12 @@ import androidx.databinding.Bindable
 import androidx.databinding.Observable
 import androidx.lifecycle.*
 import com.tekskills.sampleapp.R
+import com.tekskills.sampleapp.data.local.BookmarksAllNews
+import com.tekskills.sampleapp.data.local.BookmarksRepository
 import com.tekskills.sampleapp.data.prefrences.AppPreferences
 import com.tekskills.sampleapp.data.repo.ArticleProvider
 import com.tekskills.sampleapp.model.AllNews
+import com.tekskills.sampleapp.model.AllNewsItem
 import com.tekskills.sampleapp.model.PosterItem
 import com.tekskills.sampleapp.utils.Event
 import kotlinx.coroutines.launch
@@ -14,6 +17,7 @@ import retrofit2.Response
 import java.lang.Exception
 
 class MainViewModel(
+    private val repository: BookmarksRepository,
     private val prefrences: AppPreferences
 ) : ViewModel(), Observable {
     override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {
@@ -34,6 +38,9 @@ class MainViewModel(
 
     var responseLiveData: MutableLiveData<Response<AllNews>?> = MutableLiveData()
     var responseEditorLiveData: MutableLiveData<Response<PosterItem>?> = MutableLiveData()
+
+    var bookmarkList: LiveData<List<BookmarksAllNews>> = repository.bookmarks
+
 
     val appPreferences: AppPreferences
     get() = prefrences
@@ -133,5 +140,26 @@ class MainViewModel(
             }
         }
         refreshResponse()
+    }
+
+    fun addABookmark(id: Int = 0, news_id: Int, article: AllNewsItem) {
+
+        viewModelScope.launch {
+            val bookMark = BookmarksAllNews(id,news_id, article)
+            repository.insertArticleIntoBookmarks(bookMark)
+        }
+
+    }
+
+    fun deleteABookmark(bookmark: BookmarksAllNews) {
+        viewModelScope.launch {
+            repository.deleteArticlefromBookmarks(bookmark)
+        }
+    }
+
+    fun clearAllBookmarks() {
+        viewModelScope.launch {
+            repository.deleteALlArticleFromBookmarks()
+        }
     }
 }

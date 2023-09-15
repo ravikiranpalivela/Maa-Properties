@@ -12,6 +12,8 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.addCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
@@ -22,6 +24,8 @@ import androidx.lifecycle.asLiveData
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.transition.MaterialFadeThrough
 import com.tekskills.sampleapp.R
+import com.tekskills.sampleapp.data.local.BookmarksDatabase
+import com.tekskills.sampleapp.data.local.BookmarksRepository
 import com.tekskills.sampleapp.data.prefrences.AppPreferences
 import com.tekskills.sampleapp.databinding.FragmentArticlesBinding
 import com.tekskills.sampleapp.model.AllNewsItem
@@ -50,8 +54,10 @@ class ArticlesFragment : Fragment() {
 
         preferences =
             AppPreferences(requireContext())
-
-        val factory = MainViewModelFactory(preferences)
+        val database: BookmarksDatabase = BookmarksDatabase.getInstance(context = requireContext())
+        val dao = database.dao
+        val repository = BookmarksRepository(dao)
+        val factory = MainViewModelFactory(repository,preferences)
         viewModel = ViewModelProvider(requireActivity(), factory).get(MainViewModel::class.java)
 
         binding.viewModel = viewModel
@@ -157,6 +163,7 @@ class ArticlesFragment : Fragment() {
                         itemView,
                         "article_image"
                     )
+                    viewModel.addABookmark(news_id = article.newsId, article = article)
                     if (!article.websiteUrl.isNullOrEmpty() && article.websiteUrl != "null") {
                         val html =
                             "${article.title} \n\nFull article at : ${article.websiteUrl}>${article.websiteUrl}"
@@ -209,11 +216,6 @@ class ArticlesFragment : Fragment() {
     }
 
     private val onPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
-        override fun onPageSelected(position: Int) {
-            super.onPageSelected(position)
-
-        }
-
         override fun onPageScrollStateChanged(state: Int) {
             super.onPageScrollStateChanged(state)
             Log.d("Event", "action response page scroll ${state}")
@@ -231,6 +233,30 @@ class ArticlesFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        // Handle the back button press
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            showExitConfirmationDialog()
+        }
+    }
+
+    private fun showExitConfirmationDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Exit Application")
+        builder.setMessage("Are you sure you want to exit the application?")
+        builder.setPositiveButton("Yes") { _, _ ->
+            // User clicked Yes, so exit the application
+            requireActivity().finish()
+        }
+        builder.setNegativeButton("No") { dialog, _ ->
+            // User clicked No, so dismiss the dialog
+            dialog.dismiss()
+        }
+        val dialog = builder.create()
+        dialog.show()
     }
 
     class CardTransformer(scalingStart: Float) : ViewPager2.PageTransformer {
