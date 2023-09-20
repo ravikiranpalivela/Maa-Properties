@@ -3,7 +3,7 @@ package com.tekskills.sampleapp.ui.poster.collegeview
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
-import com.tekskills.sampleapp.ui.articledetails.PosterEditorFragment
+import com.tekskills.sampleapp.ui.articleDetails.PosterEditorFragment
 
 class MultiTouchListener : OnTouchListener {
     var isRotateEnabled = true
@@ -16,7 +16,6 @@ class MultiTouchListener : OnTouchListener {
     private var mPrevY = 0f
     private var mScaleGestureDetector: ScaleGestureDetector
     private var posterEditor: PosterEditorFragment? = null
-
 
     constructor(posterEditorFragment: PosterEditorFragment?) {
         this.posterEditor = posterEditorFragment

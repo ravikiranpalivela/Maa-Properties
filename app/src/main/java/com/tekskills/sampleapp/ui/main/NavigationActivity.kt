@@ -12,7 +12,6 @@ import android.util.Log
 import android.view.GestureDetector
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.LinearLayout
@@ -31,12 +30,10 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.tekskills.sampleapp.R
-import com.tekskills.sampleapp.databinding.ActivityMainBinding
 import com.tekskills.sampleapp.databinding.ActivityNavigationBinding
 import com.tekskills.sampleapp.model.ExpandedMenuModel
 import com.tekskills.sampleapp.ui.adapter.ExpandableListAdapter
 import com.tekskills.sampleapp.ui.adapter.ViewPagerAdapter
-import com.tekskills.sampleapp.ui.articledetails.ArticlesFragment
 import com.tekskills.sampleapp.ui.base.BaseActivity
 import com.tekskills.sampleapp.ui.splash.SplashActivity
 import com.tekskills.sampleapp.utils.NetworkObserver

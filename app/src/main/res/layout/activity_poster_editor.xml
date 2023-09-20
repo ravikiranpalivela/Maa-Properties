@@ -150,15 +150,25 @@
                     android:layout_marginStart="10dp"
                     android:background="@drawable/text" />
 
+                <com.tekskills.sampleapp.utils.like.LikeButton
+                    android:id="@+id/heart_button"
+                    android:layout_width="@dimen/widget_size_30"
+                    android:layout_height="@dimen/widget_size_30"
+                    app:icon_size="25dp"
+                    android:layout_toEndOf="@id/editor_text"
+                    app:anim_scale_factor="3"
+                    app:icon_type="heart" />
+
                 <ImageView
-                    android:id="@+id/like"
                     android:layout_width="@dimen/widget_size_40"
                     android:layout_height="@dimen/widget_size_40"
+                    android:id="@+id/like"
                     android:layout_marginStart="10dp"
-                    android:layout_toEndOf="@id/editor_text"
+                    android:visibility="gone"
+                    android:layout_toEndOf="@id/heart_button"
                     android:background="@drawable/ic_like"
-                    android:backgroundTint="@color/yellow" />
-
+                    android:backgroundTint="@color/yellow"
+                    />
                 <TextView
                     android:id="@+id/likes"
                     android:layout_width="wrap_content"

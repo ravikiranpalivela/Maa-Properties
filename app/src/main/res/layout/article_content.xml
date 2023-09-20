@@ -2,7 +2,7 @@
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/ns_artical"
+    android:id="@+id/ns_article"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
@@ -10,7 +10,7 @@
     tools:showIn="@layout/activity_article_details">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_artical_main"
+        android:id="@+id/cl_article_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:divider="@android:color/transparent"
@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_artical_view"
+            android:id="@+id/cl_article_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="4dp"
@@ -269,8 +269,8 @@
             android:layout_marginBottom="8dp"
             android:background="@drawable/ic_round_share"
             android:backgroundTint="@color/colorAccent"
-            app:layout_constraintBottom_toBottomOf="@+id/cl_artical_view"
-            app:layout_constraintEnd_toEndOf="@+id/cl_artical_view" />
+            app:layout_constraintBottom_toBottomOf="@+id/cl_article_view"
+            app:layout_constraintEnd_toEndOf="@+id/cl_article_view" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

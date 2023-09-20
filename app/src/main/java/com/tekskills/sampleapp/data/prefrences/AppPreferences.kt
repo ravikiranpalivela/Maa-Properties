@@ -33,6 +33,11 @@ class AppPreferences (
             it[KEY_LANGUAGE]
         }
 
+    val bannerCount: Flow<Int?>
+        get() = datastore.data.map {
+            it[KEY_BANNER]
+        }
+
     suspend fun saveViewType(type: String){
         datastore.edit {
             it[KEY_VIEWTYPE] = type
@@ -51,9 +56,18 @@ class AppPreferences (
         }
     }
 
+    suspend fun saveBannerEdit(count: Int)
+    {
+        datastore.edit {
+            it[KEY_BANNER] = count
+        }
+    }
+
     companion object{
         private val KEY_VIEWTYPE = preferencesKey<String>("View_Type")
         private val KEY_THEME = preferencesKey<String>("User_Theme")
         private val KEY_LANGUAGE = preferencesKey<String>("User_Language")
+        private val KEY_BANNER = preferencesKey<Int>("Banner_Select")
+
     }
 }

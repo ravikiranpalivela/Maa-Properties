@@ -1,85 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources >
     <color name="colorPrimary">#ffff</color>
     <color name="colorPrimaryDark">#000</color>
     <color name="colorSecondary">#ffff</color>
     <color name="colorAccent">#2196F3</color>
-    <color name="colorLandingBgGray">#737373</color>
-    <color name="colorWhite">#FFFFFF</color>
-    <color name="colorTransparentWhite">#8effffff</color>
-    <color name="colorBackground">#efefef</color>
-    <color name="colorTextGray">#4b4b4b</color>
     <!-- overwrite the selected colors because the primary color is to dark -->
-    <color name="material_drawer_selected_text">#039be5</color>
-    <color name="material_drawer_dark_selected_text">#039be5</color>
     <color name="white">#ffff</color>
 
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
-    <color name="light_blue_600">#FF039BE5</color>
-    <color name="light_blue_900">#FF01579B</color>
-    <color name="light_blue_A200">#FF40C4FF</color>
-    <color name="light_blue_A400">#FF00B0FF</color>
     <color name="background_color">#FF000000</color>
-    <color name="header_black">#bcbcbc</color>
     <color name="black_overlay">#66000000</color>
-    <color name="readmore_textview_Color">#FF0000</color>
-    <color name="light_white">#bcbcbc</color>
-    <color name="header_footer">#6c757d</color>
-    <color name="background_image">#1f1e24</color>
     <color name="desc_color">#212529</color>
-
-    <color name="colorTheme">#1DA1F2</color>
-
-    <color name="colorPrimaryTransparent">#a413428e</color>
-    <color name="colorEditTextBorder">#a4b3dc</color>
-    <color name="colorBtnText">#13244f</color>
-    <color name="appBackground">#FFFFFF</color>
-    <color name="txtWhite">#000000</color>
 
     <!--<color name="colorPrimary">#FFE0000E</color>
     <color name="colorPrimaryDark">#FF9E0010</color>
     <color name="colorAccent">#FF09090A</color>-->
     <!--<color name="colorPrimaryTransparent">#a4e0000e</color>
     <color name="colorEditTextBorder">#FFECD6D6</color>-->
-    <color name="colorDrawerBgGray">#FFE1E1E1</color>
-    <color name="colorDrawerTextGray">#FF6A6A6A</color>
-    <color name="color_light_gray">#969494</color>
-    <color name="color_gray">#687A89</color>
 
-    <color name="colorBlack">#000000</color>
-
-    <color name="colorDarkGray">#1a1919</color>
-    <color name="colorImgGray">#5b5959</color>
     <!--<color name="colorImgGray">#f51a1919</color>-->
-    <color name="colorSuperLightGray">#f1f1f1</color>
 
     <!-- Placeholder colors-->
-    <color name="stay_color">#646262</color>
-    <color name="colorBlackTransparent">#b1000000</color>
-    <color name="colorBlackTransparent2">#71000000</color>
-    <color name="colorTransparent">#01000000</color>
 
-    <color name="colorLightGray">#cccbcb</color>
-    <color name="colorBgSearch">#FFE1E1E1</color>
-    <color name="colorBgFollow">#FFF2F2F2</color>
-    <color name="colorLightGrayView">#FFCECECE</color>
-    <color name="colorDialogGray">#FFD4D4D4</color>
     <color name="colorRed">#fa3b33</color>
-    <color name="colorUnread">#e7f0f9</color>
-    <color name="grey">#808080</color>
-    <color name="bblack">#000</color>
     <color name="red">#FF0000</color>
-    <color name="switchColor">#FF0000</color>
 
-    <color name="colorPrimaryBroadcast">#13428e</color>
-    <color name="colorPrimaryDarkBroadcast">#2a58a1</color>
-    <color name="colorAccentBroadcast">#13428e</color>
-
-    <color name="contact_us">#dd4646</color>
     <color name="yellow">#ffde34</color>
 </resources>

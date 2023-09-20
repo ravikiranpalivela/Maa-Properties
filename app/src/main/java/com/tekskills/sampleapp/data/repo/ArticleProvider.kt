@@ -3,6 +3,7 @@ package com.tekskills.sampleapp.data.repo
 import com.tekskills.sampleapp.data.webdata.NewsService
 import com.tekskills.sampleapp.data.webdata.RetrofitInstance
 import com.tekskills.sampleapp.model.AllNews
+import com.tekskills.sampleapp.model.BannerItem
 import com.tekskills.sampleapp.model.PosterItem
 import retrofit2.Response
 
@@ -32,5 +33,9 @@ class ArticleProvider{
             "Posters" -> retService.getPosters()
             else -> {retService.getPosters()}
         }
+    }
+
+    suspend fun getBanner():Response<BannerItem>{
+        return retService.getBanners()
     }
 }

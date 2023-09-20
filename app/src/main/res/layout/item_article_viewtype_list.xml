@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_artical_main"
+        android:id="@+id/cl_article_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="2dp"
@@ -15,7 +15,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_artical_view"
+            android:id="@+id/cl_article_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/colorPrimary"
@@ -193,6 +193,14 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/read_more_article" />
 
+            <View
+                android:id="@+id/view"
+                style="@style/line"
+                android:layout_width="match_parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/published_at" />
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -201,12 +209,22 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/published_at">
+                app:layout_constraintTop_toBottomOf="@+id/view">
+
+                <com.tekskills.sampleapp.utils.like.LikeButton
+                    android:id="@+id/heart_button"
+                    android:layout_width="@dimen/widget_size_30"
+                    android:layout_height="@dimen/widget_size_30"
+                    app:icon_size="25dp"
+                    app:anim_scale_factor="3"
+                    app:icon_type="heart" />
 
                 <ImageView
                     android:layout_width="@dimen/widget_size_30"
                     android:layout_height="@dimen/widget_size_30"
                     android:id="@+id/like"
+                    android:visibility="gone"
+                    android:layout_toEndOf="@id/heart_button"
                     android:background="@drawable/ic_like"
                     android:backgroundTint="@color/yellow"
                     />

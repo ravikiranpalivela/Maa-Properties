@@ -8,11 +8,11 @@ import com.tekskills.sampleapp.model.AllNewsItem
 
 @Entity(tableName = "Bookmarks")
 data class BookmarksAllNews(
-
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "bookmark_id")
-    val id: Int,
+    val id: Int = 0,
     @ColumnInfo(name = "news_id")
     val news_id: Int,
-    @Embedded val article: AllNewsItem?
+    @ColumnInfo(name = "view_count")
+    var view_count: Int = 0
 )

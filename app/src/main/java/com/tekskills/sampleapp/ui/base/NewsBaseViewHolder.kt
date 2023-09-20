@@ -1,6 +1,8 @@
 package com.tekskills.sampleapp.ui.base
 
 import android.app.Activity
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.CountDownTimer
 import android.util.Log
 import android.view.View
@@ -15,16 +17,29 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.tekskills.sampleapp.R
+import com.tekskills.sampleapp.data.local.BannersDatabase
+import com.tekskills.sampleapp.data.local.BookmarksAllNews
+import com.tekskills.sampleapp.data.local.BookmarksDatabase
+import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
 import com.tekskills.sampleapp.databinding.ItemArticleViewtypeListBinding
 import com.tekskills.sampleapp.model.AllNewsItem
+import com.tekskills.sampleapp.ui.adapter.NewsAdapter
+import com.tekskills.sampleapp.ui.main.MainViewModel
+import com.tekskills.sampleapp.utils.like.LikeButton
+import com.tekskills.sampleapp.utils.like.OnAnimationEndListener
+import com.tekskills.sampleapp.utils.like.OnLikeListener
+import com.tekskills.sampleapp.utils.reactions.ReactionPopup
+import com.tekskills.sampleapp.utils.reactions.ReactionsConfigBuilder
 import com.tekskills.sampleapp.utils.video.changeDateFormat
 import com.tekskills.sampleapp.utils.video.getThumbnail
 import com.tekskills.sampleapp.utils.video.isValidURL
 import com.tekskills.sampleapp.utils.video.isValidUrl
 import com.tekskills.sampleapp.utils.video.isYoutubeUrl
+import java.util.concurrent.Executors
 
 abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
     private val activity: Activity,
+    private val viewModel: MainViewModel,
     private val bindingView: viewDataBinding,
     private val lifecycle: Lifecycle
 ) :
@@ -37,11 +52,10 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
 
     fun bind(
         article: AllNewsItem,
-        clickListener: (AllNewsItem, ImageView) -> Unit,
-        doubleClickListener: (AllNewsItem, ImageView) -> Unit,
-        readMoreClickListener: (AllNewsItem, ImageView) -> Unit,
-        shareClickListener: (AllNewsItem, View) -> Unit
+        onClickListener: NewsAdapter.OnClickListener,
     ) {
+        // Get the view count using the ViewModel
+        val sharedPrefManager: SharedPrefManager = SharedPrefManager.getInstance(activity)
 
         binding.apply {
             if (validateValue(article.description) == "null")
@@ -58,17 +72,78 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                 titleArticle.text = article.title
             }
 
+            var count = viewModel.getBookMarkViewCount(article.newsId)
+
+            likes.text = count.toString()
+
             article.scheduleDate?.let {
                 publishedAt.text = "Posted date : ${changeDateFormat(it)}"
             }
 
             titleArticle.setOnClickListener {
-                clickListener(article, articleImage)
+                onClickListener.clickListener(article, articleImage)
             }
 
             readMoreArticle.setOnClickListener {
-                readMoreClickListener(article, articleImage)
+                onClickListener.readMoreClickListener(article, articleImage)
             }
+
+            heartButton.setOnLikeListener(object : OnLikeListener {
+                override fun liked(likeButton: LikeButton?) {
+//                    Toast.makeText(activity, "Liked!", Toast.LENGTH_SHORT).show();
+                }
+
+                override fun unLiked(likeButton: LikeButton?) {
+//                    Toast.makeText(activity, "unLiked!", Toast.LENGTH_SHORT).show();
+                }
+            })
+
+            heartButton.setOnAnimationEndListener(object : OnAnimationEndListener {
+                override fun onAnimationEnd(likeButton: LikeButton?) {
+                    updateViewCount(article.newsId, article)
+                }
+            })
+
+//            like.setOnClickListener {
+//                count++
+//                likes.text = count.toString()
+////                onClickListener.likeClickListener(article, articleImage)
+//
+////                updateViewCount(article.newsId, article)
+////                var countData = viewModel.getBookMarkViewCount(article.newsId)
+////                countData++
+////                likes.text = countData.toString()
+//            }
+            val strings = arrayOf("like", "love", "laugh", "wow", "sad", "angry")
+
+            val popup = ReactionPopup(
+                activity,
+                ReactionsConfigBuilder(activity)
+                    .withReactions(
+                        intArrayOf(
+                            R.drawable.ic_fb_like,
+                            R.drawable.ic_fb_love,
+                            R.drawable.ic_fb_laugh,
+                            R.drawable.ic_fb_wow,
+                            R.drawable.ic_fb_sad,
+                            R.drawable.ic_fb_angry
+                        )
+                    )
+                    .withPopupAlpha(20)
+                    .withReactionTexts { position -> strings[position] }
+                    .withTextBackground(ColorDrawable(Color.TRANSPARENT))
+                    .withTextColor(Color.BLACK)
+                    .withTextHorizontalPadding(0)
+                    .withTextVerticalPadding(0)
+                    .withTextSize(activity.resources.getDimension(R.dimen.reactions_text_size))
+                    .build()
+            ) {
+                if (it) {
+                    updateViewCount(article.newsId, article)
+                }
+            }
+
+            like.setOnTouchListener(popup)
 
 //            root.setOnClickListener(object : DoubleClickListener() {
 //                override fun onDoubleClick(v: View) {
@@ -79,15 +154,17 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
 
             root.setOnClickListener() {
                 Log.d("Event", "action response double click")
-                doubleClickListener(article, articleImage)
+                onClickListener.doubleClickListener(article, articleImage)
             }
 
-            val BANNER_SAMPLE =
-                "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
-            displayImage(BANNER_SAMPLE, ivBannerShare)
+//            val BANNER_SAMPLE =
+//                "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
+//            displayImage(BANNER_SAMPLE, ivBannerShare)
 
             ivBannerShare.visibility = View.GONE
             ivBannerLogo.visibility = View.GONE
+
+            getBannerInfo(sharedPrefManager.bannerSelect)
 
             ivShare.setOnClickListener {
                 youtubePlayerView.visibility = View.GONE
@@ -96,11 +173,18 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                 btnPlay.visibility = View.VISIBLE
                 ivBannerShare.visibility = View.VISIBLE
                 ivBannerLogo.visibility = View.VISIBLE
+                getBannerInfo(sharedPrefManager.bannerSelect)
                 object : CountDownTimer(200, 100) {
                     override fun onFinish() {
-                        shareClickListener(article, clArticalView)
+                        onClickListener.shareClickListener(article, clArticleView)
                         ivBannerShare.visibility = View.GONE
                         ivBannerLogo.visibility = View.GONE
+
+                        sharedPrefManager.saveBannerSelect()
+//                        val prefrences = AppPreferences(activity)
+//
+//                        prefrences.saveBannerEdit()
+
                     }
 
                     override fun onTick(millisUntilFinished: Long) {}
@@ -147,7 +231,7 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
             } else if (validateUrlValue(article.videoPath) != "null"
                 && validateUrlValue(article.videoUrl) == "null"
             ) {
-                if (article.videoPath?.isValidUrl()!!)
+                if (article.videoPath.isValidUrl()!!)
                     playPathUrlVideo(article.videoPath!!)
             } else {
                 if (validateUrlValue(article.imagePath) != "null"
@@ -176,6 +260,69 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
             }
         }
     }
+
+    fun updateViewCount(articleId: Int, article: AllNewsItem) {
+
+        val executor = Executors.newSingleThreadExecutor()
+        executor.execute {
+            // Update the view count in the Room database
+            val database: BookmarksDatabase = BookmarksDatabase.getInstance(context = activity)
+            val dao = database.dao
+            val existingBookmark = dao.getBookmarksById(articleId)
+            if (existingBookmark != null) {
+                // Update the existing article
+                var count = existingBookmark.view_count + 1
+                dao.incrementViewCount(existingBookmark.news_id, count)
+            } else {
+                val bookMark = BookmarksAllNews(news_id = articleId, view_count = 1)
+                // Insert a new article
+                dao.insertBookmarks(bookMark)
+            }
+
+            // Fetch the updated data from the database
+            activity.runOnUiThread(Runnable {
+                val updatedData = dao.getBookmarksById(articleId)
+                binding.apply {
+                    likes.text = updatedData?.view_count.toString()
+                }
+            })
+//            database.close()
+        }
+
+    }
+
+    fun getBannerInfo(bannerSelect: Int) {
+
+        val executor = Executors.newSingleThreadExecutor()
+        executor.execute {
+            // Update the view count in the Room database
+            val database: BannersDatabase = BannersDatabase.getInstance(context = activity)
+            val dao = database.bannerDao
+
+            // Fetch the updated data from the database
+            activity.runOnUiThread(Runnable {
+                binding.apply {
+                    var banners = dao.getAllBannerItems()
+                    var count = bannerSelect + 1
+                    if (count < banners.size) {
+                        val updatedData = dao.getAllBannerItems()[count].link
+                        displayImage(updatedData, ivBannerShare)
+                    } else if (banners.isNotEmpty()) {
+                        val updatedData = dao.getAllBannerItems()[0].link
+
+                        displayImage(updatedData, ivBannerShare)
+                    } else {
+                        val BANNER_SAMPLE =
+                            "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
+                        displayImage(BANNER_SAMPLE, ivBannerShare)
+                    }
+                }
+            })
+//            database.close()
+        }
+
+    }
+
 
     private fun playVideoUrlData(videoUrl: String) {
         binding.apply {

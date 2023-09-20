@@ -5,11 +5,9 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [BookmarksAllNews::class], version = 2, exportSchema = false)
+@Database(entities = [BookmarksAllNews::class], version = 1, exportSchema = false)
 abstract class BookmarksDatabase :RoomDatabase(){
-
     abstract val dao: BookmarkDAO
-
     companion object{
         @Volatile
         private var INSTANCE: BookmarksDatabase? = null
@@ -22,7 +20,7 @@ abstract class BookmarksDatabase :RoomDatabase(){
                         context.applicationContext,
                         BookmarksDatabase::class.java,
                         "Bookmarks"
-                    ).build()
+                    ).allowMainThreadQueries().build()
 
                 }
                     return instance

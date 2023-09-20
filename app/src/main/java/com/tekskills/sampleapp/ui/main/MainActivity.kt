@@ -79,18 +79,19 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivi
 //        val actionBar: ActionBar? = supportActionBar
         setSupportActionBar(binding.toolBar);
 
-        handler = Handler()
-        runnable = Runnable {
-            Log.d("Event", "inactive mins ${binding.motionBase.isVisible}")
-//            appBarLayoutHandle(true)
-//            binding.motionBase.visibility = if (binding.motionBase.isVisible) GONE else VISIBLE
-        }
-        startHandler()
+//        handler = Handler()
+//        runnable = Runnable {
+//            Log.d("Event", "inactive mins ${binding.motionBase.isVisible}")
+////            appBarLayoutHandle(true)
+////            binding.motionBase.visibility = if (binding.motionBase.isVisible) GONE else VISIBLE
+//        }
+//        startHandler()
 
         defineLayout()
         observeUserNetworkConnection()
 
         observeRetrofitErrors()
+        observeBannerResponse()
 
         binding.slider.apply {
             setDrawerItems()
@@ -287,19 +288,19 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivi
         }
     }
 
-    override fun onUserInteraction() {
-        super.onUserInteraction()
-        stopHandler()
-        startHandler()
-    }
-
-    private fun startHandler() {
-        handler?.postDelayed(runnable!!, 500)
-    }
-
-    private fun stopHandler() {
-        handler?.removeCallbacks(runnable!!)
-    }
+//    override fun onUserInteraction() {
+//        super.onUserInteraction()
+//        stopHandler()
+//        startHandler()
+//    }
+//
+//    private fun startHandler() {
+//        handler?.postDelayed(runnable!!, 500)
+//    }
+//
+//    private fun stopHandler() {
+//        handler?.removeCallbacks(runnable!!)
+//    }
 
 //    // create an override function onTouchEvent that takes
 //    // in the MotionEvent and returns a boolean value
@@ -598,62 +599,62 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivi
 //    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.view_options -> {
-
-                showDialogWithRadioButtons(
-                    "Choose view type", "List", "Tab", positiveButtonAction = { dialog ->
-                        dialog.dismiss()
-                        val radioGroup =
-                            dialog.findViewById<RadioGroup>(R.id.radiogroup_dialog_main)
-                        val id = radioGroup.checkedRadioButtonId
-                        viewModel.changeViewType(id)
-                    }
-                )
-            }
-
-            R.id.choose_theme -> {
-
-                showDialogWithRadioButtons(
-                    "Choose your theme", "Light", "Dark", positiveButtonAction = { dialog ->
-                        dialog.dismiss()
-                        val radioGroup =
-                            dialog.findViewById<RadioGroup>(R.id.radiogroup_dialog_main)
-
-                        val id = radioGroup.checkedRadioButtonId
-                        when (id) {
-                            R.id.radio_button1 -> {
-                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                                lifecycleScope.launch {
-                                    prefrences.saveUserTheme("Light")
-                                }
-                            }
-
-                            R.id.radio_button2 -> {
-                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                                lifecycleScope.launch {
-                                    prefrences.saveUserTheme("Dark")
-                                }
-                            }
-                        }
-                    }
-                )
-            }
-
-            R.id.choose_language -> {
-
-                showDialogWithRadioButtons(
-                    "Choose view type", "List", "Tab", positiveButtonAction = { dialog ->
-                        dialog.dismiss()
-                        val radioGroup =
-                            dialog.findViewById<RadioGroup>(R.id.radiogroup_dialog_main)
-                        val id = radioGroup.checkedRadioButtonId
-                        viewModel.changeViewType(id)
-                    }
-                )
-            }
-
-        }
+//        when (item.itemId) {
+//            R.id.view_options -> {
+//
+//                showDialogWithRadioButtons(
+//                    "Choose view type", "List", "Tab", positiveButtonAction = { dialog ->
+//                        dialog.dismiss()
+//                        val radioGroup =
+//                            dialog.findViewById<RadioGroup>(R.id.radiogroup_dialog_main)
+//                        val id = radioGroup.checkedRadioButtonId
+//                        viewModel.changeViewType(id)
+//                    }
+//                )
+//            }
+//
+//            R.id.choose_theme -> {
+//
+//                showDialogWithRadioButtons(
+//                    "Choose your theme", "Light", "Dark", positiveButtonAction = { dialog ->
+//                        dialog.dismiss()
+//                        val radioGroup =
+//                            dialog.findViewById<RadioGroup>(R.id.radiogroup_dialog_main)
+//
+//                        val id = radioGroup.checkedRadioButtonId
+//                        when (id) {
+//                            R.id.radio_button1 -> {
+//                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+//                                lifecycleScope.launch {
+//                                    prefrences.saveUserTheme("Light")
+//                                }
+//                            }
+//
+//                            R.id.radio_button2 -> {
+//                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+//                                lifecycleScope.launch {
+//                                    prefrences.saveUserTheme("Dark")
+//                                }
+//                            }
+//                        }
+//                    }
+//                )
+//            }
+//
+//            R.id.choose_language -> {
+//
+//                showDialogWithRadioButtons(
+//                    "Choose view type", "List", "Tab", positiveButtonAction = { dialog ->
+//                        dialog.dismiss()
+//                        val radioGroup =
+//                            dialog.findViewById<RadioGroup>(R.id.radiogroup_dialog_main)
+//                        val id = radioGroup.checkedRadioButtonId
+//                        viewModel.changeViewType(id)
+//                    }
+//                )
+//            }
+//
+//        }
         return true
     }
 
@@ -748,6 +749,14 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivi
         })
     }
 
+    private fun observeBannerResponse() {
+        viewModel.responseBannerLiveData.observe(this, Observer {
+            if (it != null)
+                it.body()?.let { articles ->
+                    viewModel.addBanners(articles)
+                }
+        })
+    }
 
     companion object {
         lateinit var toolbar: Toolbar

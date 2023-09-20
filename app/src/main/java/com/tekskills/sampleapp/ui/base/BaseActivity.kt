@@ -7,6 +7,8 @@ import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
+import com.tekskills.sampleapp.data.local.BannerItemRepository
+import com.tekskills.sampleapp.data.local.BannersDatabase
 import com.tekskills.sampleapp.data.local.BookmarksDatabase
 import com.tekskills.sampleapp.data.local.BookmarksRepository
 import com.tekskills.sampleapp.data.prefrences.AppPreferences
@@ -31,11 +33,14 @@ abstract class BaseActivity<binding : ViewDataBinding, viewModel : ViewModel, vi
         binding = getViewBinding()
         val database: BookmarksDatabase =
             BookmarksDatabase.getInstance(context = applicationContext)
-        val dao = database.dao
-        val repository = BookmarksRepository(dao)
+        val bannerDatabase: BannersDatabase = BannersDatabase.getInstance(context = applicationContext)
 
+        val dao = database.dao
+        val articleDao = bannerDatabase.bannerDao
+        val repository = BookmarksRepository(dao)
+        val bannerRepo = BannerItemRepository(articleDao)
         prefrences = AppPreferences(this)
-        val factory = MainViewModelFactory(repository, prefrences)
+        val factory = MainViewModelFactory(repository, bannerRepo,prefrences)
         viewModel = ViewModelProvider(getViewModelStoreOwner(), factory)[getViewModel()]
     }
 }

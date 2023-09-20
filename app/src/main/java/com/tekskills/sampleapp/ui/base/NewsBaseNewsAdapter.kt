@@ -1,16 +1,12 @@
 package com.tekskills.sampleapp.ui.base
 
-import android.view.View
-import android.widget.ImageView
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
 import com.tekskills.sampleapp.model.AllNewsItem
+import com.tekskills.sampleapp.ui.adapter.NewsAdapter
 
 abstract class NewsBaseNewsAdapter<VB : ViewDataBinding>(
-    private val clickListener: (AllNewsItem, ImageView) -> Unit,
-    private val doubleClickListener: (AllNewsItem, ImageView) -> Unit,
-    private val longClickListener: (AllNewsItem, ImageView) -> Unit,
-    private val shareClickListener: (AllNewsItem, View) -> Unit
+    val onClickListener : NewsAdapter.OnClickListener
 ) : RecyclerView.Adapter<NewsBaseViewHolder<VB>>() {
 
     val articles: ArrayList<AllNewsItem> = ArrayList()
@@ -24,6 +20,6 @@ abstract class NewsBaseNewsAdapter<VB : ViewDataBinding>(
     }
 
     override fun onBindViewHolder(holder: NewsBaseViewHolder<VB>, position: Int) {
-        holder.bind(articles[position], clickListener, doubleClickListener,longClickListener,shareClickListener)
+        holder.bind(articles[position],onClickListener)
     }
 }

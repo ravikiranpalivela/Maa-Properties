@@ -92,7 +92,7 @@ abstract class BaseViewHolder<viewDataBinding : ViewDataBinding>(
                 ivBannerLogo.visibility = View.VISIBLE
                 object : CountDownTimer(200, 100) {
                     override fun onFinish() {
-                        shareClickListener(article, clArticalView)
+                        shareClickListener(article, clArticleView)
                         ivBannerShare.visibility = View.GONE
                         ivBannerLogo.visibility = View.GONE
                     }
