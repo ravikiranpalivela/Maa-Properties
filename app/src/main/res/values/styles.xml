@@ -13,6 +13,15 @@
 <!--        <item name="android:windowBackground">@android:color/transparent</item>-->
 <!--    </style>-->
 
+    <style name="FeedbackBottomSheetDialog" parent="Theme.Design.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/MyBottomSheetStyle</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="android:windowIsFloating">false</item>
+    </style>
+
+    <style name="MyBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">#00000000</item>
+    </style>
 
     <style name="tab_selected_text" parent="TextAppearance.AppCompat.Large">
         <item name="android:fontFamily">@font/google_sans</item>

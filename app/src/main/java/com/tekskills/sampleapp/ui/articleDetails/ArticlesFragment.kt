@@ -17,7 +17,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.asLiveData
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.transition.MaterialFadeThrough
 import com.tekskills.sampleapp.R
@@ -29,12 +28,13 @@ import com.tekskills.sampleapp.data.prefrences.AppPreferences
 import com.tekskills.sampleapp.databinding.FragmentArticlesBinding
 import com.tekskills.sampleapp.model.AllNewsItem
 import com.tekskills.sampleapp.ui.adapter.NewsAdapter
+import com.tekskills.sampleapp.ui.comment.CommentBottomSheet
 import com.tekskills.sampleapp.ui.main.MainActivity
 import com.tekskills.sampleapp.ui.main.MainViewModel
 import com.tekskills.sampleapp.ui.main.MainViewModelFactory
-import com.tekskills.sampleapp.utils.DoubleClickListener
 import com.tekskills.sampleapp.utils.ObjectSerializer
 import com.tekskills.sampleapp.utils.ShareLayout
+
 
 class ArticlesFragment : Fragment() {
 
@@ -54,13 +54,14 @@ class ArticlesFragment : Fragment() {
         preferences =
             AppPreferences(requireContext())
         val database: BookmarksDatabase = BookmarksDatabase.getInstance(context = requireContext())
-        val bannerDatabase: BannersDatabase = BannersDatabase.getInstance(context = requireContext())
+        val bannerDatabase: BannersDatabase =
+            BannersDatabase.getInstance(context = requireContext())
 
         val dao = database.dao
         val repository = BookmarksRepository(dao)
         val articleDao = bannerDatabase.bannerDao
         val bannerRepo = BannerItemRepository(articleDao)
-        val factory = MainViewModelFactory(repository, bannerRepo,preferences)
+        val factory = MainViewModelFactory(repository, bannerRepo, preferences)
         viewModel = ViewModelProvider(requireActivity(), factory)[MainViewModel::class.java]
 
         binding.viewModel = viewModel
@@ -100,12 +101,10 @@ class ArticlesFragment : Fragment() {
     }
 
     private fun displayArticles() {
-
         viewModel.responseLiveData.observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 it.body()?.let { news ->
                     news
-//                        .filter { it.newsId == 772 }
                         .sortedByDescending { sort -> sort.newsId }
                         .let { articles ->
                             isLoading = true
@@ -117,6 +116,28 @@ class ArticlesFragment : Fragment() {
         })
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        // handle result of pick image chooser
+        super.onActivityResult(requestCode, resultCode, data)
+        Log.d("TAG", "onActivityResult response ${resultCode} ${data.toString()}")
+        val TEXT_FONT_COLOR = 856
+
+//        if (resultCode == AppCompatActivity.RESULT_OK) {
+//            if (requestCode == TEXT_FONT_COLOR) {
+//                try {
+//                    val del = DocumentsContract.deleteDocument(
+//                        requireContext().contentResolver,
+//                        data?.data!!
+//                    )
+//                    Log.d("myLogs", "del = $del")
+//                } catch (e: FileNotFoundException) {
+//                    e.printStackTrace()
+//                }
+//            }
+//        }
+    }
+
+
     private fun goToArticleDetailActivity(article: AllNewsItem, imageView: ImageView) {
         val intent = Intent(requireContext(), ArticleDetailsActivity::class.java)
         intent.putExtra("article", ObjectSerializer.serialize(article))
@@ -125,7 +146,7 @@ class ArticlesFragment : Fragment() {
             imageView,
             "article_image"
         )
-        intent.putExtra("fab_visiblity", View.VISIBLE)
+        intent.putExtra("fab_visibility", View.VISIBLE)
         startActivity(intent, activityOptions.toBundle())
     }
 
@@ -164,10 +185,9 @@ class ArticlesFragment : Fragment() {
                                     imageView,
                                     "article_image"
                                 )
-                            intent.putExtra("fab_visiblity", View.VISIBLE)
+                            intent.putExtra("fab_visibility", View.VISIBLE)
                             val chooseIntent = Intent.createChooser(intent, "Choose from below")
                             startActivity(chooseIntent, activityOptions.toBundle())
-//                        startActivity(intent, activityOptions.toBundle())
                         }
                     }
 
@@ -181,14 +201,14 @@ class ArticlesFragment : Fragment() {
                             val html =
                                 "${allNewsItem.title} \n\nFull article at : ${allNewsItem.websiteUrl}>${allNewsItem.websiteUrl}"
                             ShareLayout.simpleLayoutShare(
-                                requireContext(),
+                                requireActivity(),
                                 imageView,
                                 html,
                                 activityOptions
                             )
                         } else
                             ShareLayout.simpleLayoutShare(
-                                requireContext(),
+                                requireActivity(),
                                 imageView,
                                 allNewsItem.title,
                                 activityOptions
@@ -200,35 +220,43 @@ class ArticlesFragment : Fragment() {
                     }
 
                     override fun commentClickListener(allNewsItem: AllNewsItem, imageView: View) {
-                        TODO("Not yet implemented")
+                        val bottomSheetFragment = CommentBottomSheet()
+                        val bundle = Bundle()
+                        bundle.putInt("article_id", allNewsItem.newsId)
+                        bottomSheetFragment.arguments = bundle
+
+                        bottomSheetFragment.show(
+                            parentFragmentManager,
+                            CommentBottomSheet.TAG
+                        )
                     }
                 })
 
         binding.pager.orientation = ViewPager2.ORIENTATION_VERTICAL
         binding.pager.registerOnPageChangeCallback(onPageChangeCallback)
 
-        viewModel.appPreferences.viewtype.asLiveData()
-            .observe(viewLifecycleOwner, Observer { viewType ->
-                binding.pager.adapter = newsListAdapter
-            })
+//        viewModel.appPreferences.viewtype.asLiveData()
+//            .observe(viewLifecycleOwner, Observer { viewType ->
+        binding.pager.adapter = newsListAdapter
+//            })
 
         binding.pager.setPageTransformer(CardTransformer(1.2f))
 
-        binding.pager.setOnClickListener(object : DoubleClickListener() {
-            override fun onDoubleClick(v: View) {
-                Log.d("Event", "action response double click")
-                (activity as MainActivity?)!!.appBarLayoutHandle(true)
-//                Toast.makeText(context,"Double Clicked Attempts", Toast.LENGTH_SHORT).show()
-            }
-        })
+//        binding.pager.setOnClickListener(object : DoubleClickListener() {
+//            override fun onDoubleClick(v: View) {
+//                Log.d("Event", "action response double click")
+//                (activity as MainActivity?)!!.appBarLayoutHandle(true)
+////                Toast.makeText(context,"Double Clicked Attempts", Toast.LENGTH_SHORT).show()
+//            }
+//        })
 
-        binding.root.setOnClickListener(object : DoubleClickListener() {
-            override fun onDoubleClick(v: View) {
-                Log.d("Event", "action response root double click")
-                (activity as MainActivity?)!!.appBarLayoutHandle(true)
-//                Toast.makeText(context,"Double Clicked Attempts", Toast.LENGTH_SHORT).show()
-            }
-        })
+//        binding.root.setOnClickListener(object : DoubleClickListener() {
+//            override fun onDoubleClick(v: View) {
+//                Log.d("Event", "action response root double click")
+//                (activity as MainActivity?)!!.appBarLayoutHandle(true)
+////                Toast.makeText(context,"Double Clicked Attempts", Toast.LENGTH_SHORT).show()
+//            }
+//        })
 
 //        binding.pager.setOnScrollChangeListener { view, i, i2, i3, i4 ->
 //            (activity as MainActivity?)!!.appBarLayoutHandle()

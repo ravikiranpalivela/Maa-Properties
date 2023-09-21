@@ -1,4 +1,4 @@
-package com.tekskills.sampleapp.data.webdata
+package com.tekskills.sampleapp.data.remote
 
 import com.tekskills.sampleapp.model.AllNews
 import com.tekskills.sampleapp.model.BannerItem

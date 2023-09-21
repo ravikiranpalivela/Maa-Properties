@@ -30,6 +30,7 @@ class NewsAdapter(
         fun shareClickListener(allNewsItem: AllNewsItem, imageView: View)
         fun likeClickListener(allNewsItem: AllNewsItem, imageView: View)
         fun commentClickListener(allNewsItem: AllNewsItem, imageView: View)
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsListViewHolder {

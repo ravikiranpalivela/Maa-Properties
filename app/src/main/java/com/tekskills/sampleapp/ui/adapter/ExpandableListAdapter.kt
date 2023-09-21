@@ -50,7 +50,7 @@ class ExpandableListAdapter(private val mContext: Context,
 
     override fun getChild(groupPosition: Int, childPosition: Int): Any {
         Log.d(
-            "Submenu", "${mListDataChild[mListDataHeader[groupPosition]]
+            "SubMenu", "${mListDataChild[mListDataHeader[groupPosition]]
             !![childPosition]} parent pos: $groupPosition child pos: $childPosition"
         )
         return mListDataChild[mListDataHeader[groupPosition]]!![childPosition]
@@ -113,14 +113,14 @@ class ExpandableListAdapter(private val mContext: Context,
         var view = convertView
         val childText = getChild(groupPosition, childPosition) as String
         if (view == null) {
-            val infalInflater = mContext
+            val initInflate = mContext
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            view = infalInflater.inflate(R.layout.list_submenu, null)
+            view = initInflate.inflate(R.layout.list_submenu, null)
         }
 
         val txtListChild = view!!.findViewById<View>(R.id.submenu) as TextView
         txtListChild.text = childText
-        Log.d("submenu","child text ${childText} ")
+        Log.d("subMenu","child text ${childText} ")
         return view
     }
 

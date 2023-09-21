@@ -5,9 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [BookmarksAllNews::class], version = 1, exportSchema = false)
+@Database(entities = [BookmarksAllNews::class,CommentItem::class], version = 1, exportSchema = false)
 abstract class BookmarksDatabase :RoomDatabase(){
     abstract val dao: BookmarkDAO
+    abstract val commentDao: CommentDao
     companion object{
         @Volatile
         private var INSTANCE: BookmarksDatabase? = null

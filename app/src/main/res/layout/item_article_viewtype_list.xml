@@ -147,12 +147,12 @@
                 android:background="@color/colorPrimary"
                 android:fontFamily="@font/google_sans"
                 android:justificationMode="inter_word"
+                android:maxHeight="200dp"
                 android:padding="4dp"
                 android:text="Coronavirus India LIVE Updates: 30,548 Fresh COVID-19 Cases In India, Lowest Daily Cases In 4 Months"
                 android:textColor="@color/desc_color"
                 android:textSize="16sp"
                 android:textStyle="normal"
-                android:maxHeight="200dp"
                 app:layout_constraintBottom_toTopOf="@+id/read_more_article"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -215,76 +215,73 @@
                     android:id="@+id/heart_button"
                     android:layout_width="@dimen/widget_size_30"
                     android:layout_height="@dimen/widget_size_30"
-                    app:icon_size="25dp"
                     app:anim_scale_factor="3"
+                    app:icon_size="25dp"
                     app:icon_type="heart" />
 
                 <ImageView
+                    android:id="@+id/like"
                     android:layout_width="@dimen/widget_size_30"
                     android:layout_height="@dimen/widget_size_30"
-                    android:id="@+id/like"
-                    android:visibility="gone"
                     android:layout_toEndOf="@id/heart_button"
                     android:background="@drawable/ic_like"
                     android:backgroundTint="@color/yellow"
-                    />
+                    android:visibility="gone" />
 
                 <TextView
+                    android:id="@+id/likes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:textColor="#C3CBCE"
-                    android:textStyle="bold"
-                    android:text="0"
                     android:layout_toEndOf="@id/like"
-                    android:textSize="20sp"
                     android:gravity="center"
-                    android:id="@+id/likes"/>
+                    android:text="0"
+                    android:textColor="#C3CBCE"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
                 <ImageView
+                    android:id="@+id/comment"
                     android:layout_width="@dimen/widget_size_30"
                     android:layout_height="@dimen/widget_size_30"
-                    android:id="@+id/comment"
-                    android:background="@drawable/icons_comment"
+                    android:layout_marginStart="10dp"
                     android:layout_toEndOf="@id/likes"
-                    android:layout_marginStart="10dp"/>
+                    android:background="@drawable/icons_comment" />
 
                 <TextView
+                    android:id="@+id/comments"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:textColor="#C3CBCE"
                     android:layout_toEndOf="@id/comment"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
                     android:text="0"
-                    android:id="@+id/comments"/>
+                    android:textColor="#C3CBCE"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
                 <ImageView
+                    android:id="@+id/save"
                     android:layout_width="@dimen/widget_size_30"
                     android:layout_height="@dimen/widget_size_30"
-                    android:id="@+id/save"
-                    android:background="@drawable/ic_save"
-                    android:backgroundTint="@color/black"
-                    android:layout_toStartOf="@id/iv_share"
                     android:layout_marginEnd="@dimen/widget_size_16"
-                    />
+                    android:layout_toStartOf="@id/iv_share"
+                    android:background="@drawable/ic_save"
+                    android:backgroundTint="@color/black" />
 
                 <ImageView
                     android:id="@+id/iv_share"
                     android:layout_width="@dimen/widget_size_30"
                     android:layout_height="@dimen/widget_size_30"
-                    android:layout_marginBottom="8dp"
-                    android:background="@drawable/ic_round_share"
-                    android:backgroundTint="@color/colorAccent"
                     android:layout_alignParentEnd="true"
                     android:layout_marginEnd="@dimen/widget_size_16"
-                    />
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/ic_round_share"
+                    android:backgroundTint="@color/colorAccent" />
 
             </RelativeLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

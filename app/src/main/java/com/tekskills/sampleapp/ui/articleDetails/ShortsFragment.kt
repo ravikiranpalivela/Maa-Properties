@@ -54,13 +54,14 @@ class ShortsFragment : Fragment() {
             AppPreferences(requireContext())
 
         val database: BookmarksDatabase = BookmarksDatabase.getInstance(context = requireContext())
-        val bannerDatabase: BannersDatabase = BannersDatabase.getInstance(context = requireContext())
+        val bannerDatabase: BannersDatabase =
+            BannersDatabase.getInstance(context = requireContext())
 
         val dao = database.dao
         val bannerDao = bannerDatabase.bannerDao
         val repository = BookmarksRepository(dao)
         val bannerRepo = BannerItemRepository(bannerDao)
-        val factory = MainViewModelFactory(repository,bannerRepo,preferences)
+        val factory = MainViewModelFactory(repository, bannerRepo, preferences)
         viewModel = ViewModelProvider(requireActivity(), factory).get(MainViewModel::class.java)
 
         binding.viewModel = viewModel
@@ -131,7 +132,6 @@ class ShortsFragment : Fragment() {
             if (it != null) {
                 it.body()?.let { news ->
                     news
-//                        .filter { it.newsId == 772 }
                         .sortedByDescending { sort -> sort.newsId }
                         .let { articles ->
                             isLoading = true
@@ -151,7 +151,7 @@ class ShortsFragment : Fragment() {
             imageView,
             "article_image"
         )
-        intent.putExtra("fab_visiblity", View.VISIBLE)
+        intent.putExtra("fab_visibility", View.VISIBLE)
         startActivity(intent, activityOptions.toBundle())
     }
 
@@ -180,12 +180,11 @@ class ShortsFragment : Fragment() {
                             imageView,
                             "article_image"
                         )
-                        intent.putExtra("fab_visiblity", View.VISIBLE)
+                        intent.putExtra("fab_visibility", View.VISIBLE)
                         val chooseIntent = Intent.createChooser(intent, "Choose from below")
                         startActivity(chooseIntent, activityOptions.toBundle())
 //                        startActivity(intent, activityOptions.toBundle())
                     }
-
                 },
                 { article, itemView ->
                     val activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
@@ -197,14 +196,14 @@ class ShortsFragment : Fragment() {
                         val html =
                             "${article.title} \n\nFull article at : ${article.websiteUrl}>${article.websiteUrl}"
                         ShareLayout.simpleLayoutShare(
-                            requireContext(),
+                            requireActivity(),
                             itemView,
                             html,
                             activityOptions
                         )
                     } else
                         ShareLayout.simpleLayoutShare(
-                            requireContext(),
+                            requireActivity(),
                             itemView,
                             article.title,
                             activityOptions
@@ -214,10 +213,10 @@ class ShortsFragment : Fragment() {
         binding.pager.orientation = ViewPager2.ORIENTATION_VERTICAL
         binding.pager.registerOnPageChangeCallback(onPageChangeCallback)
 
-        viewModel.appPreferences.viewtype.asLiveData()
-            .observe(viewLifecycleOwner, Observer { viewType ->
+//        viewModel.appPreferences.viewtype.asLiveData()
+//            .observe(viewLifecycleOwner, Observer { viewType ->
                 binding.pager.adapter = newsListAdapter
-            })
+//            })
 
         binding.pager.setPageTransformer(CardTransformer(1.2f))
 
@@ -260,7 +259,6 @@ class ShortsFragment : Fragment() {
                 page.scaleY = scaleFactor
                 page.translationY = w * (1 - position) - w
                 page.translationZ = w * (2 - position) - w
-
             }
         }
     }

@@ -98,7 +98,7 @@ class ArticleDetailsActivity :
                 object : CountDownTimer(200, 100) {
                     override fun onFinish() {
                         ShareLayout.simpleLayoutShare(
-                            getContext(),
+                            this@ArticleDetailsActivity,
                             clArticleView,
                             " ${article.title} \n ${articleContent.text}",
                             null

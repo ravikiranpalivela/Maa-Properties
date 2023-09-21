@@ -104,6 +104,10 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                 }
             })
 
+            comment.setOnClickListener {
+                onClickListener.commentClickListener(article,articleImage)
+            }
+
 //            like.setOnClickListener {
 //                count++
 //                likes.text = count.toString()

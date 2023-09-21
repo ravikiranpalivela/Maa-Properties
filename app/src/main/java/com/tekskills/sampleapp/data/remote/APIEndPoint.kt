@@ -1,4 +1,4 @@
-package com.tekskills.sampleapp.data.webdata
+package com.tekskills.sampleapp.data.remote
 
 class APIEndPoint {
     companion object {

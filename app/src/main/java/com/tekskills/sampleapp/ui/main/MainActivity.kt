@@ -58,10 +58,6 @@ import kotlinx.coroutines.withContext
 
 class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivity>() {
 
-    var gestureDetector: GestureDetector? = null
-
-    var handler: Handler? = null
-    var runnable: Runnable? = null
     override fun onBackPressed() {
         //handle the back press :D close the drawer first and if the drawer is closed close the activity
         if (binding.dlRoot.isDrawerOpen(binding.slider)) {
@@ -76,16 +72,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivi
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-//        val actionBar: ActionBar? = supportActionBar
         setSupportActionBar(binding.toolBar);
-
-//        handler = Handler()
-//        runnable = Runnable {
-//            Log.d("Event", "inactive mins ${binding.motionBase.isVisible}")
-////            appBarLayoutHandle(true)
-////            binding.motionBase.visibility = if (binding.motionBase.isVisible) GONE else VISIBLE
-//        }
-//        startHandler()
 
         defineLayout()
         observeUserNetworkConnection()
@@ -98,91 +85,6 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivi
             setSelection(1, false)
             setSavedInstance(savedInstanceState)
         }
-
-        object : CountDownTimer(2000, 10000) {
-            override fun onFinish() {
-//                binding.motionBase.visibility = GONE
-            }
-
-            override fun onTick(millisUntilFinished: Long) {
-            }
-        }.start()
-
-        binding.dlRoot.setOnTouchListener(object : View.OnTouchListener {
-            override fun onTouch(p0: View?, p1: MotionEvent?): Boolean {
-                Log.d("Event", "action response ${p1?.action}")
-                when (p1?.action) {
-                    MotionEvent.ACTION_DOWN,
-//                    MotionEvent.ACTION_MOVE,
-                    MotionEvent.ACTION_UP
-                    -> {
-                        if (binding.motionBase.isVisible) {
-                            binding.motionBase.visibility = GONE
-                        } else {
-                            binding.motionBase.visibility = VISIBLE
-                        }
-                    }
-                }
-                return true
-            }
-        })
-
-        binding.pager.setOnClickListener(object : DoubleClickListener() {
-            override fun onDoubleClick(v: View) {
-                Log.d("Event", "action response double click")
-                Toast.makeText(applicationContext, "Double Clicked Attempts", Toast.LENGTH_SHORT)
-                    .show()
-            }
-        })
-
-        binding.dlRoot.setOnClickListener {
-            if (binding.toolBar.isVisible) {
-                binding.toolBar.visibility = GONE
-            } else {
-                binding.toolBar.visibility = VISIBLE
-            }
-        }
-
-        binding.root.setOnTouchListener { v, event ->
-            Log.d("Touch Event", "action response ${event.action}")
-            return@setOnTouchListener when (MotionEventCompat.getActionMasked(event)) {
-                MotionEvent.ACTION_DOWN -> {
-
-                    // Make a Toast when movements captured on the sub-class
-                    Toast.makeText(applicationContext, "Move", Toast.LENGTH_SHORT).show()
-                    true
-                }
-
-                else -> false
-            }
-        }
-
-//        binding.motionBase.setTransitionListener(object : MotionLayout.TransitionListener {
-//            override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float) {
-//
-//            }
-//
-//            override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int) {
-//
-//            }
-//
-//            override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float) {
-//
-//            }
-//
-//            override fun onTransitionCompleted(p0: MotionLayout?, p1: Int) {
-//
-//            }
-//
-//        })
-//
-//        binding.pager.setOnTouchListener { _, event ->
-//            binding.motionBase.onTouchEvent(event)
-//            return@setOnTouchListener false
-//        }
-
-//        binding.motionBase.setTransition(R.id.end);
-//        binding.motionBase.setProgress(0)
 
         binding.slider.onDrawerItemClickListener = { v, drawerItem, position ->
             var intent: Intent? = null
@@ -250,74 +152,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivi
             }
             false
         }
-
-//        binding.clMain.setOnTouchListener(OnTouchListener { v, event ->
-////            if (event.action == MotionEvent.ACTION_DOWN) {
-//            if (actionBar!!.isShowing) {
-//                actionBar.hide()
-//            } else {
-//                actionBar.show()
-//            }
-//            true
-////            } else false
-//        })
-
-//        binding.appBar.addOnOffsetChangedListener(object :
-//            AppBarLayout.OnOffsetChangedListener {
-//            var isShow = false
-//            var scrollRange = -1
-//            override fun onOffsetChanged(appBarLayout: AppBarLayout, verticalOffset: Int) {
-//                if (scrollRange == -1) {
-//                    scrollRange = appBarLayout.totalScrollRange
-//                }
-//                if (scrollRange + verticalOffset == 0) {
-//                    isShow = true
-//                } else if (isShow) {
-//                    isShow = false
-//                }
-//            }
-//        })
-        gestureDetector = GestureDetector(this, GestureListener())
     }
-
-    class MyGlSurfaceView(context: Context) : GLSurfaceView(context) {
-
-        init {
-            // Render the view only when there is a change in the drawing data
-            renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
-        }
-    }
-
-//    override fun onUserInteraction() {
-//        super.onUserInteraction()
-//        stopHandler()
-//        startHandler()
-//    }
-//
-//    private fun startHandler() {
-//        handler?.postDelayed(runnable!!, 500)
-//    }
-//
-//    private fun stopHandler() {
-//        handler?.removeCallbacks(runnable!!)
-//    }
-
-//    // create an override function onTouchEvent that takes
-//    // in the MotionEvent and returns a boolean value
-//    override fun onTouchEvent(event: MotionEvent): Boolean {
-//        Log.d("Touch Event","action response ${event.action}")
-//        return when (MotionEventCompat.getActionMasked(event)) {
-//
-//            // Display a Toast whenever a movement is captured on the screen
-//            MotionEvent.ACTION_DOWN -> {
-//                Log.d("Touch Event","action response down ${event.action}")
-//
-//                true
-//            }
-//            else -> super.onTouchEvent(event)
-//        }
-//    }
-
 
     private val onPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
@@ -328,7 +163,6 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivi
 
         override fun onPageScrollStateChanged(state: Int) {
             super.onPageScrollStateChanged(state)
-            binding.motionBase.visibility = if (binding.motionBase.isVisible) GONE else VISIBLE
         }
     }
 
@@ -340,25 +174,6 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivi
         binding.tabLayout.visibility =
             if (!value)
                 GONE else VISIBLE
-    }
-
-    //     onTouchEvent to confirm presence of Touch due to Long Press
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        Log.d("Event", "action touch response ${event?.action}")
-
-        return gestureDetector!!.onTouchEvent(event!!)
-    }
-
-    private class GestureListener : SimpleOnGestureListener() {
-        override fun onLongPress(e: MotionEvent) {
-            super.onLongPress(e)
-            if (toolbar.isVisible) {
-                toolbar.visibility = GONE
-            } else {
-                toolbar.visibility = VISIBLE
-            }
-//            Toast.makeText(, "Long pressed", Toast.LENGTH_SHORT).show()
-        }
     }
 
     private fun defineLayout() {
@@ -454,7 +269,6 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivi
         for (fragment in supportFragmentManager.fragments) {
             fragment.onActivityResult(requestCode, resultCode, intent)
         }
-        Log.d("TAG", "the code is catch")
     }
 
     private fun MaterialDrawerSliderView.setDrawerItems() {
@@ -463,19 +277,15 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivi
             PrimaryDrawerItem().apply {
                 iconDrawable = getDrawable(R.drawable.ic_home)
                 nameRes = R.string.drawer_item_home
-//                iconicsIcon = FontAwesome.Icon.faw_home
                 identifier = 100
             },
             PrimaryDrawerItem().apply {
                 iconDrawable = getDrawable(R.drawable.ic_home)
                 nameRes = R.string.drawer_item_about_us
-//                iconicsIcon = FontAwesome.Icon.faw_address_card
             },
             PrimaryDrawerItem().apply {
                 iconDrawable = getDrawable(R.drawable.ic_bookmark)
                 nameRes = R.string.drawer_item_contact_us
-//                iconicsIcon =
-//                FontAwesome.Icon.faw_address_book
                 identifier = 200
             },
 //            PrimaryDrawerItem().apply {
@@ -533,14 +343,10 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivi
         addStickyDrawerItems(
             SecondaryDrawerItem().apply {
                 nameRes = R.string.drawer_item_language
-//                iconicsIcon =
-//                FontAwesome.Icon.faw_language
                 identifier = 11
             },
             SecondaryDrawerItem().apply {
                 nameRes = R.string.drawer_item_settings
-//                iconicsIcon =
-//                FontAwesome.Icon.faw_cog
                 identifier = 12
             }
         )
@@ -592,72 +398,6 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivi
     private fun createPagerAdapter(): ViewPagerAdapter =
         ViewPagerAdapter(this, getContext())
 
-//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-//
-//        menuInflater.inflate(R.menu.main_menu, menu)
-//        return true
-//    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when (item.itemId) {
-//            R.id.view_options -> {
-//
-//                showDialogWithRadioButtons(
-//                    "Choose view type", "List", "Tab", positiveButtonAction = { dialog ->
-//                        dialog.dismiss()
-//                        val radioGroup =
-//                            dialog.findViewById<RadioGroup>(R.id.radiogroup_dialog_main)
-//                        val id = radioGroup.checkedRadioButtonId
-//                        viewModel.changeViewType(id)
-//                    }
-//                )
-//            }
-//
-//            R.id.choose_theme -> {
-//
-//                showDialogWithRadioButtons(
-//                    "Choose your theme", "Light", "Dark", positiveButtonAction = { dialog ->
-//                        dialog.dismiss()
-//                        val radioGroup =
-//                            dialog.findViewById<RadioGroup>(R.id.radiogroup_dialog_main)
-//
-//                        val id = radioGroup.checkedRadioButtonId
-//                        when (id) {
-//                            R.id.radio_button1 -> {
-//                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-//                                lifecycleScope.launch {
-//                                    prefrences.saveUserTheme("Light")
-//                                }
-//                            }
-//
-//                            R.id.radio_button2 -> {
-//                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-//                                lifecycleScope.launch {
-//                                    prefrences.saveUserTheme("Dark")
-//                                }
-//                            }
-//                        }
-//                    }
-//                )
-//            }
-//
-//            R.id.choose_language -> {
-//
-//                showDialogWithRadioButtons(
-//                    "Choose view type", "List", "Tab", positiveButtonAction = { dialog ->
-//                        dialog.dismiss()
-//                        val radioGroup =
-//                            dialog.findViewById<RadioGroup>(R.id.radiogroup_dialog_main)
-//                        val id = radioGroup.checkedRadioButtonId
-//                        viewModel.changeViewType(id)
-//                    }
-//                )
-//            }
-//
-//        }
-        return true
-    }
-
     private fun showDialogWithRadioButtons(
         titleText: String,
         firstRadioButtonText: String,
@@ -691,7 +431,6 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivi
 
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog.show()
-
     }
 
     override fun getViewBinding(): ActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)

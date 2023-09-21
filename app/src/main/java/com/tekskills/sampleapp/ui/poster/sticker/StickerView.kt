@@ -33,11 +33,9 @@ class StickerView : AppCompatImageView {
     private var resizeBitmapWidth = 0
     private var resizeBitmapHeight = 0
 
-    //水平镜像
     private var flipVBitmapWidth = 0
     private var flipVBitmapHeight = 0
 
-    //置顶
     private var topBitmapWidth = 0
     private var topBitmapHeight = 0
     private var localPaint: Paint? = null
@@ -47,29 +45,24 @@ class StickerView : AppCompatImageView {
     private var operationListener: OperationListener? = null
     private var lastRotateDegree = 0f
 
-    //是否是第二根手指放下
     private var isPointerDown = false
 
-    //手指移动距离必须超过这个数值
     private val pointerLimitDis = 20f
     private val pointerZoomCoeff = 0.09f
 
     /**
-     * 对角线的长度
      */
     private var lastLength = 0f
     private var isInResize = false
     private val matrix = Matrix()
 
     /**
-     * 是否在四条线内部
      */
     private var isInSide = false
     private var lastX = 0f
     private var lastY = 0f
 
     /**
-     * 是否在编辑模式
      */
     private var isInEdit = true
     private var MIN_SCALE = 0.5f
@@ -77,12 +70,10 @@ class StickerView : AppCompatImageView {
     private var halfDiagonalLength = 0.0
     private var oringinWidth = 0f
 
-    //双指缩放时的初始距离
     private var oldDis = 0f
     private val stickerId: Long
     private var dm: DisplayMetrics? = null
 
-    //水平镜像
     private var isHorizonMirror = false
 
     constructor(context: Context?, attrs: AttributeSet?) : super(
@@ -137,22 +128,18 @@ class StickerView : AppCompatImageView {
                 arrayOfFloat[3] * mBitmap!!.width + arrayOfFloat[4] * mBitmap!!.height + arrayOfFloat[5]
             canvas.save()
             canvas.drawBitmap(mBitmap!!, matrix, null)
-            //删除在右上角
             dst_delete!!.left = (f3 - deleteBitmapWidth / 2).toInt()
             dst_delete!!.right = (f3 + deleteBitmapWidth / 2).toInt()
             dst_delete!!.top = (f4 - deleteBitmapHeight / 2).toInt()
             dst_delete!!.bottom = (f4 + deleteBitmapHeight / 2).toInt()
-            //拉伸等操作在右下角
             dst_resize!!.left = (f7 - resizeBitmapWidth / 2).toInt()
             dst_resize!!.right = (f7 + resizeBitmapWidth / 2).toInt()
             dst_resize!!.top = (f8 - resizeBitmapHeight / 2).toInt()
             dst_resize!!.bottom = (f8 + resizeBitmapHeight / 2).toInt()
-            //垂直镜像在左上角
             dst_top!!.left = (f1 - flipVBitmapWidth / 2).toInt()
             dst_top!!.right = (f1 + flipVBitmapWidth / 2).toInt()
             dst_top!!.top = (f2 - flipVBitmapHeight / 2).toInt()
             dst_top!!.bottom = (f2 + flipVBitmapHeight / 2).toInt()
-            //水平镜像在左下角
             dst_flipV!!.left = (f5 - topBitmapWidth / 2).toInt()
             dst_flipV!!.right = (f5 + topBitmapWidth / 2).toInt()
             dst_flipV!!.top = (f6 - topBitmapHeight / 2).toInt()
@@ -185,7 +172,6 @@ class StickerView : AppCompatImageView {
         oringinWidth = w.toFloat()
         val initScale = (MIN_SCALE + MAX_SCALE) / 2
         matrix.postScale(initScale, initScale, (w / 2).toFloat(), (h / 2).toFloat())
-        //Y为 （顶部操作栏+正方形图）/2
         matrix.postTranslate(
             (mScreenwidth / 2 - w / 2).toFloat(),
             (mScreenwidth / 2 - h / 2).toFloat()
@@ -198,7 +184,6 @@ class StickerView : AppCompatImageView {
     }
 
     private fun initBitmaps() {
-        //当图片的宽比高大时 按照宽计算 缩放大小根据图片的大小而改变 最小为图片的1/8 最大为屏幕宽
         if (mBitmap!!.width >= mBitmap!!.height) {
             val minWidth = (mScreenwidth / 8).toFloat()
             MIN_SCALE = if (mBitmap!!.width < minWidth) {
@@ -212,7 +197,6 @@ class StickerView : AppCompatImageView {
                 1.0f * mScreenwidth / mBitmap!!.width
             }
         } else {
-            //当图片高比宽大时，按照图片的高计算
             val minHeight = (mScreenwidth / 8).toFloat()
             MIN_SCALE = if (mBitmap!!.height < minHeight) {
                 1f
@@ -253,14 +237,12 @@ class StickerView : AppCompatImageView {
                 midPointToStartPoint(event)
                 lastLength = diagonalLength(event)
             } else if (isInButton(event, dst_flipV)) {
-                //水平镜像
                 val localPointF = PointF()
                 midDiagonalPoint(localPointF)
                 matrix.postScale(-1.0f, 1.0f, localPointF.x, localPointF.y)
                 isHorizonMirror = !isHorizonMirror
                 invalidate()
             } else if (isInButton(event, dst_top)) {
-                //置顶
                 bringToFront()
                 if (operationListener != null) {
                     operationListener!!.onTop(this)
@@ -285,7 +267,7 @@ class StickerView : AppCompatImageView {
                 isInResize = false
             }
 
-            MotionEvent.ACTION_MOVE ->                 //双指缩放
+            MotionEvent.ACTION_MOVE ->
                 if (isPointerDown) {
                     var scale: Float
                     val disNew = spacing(event)
@@ -330,7 +312,7 @@ class StickerView : AppCompatImageView {
                 } else if (isInSide) {
                     val x = event.getX(0)
                     val y = event.getY(0)
-                    //TODO 移动区域判断 不能超出屏幕
+
                     matrix.postTranslate(x - lastX, y - lastY)
                     lastX = x
                     lastY = y
@@ -350,7 +332,6 @@ class StickerView : AppCompatImageView {
     }
 
     /**
-     * 计算图片的角度等属性
      *
      * @param model
      * @return
@@ -382,7 +363,7 @@ class StickerView : AppCompatImageView {
         val minY = localPointF.y
         Log.d(TAG, "midX : $minX midY : $minY")
         model.degree = Math.toRadians(rAngle.toDouble()).toFloat()
-        //TODO 占屏幕百分比
+
         val precentWidth = mBitmap!!.width * rScale / mScreenwidth
         model.scaling = precentWidth
         model.setxLocation(minX / mScreenwidth)
@@ -397,45 +378,38 @@ class StickerView : AppCompatImageView {
     }
 
     /**
-     * 是否在四条线内部
-     * 图片旋转后 可能存在菱形状态 不能用4个点的范围去判断点击区域是否在图片内
      *
      * @return
      */
     private fun isInBitmap(event: MotionEvent): Boolean {
         val arrayOfFloat1 = FloatArray(9)
         matrix.getValues(arrayOfFloat1)
-        //左上角
         val f1 = 0.0f * arrayOfFloat1[0] + 0.0f * arrayOfFloat1[1] + arrayOfFloat1[2]
         val f2 = 0.0f * arrayOfFloat1[3] + 0.0f * arrayOfFloat1[4] + arrayOfFloat1[5]
-        //右上角
         val f3 = arrayOfFloat1[0] * mBitmap!!.width + 0.0f * arrayOfFloat1[1] + arrayOfFloat1[2]
         val f4 = arrayOfFloat1[3] * mBitmap!!.width + 0.0f * arrayOfFloat1[4] + arrayOfFloat1[5]
-        //左下角
         val f5 = 0.0f * arrayOfFloat1[0] + arrayOfFloat1[1] * mBitmap!!.height + arrayOfFloat1[2]
         val f6 = 0.0f * arrayOfFloat1[3] + arrayOfFloat1[4] * mBitmap!!.height + arrayOfFloat1[5]
-        //右下角
         val f7 =
             arrayOfFloat1[0] * mBitmap!!.width + arrayOfFloat1[1] * mBitmap!!.height + arrayOfFloat1[2]
         val f8 =
             arrayOfFloat1[3] * mBitmap!!.width + arrayOfFloat1[4] * mBitmap!!.height + arrayOfFloat1[5]
         val arrayOfFloat2 = FloatArray(4)
         val arrayOfFloat3 = FloatArray(4)
-        //确定X方向的范围
-        arrayOfFloat2[0] = f1 //左上的x
-        arrayOfFloat2[1] = f3 //右上的x
-        arrayOfFloat2[2] = f7 //右下的x
-        arrayOfFloat2[3] = f5 //左下的x
-        //确定Y方向的范围
-        arrayOfFloat3[0] = f2 //左上的y
-        arrayOfFloat3[1] = f4 //右上的y
-        arrayOfFloat3[2] = f8 //右下的y
-        arrayOfFloat3[3] = f6 //左下的y
+
+        arrayOfFloat2[0] = f1
+        arrayOfFloat2[1] = f3
+        arrayOfFloat2[2] = f7
+        arrayOfFloat2[3] = f5
+
+        arrayOfFloat3[0] = f2
+        arrayOfFloat3[1] = f4
+        arrayOfFloat3[2] = f8
+        arrayOfFloat3[3] = f6
         return pointInRect(arrayOfFloat2, arrayOfFloat3, event.getX(0), event.getY(0))
     }
 
     /**
-     * 判断点是否在一个矩形内部
      *
      * @param xRange
      * @param yRange
@@ -444,12 +418,12 @@ class StickerView : AppCompatImageView {
      * @return
      */
     private fun pointInRect(xRange: FloatArray, yRange: FloatArray, x: Float, y: Float): Boolean {
-        //四条边的长度
+
         val a1 = Math.hypot((xRange[0] - xRange[1]).toDouble(), (yRange[0] - yRange[1]).toDouble())
         val a2 = Math.hypot((xRange[1] - xRange[2]).toDouble(), (yRange[1] - yRange[2]).toDouble())
         val a3 = Math.hypot((xRange[3] - xRange[2]).toDouble(), (yRange[3] - yRange[2]).toDouble())
         val a4 = Math.hypot((xRange[0] - xRange[3]).toDouble(), (yRange[0] - yRange[3]).toDouble())
-        //待检测点到四个点的距离
+
         val b1 = Math.hypot((x - xRange[0]).toDouble(), (y - yRange[0]).toDouble())
         val b2 = Math.hypot((x - xRange[1]).toDouble(), (y - yRange[1]).toDouble())
         val b3 = Math.hypot((x - xRange[2]).toDouble(), (y - yRange[2]).toDouble())
@@ -459,9 +433,9 @@ class StickerView : AppCompatImageView {
         val u3 = (a3 + b3 + b4) / 2
         val u4 = (a4 + b4 + b1) / 2
 
-        //矩形的面积
+
         val s = a1 * a2
-        //海伦公式 计算4个三角形面积
+
         val ss = (Math.sqrt(u1 * (u1 - a1) * (u1 - b1) * (u1 - b2))
                 + Math.sqrt(u2 * (u2 - a2) * (u2 - b2) * (u2 - b3))
                 + Math.sqrt(u3 * (u3 - a3) * (u3 - b3) * (u3 - b4))
@@ -470,7 +444,6 @@ class StickerView : AppCompatImageView {
     }
 
     /**
-     * 触摸是否在某个button范围
      *
      * @param event
      * @param rect
@@ -487,7 +460,6 @@ class StickerView : AppCompatImageView {
     }
 
     /**
-     * 触摸是否在拉伸区域内
      *
      * @param event
      * @return
@@ -503,7 +475,6 @@ class StickerView : AppCompatImageView {
     }
 
     /**
-     * 触摸的位置和图片左上角位置的中点
      *
      * @param event
      */
@@ -518,7 +489,6 @@ class StickerView : AppCompatImageView {
     }
 
     /**
-     * 计算对角线交叉的位置
      *
      * @param paramPointF
      */
@@ -537,7 +507,6 @@ class StickerView : AppCompatImageView {
     }
 
     /**
-     * 在滑动旋转过程中,总是以左上角原点作为绝对计算偏转角度
      *
      * @param event
      * @return
@@ -552,7 +521,6 @@ class StickerView : AppCompatImageView {
     }
 
     /**
-     * 触摸点到矩形中点的距离
      *
      * @param event
      * @return
@@ -563,7 +531,6 @@ class StickerView : AppCompatImageView {
     }
 
     /**
-     * 计算双指之间的距离
      */
     private fun spacing(event: MotionEvent): Float {
         return if (event.pointerCount == 2) {

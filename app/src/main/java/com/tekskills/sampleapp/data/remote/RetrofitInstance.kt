@@ -1,4 +1,4 @@
-package com.tekskills.sampleapp.data.webdata
+package com.tekskills.sampleapp.data.remote
 
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient

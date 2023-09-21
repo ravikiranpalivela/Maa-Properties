@@ -71,7 +71,6 @@ class MainViewModel(
                     }
                 }
 
-
 //                val response = ArticleProvider().getNews(category.value!!)
 //                val posterResponse = ArticleProvider().getPosterNews(category.value!!)
 //                if (response.isSuccessful) {

@@ -266,7 +266,7 @@ class PosterEditorFragment : Fragment() {
                                     "article_image"
                                 )
                             ShareLayout.simpleLayoutShare(
-                                requireContext(),
+                                requireActivity(),
                                 editorViewToSave,
                                 " ",
                                 activityOptions

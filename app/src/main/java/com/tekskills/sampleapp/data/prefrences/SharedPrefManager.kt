@@ -31,7 +31,7 @@ class SharedPrefManager private constructor(private val mCtx: Context) {
     }
 
     companion object {
-        private val SHARED_PREF_NAME = "my_pexcel_shared_pref"
+        private const val SHARED_PREF_NAME = "my_shared_pref"
         private var mInstance: SharedPrefManager? = null
 
         @Synchronized
