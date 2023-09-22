@@ -20,6 +20,7 @@ import com.tekskills.sampleapp.data.local.ArticlesDatabase
 import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
 import com.tekskills.sampleapp.databinding.ItemArticleViewtypeListBinding
 import com.tekskills.sampleapp.model.NewsItem
+import com.tekskills.sampleapp.ui.adapter.NewsAdapter
 import com.tekskills.sampleapp.ui.adapter.ShortsAdapter
 import com.tekskills.sampleapp.utils.like.LikeButton
 import com.tekskills.sampleapp.utils.like.OnAnimationEndListener
@@ -163,6 +164,56 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
         }
     }
 
+    fun bindAdView(
+        onClickListener: ShortsAdapter.OnClickListener,
+    ) {
+        val sharedPrefManager: SharedPrefManager = SharedPrefManager.getInstance(activity)
+
+        binding.apply {
+            clArticleAdView.visibility = View.VISIBLE
+            clArticleView.visibility = View.GONE
+
+            getBannerAdsInfo(sharedPrefManager.bannerAdsSelect)
+
+            sharedPrefManager.saveBannerAdsSelect()
+
+        }
+    }
+
+    private fun getBannerAdsInfo(bannerSelect: Int) {
+        val executor = Executors.newSingleThreadExecutor()
+        executor.execute {
+            // Update the view count in the Room database
+            val database: ArticlesDatabase = ArticlesDatabase.getInstance(context = activity)
+            val bannerDao = database.bannerDao
+
+            // Fetch the updated data from the database
+            activity.runOnUiThread(Runnable {
+                var banners = bannerDao.getAllBannerItems()
+                binding.apply {
+                    var count = bannerSelect + 1
+                    if (count < banners.size) {
+                        val updatedData = bannerDao.getAllBannerItems()[count].link
+                        displayImage(updatedData, ivBannerAds)
+                    } else if (count > banners.size) {
+                        val num = count % banners.size
+                        val updatedData = bannerDao.getAllBannerItems()[num].link
+                        displayImage(updatedData, ivBannerAds)
+                    } else if (banners.isNotEmpty()) {
+                        val updatedData = bannerDao.getAllBannerItems()[0].link
+                        displayImage(updatedData, ivBannerAds)
+                    } else {
+                        val BANNER_SAMPLE =
+                            "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
+                        displayImage(BANNER_SAMPLE, ivBannerAds)
+                    }
+                }
+            })
+//            database.close()
+        }
+    }
+
+
     fun updateViewCount(articleId: Int, article: NewsItem) {
 
         val executor = Executors.newSingleThreadExecutor()
@@ -278,7 +329,7 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                         val updatedData = bannerDao.getAllBannerItems()[count].link
                         displayImage(updatedData, ivBannerShare)
                     } else if (count > banners.size) {
-                        val num = count / banners.size
+                        val num = count % banners.size
                         val updatedData = bannerDao.getAllBannerItems()[num].link
                         displayImage(updatedData, ivBannerShare)
                     } else if (banners.isNotEmpty()) {

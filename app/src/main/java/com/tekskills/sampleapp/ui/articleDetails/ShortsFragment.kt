@@ -132,13 +132,34 @@ class ShortsFragment : Fragment() {
                         .sortedByDescending { sort -> sort.newsId }
                         .let { articles ->
                             isLoading = true
-                            newsListAdapter.setArticleList(articles)
+                            newsListAdapter.setArticleList(addNullItems(articles))
                             isLoading = true
                         }
                 }
             }
         })
     }
+
+
+    fun addNullItems(list: List<NewsItem>): ArrayList<NewsItem?> {
+        val newList = arrayListOf<NewsItem?>()
+
+        for ((counter, item) in list.withIndex()) {
+            if (counter < 4) {
+                newList.add(item)
+            } else {
+                if (counter % 4 != 0) {
+                    newList.add(item) // Add a null item every 3rd position
+                } else{
+                    newList.add(null)
+                    newList.add(item)
+                }
+            }
+        }
+
+        return newList
+    }
+
 
     private fun goToArticleDetailActivity(article: NewsItem, imageView: ImageView) {
         val intent = Intent(requireContext(), ArticleDetailsActivity::class.java)

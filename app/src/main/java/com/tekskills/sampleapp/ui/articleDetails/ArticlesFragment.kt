@@ -59,7 +59,7 @@ class ArticlesFragment : Fragment() {
         val bannerDao = database.bannerDao
         val bannerRepo = BannerItemRepository(bannerDao)
         val factory = MainViewModelFactory(repository, bannerRepo, preferences)
-        viewModel = ViewModelProvider(requireActivity(),factory)[MainViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity(), factory)[MainViewModel::class.java]
 
         binding.viewModel = viewModel
 
@@ -105,12 +105,30 @@ class ArticlesFragment : Fragment() {
                         .sortedByDescending { sort -> sort.newsId }
                         .let { articles ->
                             isLoading = true
-                            newsListAdapter.setArticleList(articles)
+                            newsListAdapter.setArticleList(addNullItems(articles))
                             isLoading = true
                         }
                 }
             }
         })
+    }
+
+    fun addNullItems(list: List<NewsItem>): ArrayList<NewsItem?> {
+        val newList = arrayListOf<NewsItem?>()
+
+        for ((counter, item) in list.withIndex()) {
+            if (counter < 4) {
+                newList.add(item)
+            } else {
+                if (counter % 4 != 0) {
+                    newList.add(item)
+                } else {
+                    newList.add(null)
+                    newList.add(item)
+                }
+            }
+        }
+        return newList
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

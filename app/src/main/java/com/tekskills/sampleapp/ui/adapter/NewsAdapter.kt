@@ -8,6 +8,8 @@ import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import com.tekskills.sampleapp.R
+import com.tekskills.sampleapp.data.local.ArticlesDatabase
+import com.tekskills.sampleapp.data.local.ArticlesRepository
 import com.tekskills.sampleapp.databinding.ItemArticleViewtypeListBinding
 import com.tekskills.sampleapp.model.NewsItem
 import com.tekskills.sampleapp.ui.base.NewsBaseNewsAdapter
@@ -49,7 +51,12 @@ class NewsListViewHolder(
     lifecycle: Lifecycle,
     private val bindingData: ItemArticleViewtypeListBinding
 ) :
-    NewsBaseViewHolder<ItemArticleViewtypeListBinding>(activity,viewModel, bindingData, lifecycle) {
+    NewsBaseViewHolder<ItemArticleViewtypeListBinding>(
+        activity,
+        viewModel,
+        bindingData,
+        lifecycle
+    ) {
     override val binding: ItemArticleViewtypeListBinding
         get() = bindingData
 }

@@ -46,5 +46,7 @@
         <item quantity="other">%d hours ago</item>
     </plurals>
     <string name="days_ago">%s days ago</string>
-
+    <string name="admob_banner_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="admob_medium_banner_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="admob_app_id">ca-app-pub-3940256099942544~3347511713</string>
 </resources>

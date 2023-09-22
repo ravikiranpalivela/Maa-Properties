@@ -11,11 +11,24 @@ class SharedPrefManager private constructor(private val mCtx: Context) {
             return sharedPreferences.getInt("BannerSelect", 0)
         }
 
+    val bannerAdsSelect: Int
+        get() {
+            return sharedPreferences.getInt("BannerAdsSelect", 0)
+        }
+
     fun saveBannerSelect()
     {
         var count = bannerSelect + 1
         val editor = sharedPreferences.edit()
         editor.putInt("BannerSelect", count)
+        editor.apply()
+    }
+
+    fun saveBannerAdsSelect()
+    {
+        var count = bannerAdsSelect + 1
+        val editor = sharedPreferences.edit()
+        editor.putInt("BannerAdsSelect", count)
         editor.apply()
     }
 
