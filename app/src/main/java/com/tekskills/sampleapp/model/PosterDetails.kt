@@ -1,10 +1,10 @@
 package com.tekskills.sampleapp.model
+
 import com.google.gson.annotations.SerializedName
 
+class PosterDetails : ArrayList<PosterItem>()
 
-class PosterItem : ArrayList<PosterItemDetails>()
-
-data class PosterItemDetails(
+data class PosterItem(
     @SerializedName("backgroundImage")
     val backgroundImage: String?,
     @SerializedName("backgroundImagePath")

@@ -1,20 +1,17 @@
 package com.tekskills.sampleapp.model
 
 import com.google.gson.annotations.SerializedName
-import com.tekskills.sampleapp.utils.video.isValidUrl
-import com.tekskills.sampleapp.utils.video.validateOneString
-import com.tekskills.sampleapp.utils.video.validateOneValue
 import java.io.Serializable
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
-class AllNews : ArrayList<AllNewsItem>()
+class NewsDetails : ArrayList<NewsItem>()
 
-data class AllNewsItem(
+data class NewsItem(
     @SerializedName("description")
     val description: String,
     @SerializedName("newsId")
     val newsId: Int,
+    @SerializedName("id")
+    val id: Int,
     @SerializedName("imageFilePath")
     var imageFilePath: String = "",
     @SerializedName("imagePath")

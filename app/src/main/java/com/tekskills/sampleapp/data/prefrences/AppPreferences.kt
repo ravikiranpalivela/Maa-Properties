@@ -18,9 +18,9 @@ class AppPreferences (
         name = "com.tekskills.sampleapp"
     )
 
-    val viewtype: Flow<String?>
+    val view_type: Flow<String?>
     get() = datastore.data.map {
-        it[KEY_VIEWTYPE]
+        it[KEY_VIEW_TYPE]
     }
 
     val theme: Flow<String?>
@@ -40,7 +40,7 @@ class AppPreferences (
 
     suspend fun saveViewType(type: String){
         datastore.edit {
-            it[KEY_VIEWTYPE] = type
+            it[KEY_VIEW_TYPE] = type
         }
     }
 
@@ -64,7 +64,7 @@ class AppPreferences (
     }
 
     companion object{
-        private val KEY_VIEWTYPE = preferencesKey<String>("View_Type")
+        private val KEY_VIEW_TYPE = preferencesKey<String>("View_Type")
         private val KEY_THEME = preferencesKey<String>("User_Theme")
         private val KEY_LANGUAGE = preferencesKey<String>("User_Language")
         private val KEY_BANNER = preferencesKey<Int>("Banner_Select")

@@ -1,29 +1,29 @@
 package com.tekskills.sampleapp.ui.base
 
-import android.view.View
-import android.widget.ImageView
+
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
-import com.tekskills.sampleapp.model.AllNewsItem
+import com.tekskills.sampleapp.model.NewsItem
+import com.tekskills.sampleapp.ui.adapter.ShortsAdapter
 
 abstract class ShortsBaseNewsAdapter<VB : ViewDataBinding>(
-    private val clickListener: (AllNewsItem, ImageView) -> Unit,
-    private val doubleClickListener: (AllNewsItem, ImageView) -> Unit,
-    private val longClickListener: (AllNewsItem, ImageView) -> Unit,
-    private val shareClickListener: (AllNewsItem, View) -> Unit
+    private val onClickListener: ShortsAdapter.OnClickListener
 ) : RecyclerView.Adapter<ShortsBaseViewHolder<VB>>() {
 
-    val articles: ArrayList<AllNewsItem> = ArrayList()
+    val articles: ArrayList<NewsItem> = ArrayList()
 
     override fun getItemCount(): Int = articles.size
 
-    fun setArticleList(articles: List<AllNewsItem>) {
+    fun setArticleList(articles: List<NewsItem>) {
         this.articles.clear()
         this.articles.addAll(articles)
         notifyDataSetChanged()
     }
 
     override fun onBindViewHolder(holder: ShortsBaseViewHolder<VB>, position: Int) {
-        holder.bind(articles[position], clickListener,doubleClickListener, longClickListener,shareClickListener)
+        holder.bind(
+            articles[position],
+            onClickListener,
+        )
     }
 }

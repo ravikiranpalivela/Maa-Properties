@@ -37,15 +37,15 @@ import com.commit451.nativestackblur.NativeStackBlur
 import com.google.android.material.transition.MaterialFadeThrough
 import com.tekskills.sampleapp.R
 import com.tekskills.sampleapp.data.local.BannerItemRepository
-import com.tekskills.sampleapp.data.local.BannersDatabase
-import com.tekskills.sampleapp.data.local.BookmarksAllNews
-import com.tekskills.sampleapp.data.local.BookmarksDatabase
-import com.tekskills.sampleapp.data.local.BookmarksRepository
+import com.tekskills.sampleapp.data.local.ArticlesAllNews
+import com.tekskills.sampleapp.data.local.ArticlesDatabase
+import com.tekskills.sampleapp.data.local.ArticlesRepository
 import com.tekskills.sampleapp.data.prefrences.AppPreferences
+import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
 import com.tekskills.sampleapp.databinding.ActivityPosterEditorBinding
-import com.tekskills.sampleapp.model.AllNewsItem
-import com.tekskills.sampleapp.model.PosterItemDetails
+import com.tekskills.sampleapp.model.PosterItem
 import com.tekskills.sampleapp.ui.adapter.PostersAdapter
+import com.tekskills.sampleapp.ui.comment.CommentBottomSheet
 import com.tekskills.sampleapp.ui.main.MainActivity
 import com.tekskills.sampleapp.ui.main.MainViewModel
 import com.tekskills.sampleapp.ui.main.MainViewModelFactory
@@ -70,12 +70,12 @@ class PosterEditorFragment : Fragment() {
     private var mCurrentEditTextView: BubbleTextView? = null
     private var editBubbleView: BubbleTextView? = null
     private var mCropImageUri: Uri? = null
-    var defualtBackImage: Bitmap? = null
+    var defaultBackImage: Bitmap? = null
     var preCurrentBackgroundImage: Bitmap? = null
     var preCurrentForegroundImage: Bitmap? = null
     var postCurrentBackgroundImage: Bitmap? = null
     var postCurrentForegroundImage: Bitmap? = null
-    var posterItem: PosterItemDetails? =null
+    var posterItem: PosterItem? = null
 
     var recyclerAdapter: PostersAdapter? = null
     var whichImage = 0
@@ -98,14 +98,13 @@ class PosterEditorFragment : Fragment() {
 
         preferences = AppPreferences(requireContext())
 
-        val database: BookmarksDatabase = BookmarksDatabase.getInstance(context = requireContext())
-        val bannerDatabase: BannersDatabase = BannersDatabase.getInstance(context = requireContext())
+        val database: ArticlesDatabase = ArticlesDatabase.getInstance(context = requireContext())
 
         val dao = database.dao
-        val bannerDao = bannerDatabase.bannerDao
-        val repository = BookmarksRepository(dao)
+        val bannerDao = database.bannerDao
+        val repository = ArticlesRepository(dao)
         val bannerRepo = BannerItemRepository(bannerDao)
-        val factory = MainViewModelFactory(repository,bannerRepo,preferences)
+        val factory = MainViewModelFactory(repository, bannerRepo, preferences)
         viewModel = ViewModelProvider(requireActivity(), factory)[MainViewModel::class.java]
 
         binding.viewModel = viewModel
@@ -156,7 +155,7 @@ class PosterEditorFragment : Fragment() {
 
     private fun viewInitializer(imagePath: String) {
         val bm: Bitmap? = uriToBitmap(Uri.parse(imagePath))
-        defualtBackImage = bm
+        defaultBackImage = bm
         preCurrentBackgroundImage = bm
         preCurrentForegroundImage = bm
         binding.editorForegroundImage.setImageBitmap(preCurrentForegroundImage)
@@ -165,15 +164,12 @@ class PosterEditorFragment : Fragment() {
     private fun setRecyclerAdapter() {
         recyclerAdapter =
             PostersAdapter(object : PostersAdapter.OnItemClickListener {
-                override fun onItemClick(itemView: View, item: PosterItemDetails) {
+                override fun onItemClick(itemView: View, item: PosterItem) {
                     (activity as MainActivity?)!!.appBarLayoutHandle(true)
-//                    makeMaskImage(
-//                        item.backgroundImagePath,
-//                        item.posterImagePath
-//                    )
                 }
 
-                override fun onUploadClick(itemView: View, item: PosterItemDetails) {
+                override fun onUploadClick(itemView: View, item: PosterItem) {
+                    posterItem = item
                     viewInitializer(item.backgroundImagePath)
                     clPosterView = itemView
                     makeMaskImage(
@@ -211,21 +207,27 @@ class PosterEditorFragment : Fragment() {
     }
 
     private fun listenerInitializer() {
-        val BANNER_SAMPLE =
-            "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
-        displayImage(BANNER_SAMPLE, binding.ivBannerShare)
+
+        val sharedPrefManager: SharedPrefManager = SharedPrefManager.getInstance(requireActivity())
+
+        getBannerInfo(sharedPrefManager.bannerSelect)
+        if (posterItem != null)
+            getArticleInfo(posterItem!!.posterId)
+//        val BANNER_SAMPLE =
+//            "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
+//        displayImage(BANNER_SAMPLE, binding.ivBannerShare)
 
         binding.ivBannerShare.visibility = View.GONE
         binding.ivBannerLogo.visibility = View.GONE
         binding.editorForegroundImage!!.setOnTouchListener(MultiTouchListener(this@PosterEditorFragment))
 
         binding.ivCancel.setOnClickListener {
-            parentFragmentManager.beginTransaction().detach(this).commit()
-            parentFragmentManager.beginTransaction().attach(this).commit()
+//            parentFragmentManager.beginTransaction().detach(this).commit()
+//            parentFragmentManager.beginTransaction().attach(this).commit()
             visibleEditor()
         }
 
-        binding.heartButton.setOnLikeListener(object: OnLikeListener {
+        binding.heartButton.setOnLikeListener(object : OnLikeListener {
             override fun liked(likeButton: LikeButton?) {
 //                    Toast.makeText(activity, "Liked!", Toast.LENGTH_SHORT).show();
             }
@@ -235,23 +237,22 @@ class PosterEditorFragment : Fragment() {
             }
         })
 
-        binding.heartButton.setOnAnimationEndListener(object: OnAnimationEndListener {
+        binding.heartButton.setOnAnimationEndListener(object : OnAnimationEndListener {
             override fun onAnimationEnd(likeButton: LikeButton?) {
-                if(posterItem != null)
-                updateViewCount(posterItem!!.posterId)
+                if (posterItem != null)
+                    updateViewCount(posterItem!!.posterId)
             }
         })
 
         binding.ivShare.setOnClickListener {
             binding.apply {
+                getBannerInfo(sharedPrefManager.bannerSelect)
+                sharedPrefManager.saveBannerSelect()
                 editorPager.visibility = View.GONE
                 ivBannerShare.visibility = View.VISIBLE
                 ivBannerLogo.visibility = View.VISIBLE
                 object : CountDownTimer(200, 100) {
                     override fun onFinish() {
-                        val a = false
-                        val b = false
-
                         if (mCurrentView != null) {
                             mCurrentView!!.setInEdit(false)
                         }
@@ -262,16 +263,17 @@ class PosterEditorFragment : Fragment() {
                             val activityOptions =
                                 ActivityOptionsCompat.makeSceneTransitionAnimation(
                                     requireActivity(),
-                                    editorPager!!,
+                                    rlEditor!!,
                                     "article_image"
                                 )
                             ShareLayout.simpleLayoutShare(
-                                requireActivity(),
+                                requireContext(),
                                 editorViewToSave,
                                 " ",
                                 activityOptions
                             )
-
+                            if (posterItem != null)
+                                updateShareCount(posterItem!!.posterId)
                             ivBannerShare.visibility = View.GONE
                             ivBannerLogo.visibility = View.GONE
                             visibleEditor()
@@ -281,6 +283,20 @@ class PosterEditorFragment : Fragment() {
                     override fun onTick(millisUntilFinished: Long) {}
                 }.start()
 
+            }
+        }
+
+        binding.comment.setOnClickListener {
+            if (posterItem != null) {
+                val bottomSheetFragment = CommentBottomSheet()
+                val bundle = Bundle()
+                bundle.putInt("article_id", posterItem!!.posterId)
+                bottomSheetFragment.arguments = bundle
+
+                bottomSheetFragment.show(
+                    parentFragmentManager,
+                    CommentBottomSheet.TAG
+                )
             }
         }
 
@@ -298,23 +314,30 @@ class PosterEditorFragment : Fragment() {
         val executor = Executors.newSingleThreadExecutor()
         executor.execute {
             // Update the view count in the Room database
-            val database: BookmarksDatabase = BookmarksDatabase.getInstance(requireContext())
+            val database: ArticlesDatabase = ArticlesDatabase.getInstance(requireContext())
             val dao = database.dao
-            val existingBookmark = dao.getBookmarksById(articleId)
-            if (existingBookmark != null) {
+            val commentsDao = database.commentDao
+
+            val existingArticle = dao.getArticlesById(articleId)
+            if (existingArticle != null) {
                 // Update the existing article
-                var count = existingBookmark.view_count + 1
-                dao.incrementViewCount(existingBookmark.news_id, count)
+                var count = existingArticle.view_count + 1
+                dao.incrementViewCount(existingArticle.news_id, count)
             } else {
-                val bookMark = BookmarksAllNews(news_id = articleId, view_count = 1)
-                dao.insertBookmarks(bookMark)
+                val article = ArticlesAllNews(news_id = articleId, view_count = 1)
+                dao.insertArticles(article)
             }
 
             // Fetch the updated data from the database
             requireActivity().runOnUiThread(Runnable {
-                val updatedData = dao.getBookmarksById(articleId)
+                val commentData = commentsDao.getCommentsForItem(articleId)
+                val updatedData = dao.getArticlesById(articleId)
                 binding.apply {
                     likes.text = updatedData?.view_count.toString()
+                    shares.text = updatedData?.share_count.toString()
+                    Log.d("TAG", "comments data ${commentData.toString()}")
+                    comments.text =
+                        if (commentData.isEmpty()) "0" else commentData.size.toString()
                 }
             })
 //            database.close()
@@ -322,6 +345,104 @@ class PosterEditorFragment : Fragment() {
 
     }
 
+    fun updateShareCount(articleId: Int) {
+
+        val executor = Executors.newSingleThreadExecutor()
+        executor.execute {
+            // Update the view count in the Room database
+            val database: ArticlesDatabase =
+                ArticlesDatabase.getInstance(context = requireContext())
+            val dao = database.dao
+            val commentsDao = database.commentDao
+            val existingArticle = dao.getArticlesById(articleId)
+            if (existingArticle != null) {
+                // Update the existing article
+                val count = existingArticle.share_count + 1
+                dao.incrementShareCount(existingArticle.news_id, count)
+            } else {
+                val insertArticle = ArticlesAllNews(news_id = articleId, share_count = 1)
+                // Insert a new article
+                dao.insertArticles(insertArticle)
+            }
+
+            // Fetch the updated data from the database
+            requireActivity().runOnUiThread(Runnable {
+                val commentData = commentsDao.getCommentsForItem(articleId)
+                val updatedData = dao.getArticlesById(articleId)
+                binding.apply {
+                    likes.text = updatedData?.view_count.toString()
+                    shares.text = updatedData?.share_count.toString()
+                    Log.d("TAG", "comments data ${commentData.toString()}")
+                    comments.text =
+                        if (commentData.isEmpty()) "0" else commentData.size.toString()
+                }
+            })
+//            database.close()
+        }
+
+    }
+
+    private fun getArticleInfo(newsId: Int) {
+
+        val executor = Executors.newSingleThreadExecutor()
+        executor.execute {
+            // Update the view count in the Room database
+            val database: ArticlesDatabase =
+                ArticlesDatabase.getInstance(context = requireContext())
+            val dao = database.dao
+            val commentsDao = database.commentDao
+
+            // Fetch the updated data from the database
+            requireActivity().runOnUiThread(Runnable {
+                val commentData = commentsDao.getCommentsForItem(newsId)
+                val updatedData = dao.getArticlesById(newsId)
+                binding.apply {
+                    comments.text =
+                        if (commentData.isEmpty()) "0" else commentData.size.toString()
+                    if (updatedData != null) {
+                        likes.text = updatedData.view_count.toString()
+                        shares.text = updatedData.share_count.toString()
+                    }
+                    Log.d("TAG", "comments data ${commentData.toString()}")
+                }
+            })
+//            database.close()
+        }
+    }
+
+    private fun getBannerInfo(bannerSelect: Int) {
+        val executor = Executors.newSingleThreadExecutor()
+        executor.execute {
+            // Update the view count in the Room database
+            val database: ArticlesDatabase =
+                ArticlesDatabase.getInstance(context = requireContext())
+            val bannerDao = database.bannerDao
+
+            // Fetch the updated data from the database
+            requireActivity().runOnUiThread(Runnable {
+                var banners = bannerDao.getAllBannerItems()
+                binding.apply {
+                    var count = bannerSelect + 1
+                    if (count < banners.size) {
+                        val updatedData = bannerDao.getAllBannerItems()[count].link
+                        displayImage(updatedData, ivBannerShare)
+                    } else if (count > banners.size) {
+                        val num = count / banners.size
+                        val updatedData = bannerDao.getAllBannerItems()[num].link
+                        displayImage(updatedData, ivBannerShare)
+                    } else if (banners.isNotEmpty()) {
+                        val updatedData = bannerDao.getAllBannerItems()[0].link
+                        displayImage(updatedData, ivBannerShare)
+                    } else {
+                        val BANNER_SAMPLE =
+                            "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
+                        displayImage(BANNER_SAMPLE, ivBannerShare)
+                    }
+                }
+            })
+//            database.close()
+        }
+    }
 
     fun displayImage(videoUrl: String?, itemView: ImageView?) {
         Glide.with(requireContext())
@@ -429,13 +550,13 @@ class PosterEditorFragment : Fragment() {
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             val result = CropImage.getActivityResult(data)
             if (resultCode == RESULT_OK) {
-                visibleEditor()
                 mCropImageUri = result.uri
                 if (whichImage == 0) {
                     setBackgroundImage()
                 } else if (whichImage == 1) {
                     setForegroundImage()
                 }
+                visibleEditor()
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 val error = result.error
             }
@@ -445,16 +566,20 @@ class PosterEditorFragment : Fragment() {
     private fun visibleEditor() {
         if (binding.swipeRefreshLayoutEditor.isVisible) {
             binding.swipeRefreshLayoutEditor.visibility = GONE
+            binding.editorPager.visibility = GONE
             binding.rlEditor.visibility = VISIBLE
         } else {
+            parentFragmentManager.beginTransaction().detach(this).commit()
+            parentFragmentManager.beginTransaction().attach(this).commit()
             binding.swipeRefreshLayoutEditor.visibility = VISIBLE
+            binding.editorPager.visibility = VISIBLE
             binding.rlEditor.visibility = GONE
         }
     }
 
     private fun setBackgroundImage() {
-        defualtBackImage = null
-        defualtBackImage = uriToBitmap(mCropImageUri)
+        defaultBackImage = null
+        defaultBackImage = uriToBitmap(mCropImageUri)
         changeBackgroundImage()
     }
 
@@ -468,18 +593,18 @@ class PosterEditorFragment : Fragment() {
         CropImage.activity(imageUri).start(requireActivity())
     }
 
-    fun makeMaskImage(maskimage: String, frameimage: String) {
-        currentMaskImage = maskimage
+    fun makeMaskImage(maskImage: String, frameImage: String) {
+        currentMaskImage = maskImage
         Glide.with(requireContext())
             .asBitmap()
-            .load(frameimage)
+            .load(frameImage)
             .error(R.drawable.place_holder)
             .into(binding.editorFrameImage)
         try {
             val mask: Bitmap = Glide
                 .with(requireContext())
                 .asBitmap()
-                .load(maskimage)
+                .load(maskImage)
                 .submit()
                 .get()
 
@@ -536,8 +661,8 @@ class PosterEditorFragment : Fragment() {
     fun resizeImage(h: Int, w: Int): Bitmap {
         val scaleWidth: Float
         val scaleHeight: Float
-        val width = defualtBackImage!!.width
-        val height = defualtBackImage!!.height
+        val width = defaultBackImage!!.width
+        val height = defaultBackImage!!.height
         if (width < height) {
             scaleWidth = w.toFloat() / width.toFloat()
             scaleHeight = scaleWidth
@@ -548,7 +673,7 @@ class PosterEditorFragment : Fragment() {
         val matrix = Matrix()
         matrix.postScale(scaleWidth, scaleHeight)
         preCurrentBackgroundImage =
-            Bitmap.createBitmap(defualtBackImage!!, 0, 0, width, height, matrix, false)
+            Bitmap.createBitmap(defaultBackImage!!, 0, 0, width, height, matrix, false)
         return preCurrentBackgroundImage!!
     }
 

@@ -17,18 +17,17 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.asLiveData
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.transition.MaterialFadeThrough
 import com.tekskills.sampleapp.R
 import com.tekskills.sampleapp.data.local.BannerItemRepository
-import com.tekskills.sampleapp.data.local.BannersDatabase
-import com.tekskills.sampleapp.data.local.BookmarksDatabase
-import com.tekskills.sampleapp.data.local.BookmarksRepository
+import com.tekskills.sampleapp.data.local.ArticlesDatabase
+import com.tekskills.sampleapp.data.local.ArticlesRepository
 import com.tekskills.sampleapp.data.prefrences.AppPreferences
 import com.tekskills.sampleapp.databinding.FragmentArticlesBinding
-import com.tekskills.sampleapp.model.AllNewsItem
+import com.tekskills.sampleapp.model.NewsItem
 import com.tekskills.sampleapp.ui.adapter.ShortsAdapter
+import com.tekskills.sampleapp.ui.comment.CommentBottomSheet
 import com.tekskills.sampleapp.ui.main.MainActivity
 import com.tekskills.sampleapp.ui.main.MainViewModel
 import com.tekskills.sampleapp.ui.main.MainViewModelFactory
@@ -53,13 +52,11 @@ class ShortsFragment : Fragment() {
         preferences =
             AppPreferences(requireContext())
 
-        val database: BookmarksDatabase = BookmarksDatabase.getInstance(context = requireContext())
-        val bannerDatabase: BannersDatabase =
-            BannersDatabase.getInstance(context = requireContext())
+        val database: ArticlesDatabase = ArticlesDatabase.getInstance(context = requireContext())
 
         val dao = database.dao
-        val bannerDao = bannerDatabase.bannerDao
-        val repository = BookmarksRepository(dao)
+        val bannerDao = database.bannerDao
+        val repository = ArticlesRepository(dao)
         val bannerRepo = BannerItemRepository(bannerDao)
         val factory = MainViewModelFactory(repository, bannerRepo, preferences)
         viewModel = ViewModelProvider(requireActivity(), factory).get(MainViewModel::class.java)
@@ -143,7 +140,7 @@ class ShortsFragment : Fragment() {
         })
     }
 
-    private fun goToArticleDetailActivity(article: AllNewsItem, imageView: ImageView) {
+    private fun goToArticleDetailActivity(article: NewsItem, imageView: ImageView) {
         val intent = Intent(requireContext(), ArticleDetailsActivity::class.java)
         intent.putExtra("article", ObjectSerializer.serialize(article))
         val activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
@@ -160,62 +157,148 @@ class ShortsFragment : Fragment() {
         newsListAdapter =
             ShortsAdapter(
                 requireActivity(),
-                lifecycle,
-                { article: AllNewsItem, imageView: ImageView ->
-                    goToArticleDetailActivity(article, imageView)
-                }, { article: AllNewsItem, imageView: ImageView ->
-                    (activity as MainActivity?)!!.appBarLayoutHandle(true)
-                },
-                { article: AllNewsItem, imageView: ImageView ->
+                lifecycle, object : ShortsAdapter.OnClickListener {
+                    override fun clickListener(newsItem: NewsItem, imageView: ImageView) {
+                        goToArticleDetailActivity(newsItem, imageView)
+                    }
 
-                    if (!article.websiteUrl.isNullOrEmpty()) {
-                        val intent = Intent(
-                            Intent.ACTION_VIEW,
-                            Uri.parse(article.websiteUrl)
-                        )
+                    override fun doubleClickListener(
+                        newsItem: NewsItem,
+                        imageView: ImageView
+                    ) {
+                        (activity as MainActivity?)!!.appBarLayoutHandle(true)
+                    }
 
-                        intent.putExtra("article", ObjectSerializer.serialize(article))
+                    override fun readMoreClickListener(
+                        newsItem: NewsItem,
+                        imageView: ImageView
+                    ) {
+                        if (!newsItem.websiteUrl.isNullOrEmpty()) {
+                            val intent = Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse(newsItem.websiteUrl)
+                            )
+
+                            intent.putExtra("article", ObjectSerializer.serialize(newsItem))
+                            val activityOptions =
+                                ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                    requireActivity(),
+                                    imageView,
+                                    "article_image"
+                                )
+                            intent.putExtra("fab_visibility", View.VISIBLE)
+                            val chooseIntent = Intent.createChooser(intent, "Choose from below")
+                            startActivity(chooseIntent, activityOptions.toBundle())
+                        }
+                    }
+
+                    override fun shareClickListener(newsItem: NewsItem, imageView: View) {
                         val activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
                             requireActivity(),
                             imageView,
                             "article_image"
                         )
-                        intent.putExtra("fab_visibility", View.VISIBLE)
-                        val chooseIntent = Intent.createChooser(intent, "Choose from below")
-                        startActivity(chooseIntent, activityOptions.toBundle())
-//                        startActivity(intent, activityOptions.toBundle())
+                        if (!newsItem.websiteUrl.isNullOrEmpty() && newsItem.websiteUrl != "null") {
+                            val html =
+                                "${newsItem.title} \n\nFull article at : ${newsItem.websiteUrl}>${newsItem.websiteUrl}"
+                            ShareLayout.simpleLayoutShare(
+                                requireContext(),
+                                imageView,
+                                html,
+                                activityOptions
+                            )
+                        } else
+                            ShareLayout.simpleLayoutShare(
+                                requireContext(),
+                                imageView,
+                                newsItem.title,
+                                activityOptions
+                            )
                     }
-                },
-                { article, itemView ->
-                    val activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        requireActivity(),
-                        itemView,
-                        "article_image"
-                    )
-                    if (!article.websiteUrl.isNullOrEmpty() && article.websiteUrl != "null") {
-                        val html =
-                            "${article.title} \n\nFull article at : ${article.websiteUrl}>${article.websiteUrl}"
-                        ShareLayout.simpleLayoutShare(
-                            requireActivity(),
-                            itemView,
-                            html,
-                            activityOptions
+
+                    override fun likeClickListener(newsItem: NewsItem, imageView: View) {
+//                        viewModel.addAArticle(news_id = allNewsItem.newsId, article = allNewsItem)
+                    }
+
+                    override fun commentClickListener(newsItem: NewsItem, imageView: View) {
+                        val bottomSheetFragment = CommentBottomSheet()
+                        val bundle = Bundle()
+                        bundle.putInt("article_id", newsItem.id)
+                        bottomSheetFragment.arguments = bundle
+
+                        bottomSheetFragment.show(
+                            parentFragmentManager,
+                            CommentBottomSheet.TAG
                         )
-                    } else
-                        ShareLayout.simpleLayoutShare(
-                            requireActivity(),
-                            itemView,
-                            article.title,
-                            activityOptions
-                        )
+                    }
                 })
+
+//                    override fun shareClickListener(
+//                        article: AllNewsItem, itemView: View) {
+//                        if (!article.websiteUrl.isNullOrEmpty()) {
+//                            val intent = Intent(
+//                                Intent.ACTION_VIEW,
+//                                Uri.parse(article.websiteUrl)
+//                            )
+//
+//                            intent.putExtra("article", ObjectSerializer.serialize(article))
+//                            val activityOptions =
+//                                ActivityOptionsCompat.makeSceneTransitionAnimation(
+//                                    requireActivity(),
+//                                    imageView,
+//                                    "article_image"
+//                                )
+//                            intent.putExtra("fab_visibility", View.VISIBLE)
+//                            val chooseIntent = Intent.createChooser(intent, "Choose from below")
+//                            startActivity(chooseIntent, activityOptions.toBundle())
+////                        startActivity(intent, activityOptions.toBundle())
+//                        }
+//
+//                    }
+//
+//                    override fun readMoreClickListener(
+//                        article: AllNewsItem,
+//                        itemView: ImageView
+//                    ) {
+//                        val activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
+//                            requireActivity(),
+//                            itemView,
+//                            "article_image"
+//                        )
+//                        if (!article.websiteUrl.isNullOrEmpty() && article.websiteUrl != "null") {
+//                            val html =
+//                                "${article.title} \n\nFull article at : ${article.websiteUrl}>${article.websiteUrl}"
+//                            ShareLayout.simpleLayoutShare(
+//                                requireContext(),
+//                                itemView,
+//                                html,
+//                                activityOptions
+//                            )
+//                        } else
+//                            ShareLayout.simpleLayoutShare(
+//                                requireContext(),
+//                                itemView,
+//                                article.title,
+//                                activityOptions
+//                            )
+//                    }
+//
+//                    override fun likeClickListener(allNewsItem: AllNewsItem, imageView: View) {
+//
+//                    }
+//
+//                    override fun commentClickListener(allNewsItem: AllNewsItem, imageView: View) {
+//
+//                    }
+//
+//                })
 
         binding.pager.orientation = ViewPager2.ORIENTATION_VERTICAL
         binding.pager.registerOnPageChangeCallback(onPageChangeCallback)
 
 //        viewModel.appPreferences.viewtype.asLiveData()
 //            .observe(viewLifecycleOwner, Observer { viewType ->
-                binding.pager.adapter = newsListAdapter
+        binding.pager.adapter = newsListAdapter
 //            })
 
         binding.pager.setPageTransformer(CardTransformer(1.2f))

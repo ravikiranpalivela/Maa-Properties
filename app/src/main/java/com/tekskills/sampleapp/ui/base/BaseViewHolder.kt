@@ -1,16 +1,12 @@
 package com.tekskills.sampleapp.ui.base
 
 import android.app.Activity
-import android.net.Uri
 import android.os.CountDownTimer
-import android.util.Log
 import android.view.View
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.widget.ImageView
-import android.widget.MediaController
-import android.widget.MediaController.MediaPlayerControl
 import android.widget.Toast
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Lifecycle
@@ -22,7 +18,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.Abs
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
 import com.tekskills.sampleapp.R
 import com.tekskills.sampleapp.databinding.ItemArticleViewtypeListBinding
-import com.tekskills.sampleapp.model.AllNewsItem
+import com.tekskills.sampleapp.model.NewsItem
 import com.tekskills.sampleapp.utils.video.changeDateFormat
 import com.tekskills.sampleapp.utils.video.getThumbnail
 import com.tekskills.sampleapp.utils.video.getVideoId
@@ -43,10 +39,10 @@ abstract class BaseViewHolder<viewDataBinding : ViewDataBinding>(
     private var initializedYouTubePlayer: YouTubePlayer? = null
 
     fun bind(
-        article: AllNewsItem,
-        clickListener: (AllNewsItem, ImageView) -> Unit,
-        longClickListener: (AllNewsItem, ImageView) -> Unit,
-        shareClickListener: (AllNewsItem, View) -> Unit
+        article: NewsItem,
+        clickListener: (NewsItem, ImageView) -> Unit,
+        longClickListener: (NewsItem, ImageView) -> Unit,
+        shareClickListener: (NewsItem, View) -> Unit
     ) {
 
         binding.apply {

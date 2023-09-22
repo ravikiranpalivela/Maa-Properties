@@ -5,22 +5,22 @@ import androidx.databinding.Observable
 import androidx.lifecycle.*
 import com.tekskills.sampleapp.R
 import com.tekskills.sampleapp.data.local.BannerItemRepository
-import com.tekskills.sampleapp.data.local.BookMarkViewCount
-import com.tekskills.sampleapp.data.local.BookmarksAllNews
-import com.tekskills.sampleapp.data.local.BookmarksRepository
+import com.tekskills.sampleapp.data.local.ArticleViewCount
+import com.tekskills.sampleapp.data.local.ArticlesAllNews
+import com.tekskills.sampleapp.data.local.ArticlesRepository
 import com.tekskills.sampleapp.data.prefrences.AppPreferences
-import com.tekskills.sampleapp.data.repo.ArticleProvider
-import com.tekskills.sampleapp.model.AllNews
+import com.tekskills.sampleapp.data.repo.ArticleProviderRepo
+import com.tekskills.sampleapp.model.NewsDetails
 import com.tekskills.sampleapp.model.BannerItem
 import com.tekskills.sampleapp.model.BannerItemItem
-import com.tekskills.sampleapp.model.PosterItem
+import com.tekskills.sampleapp.model.PosterDetails
 import com.tekskills.sampleapp.utils.Event
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.lang.Exception
 
 class MainViewModel(
-    private val repository: BookmarksRepository,
+    private val repository: ArticlesRepository,
     private val bannerRepo: BannerItemRepository,
     private val prefrences: AppPreferences
 ) : ViewModel(), Observable {
@@ -40,20 +40,19 @@ class MainViewModel(
     private val message: MutableLiveData<Event<String>> = MutableLiveData()
     val errorMessage get() = message
 
-    var responseLiveData: MutableLiveData<Response<AllNews>?> = MutableLiveData()
-    var responseEditorLiveData: MutableLiveData<Response<PosterItem>?> = MutableLiveData()
+    var responseLiveData: MutableLiveData<Response<NewsDetails>?> = MutableLiveData()
+    var responseEditorLiveData: MutableLiveData<Response<PosterDetails>?> = MutableLiveData()
     var responseBannerLiveData: MutableLiveData<Response<BannerItem>?> = MutableLiveData()
 
-    var bookmarkList: LiveData<List<BookmarksAllNews>> = repository.bookmarks
+    var bookmarkList: LiveData<List<ArticlesAllNews>> = repository.articles
 
-    val _viewCount: MutableLiveData<BookMarkViewCount> = MutableLiveData<BookMarkViewCount>()
-    val viewCount: LiveData<BookMarkViewCount> get() = _viewCount
+    val _viewCount: MutableLiveData<ArticleViewCount> = MutableLiveData<ArticleViewCount>()
+    val viewCount: LiveData<ArticleViewCount> get() = _viewCount
 
     val appPreferences: AppPreferences
         get() = prefrences
 
     fun refreshResponse() {
-
         viewModelScope.launch {
             isLoading.value = true
             try {
@@ -70,16 +69,6 @@ class MainViewModel(
                         getAllNews()
                     }
                 }
-
-//                val response = ArticleProvider().getNews(category.value!!)
-//                val posterResponse = ArticleProvider().getPosterNews(category.value!!)
-//                if (response.isSuccessful) {
-//                    responseLiveData.postValue(response)
-//                }
-//                else {
-//                    responseLiveData.postValue(null)
-//                    message.value = Event(response.errorBody().toString())
-//                }
             } catch (e: Exception) {
                 responseLiveData.postValue(null)
                 message.value = Event(e.toString())
@@ -94,7 +83,7 @@ class MainViewModel(
     }
 
     private suspend fun getAllNews() {
-        val response = ArticleProvider().getNews(category.value!!)
+        val response = ArticleProviderRepo().getNews(category.value!!)
         if (response.isSuccessful) {
             responseLiveData.postValue(response)
         } else {
@@ -104,7 +93,7 @@ class MainViewModel(
     }
 
     private suspend fun getPosterDetails() {
-        val response = ArticleProvider().getPoster(category.value!!)
+        val response = ArticleProviderRepo().getPoster(category.value!!)
         if (response.isSuccessful) {
             responseEditorLiveData.postValue(response)
         } else {
@@ -114,7 +103,7 @@ class MainViewModel(
     }
 
     private suspend fun getBannerDetails() {
-        val response = ArticleProvider().getBanner()
+        val response = ArticleProviderRepo().getBanner()
         if (response.isSuccessful) {
             responseBannerLiveData.postValue(response)
         } else {
@@ -160,9 +149,9 @@ class MainViewModel(
         refreshResponse()
     }
 
-    fun addABookmark(id: Int = 0, news_id: Int, viewCount: Int) {
+    fun addAArticle(id: Int = 0, news_id: Int, viewCount: Int) {
         viewModelScope.launch {
-            repository.insertOrUpdateBookmark(id, news_id, viewCount)
+            repository.insertOrUpdateArticleViewCount(id, news_id, viewCount)
         }
     }
 
@@ -176,22 +165,22 @@ class MainViewModel(
         return bannerRepo.getAllBannerItems()
     }
 
-    fun deleteABookmark(bookmark: BookmarksAllNews) {
+    fun deleteAArticle(bookmark: ArticlesAllNews) {
         viewModelScope.launch {
-            repository.deleteArticleFromBookmarks(bookmark)
+            repository.deleteArticleFromArticles(bookmark)
         }
     }
 
-    fun clearAllBookmarks() {
+    fun clearAllArticles() {
         viewModelScope.launch {
-            repository.deleteALlArticleFromBookmarks()
+            repository.deleteALlArticleFromArticles()
         }
     }
 
-    fun getBookMarkCount(news_id: Int): Int {
+    fun getArticleCount(news_id: Int): Int {
         var count = 0
         viewModelScope.launch {
-            _viewCount.postValue(repository.getBookMarkViewCount(news_id))
+            _viewCount.postValue(repository.getArticleViewCount(news_id))
         }
         if (viewCount.value != null)
             viewCount.value?.let {
@@ -203,7 +192,7 @@ class MainViewModel(
         return count
     }
 
-    fun getBookMarkViewCount(news_id: Int): Int {
-        return getBookMarkCount(news_id)
+    fun getArticleViewCount(news_id: Int): Int {
+        return getArticleCount(news_id)
     }
 }

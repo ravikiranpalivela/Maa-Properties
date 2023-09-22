@@ -263,7 +263,7 @@
                     android:id="@+id/save"
                     android:layout_width="@dimen/widget_size_30"
                     android:layout_height="@dimen/widget_size_30"
-                    android:layout_marginEnd="@dimen/widget_size_16"
+                    android:layout_marginEnd="@dimen/widget_size_8"
                     android:layout_toStartOf="@id/iv_share"
                     android:background="@drawable/ic_save"
                     android:backgroundTint="@color/black" />
@@ -272,11 +272,23 @@
                     android:id="@+id/iv_share"
                     android:layout_width="@dimen/widget_size_30"
                     android:layout_height="@dimen/widget_size_30"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginEnd="@dimen/widget_size_16"
+                    android:layout_marginStart="@dimen/widget_size_8"
                     android:layout_marginBottom="8dp"
+                    android:layout_toStartOf="@id/shares"
                     android:background="@drawable/ic_round_share"
                     android:backgroundTint="@color/colorAccent" />
+
+                <TextView
+                    android:id="@+id/shares"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/widget_size_8"
+                    android:layout_marginEnd="@dimen/widget_size_16"
+                    android:layout_alignParentEnd="true"
+                    android:text="0"
+                    android:textColor="#C3CBCE"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
             </RelativeLayout>
 

@@ -8,10 +8,8 @@ import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import com.tekskills.sampleapp.R
-import com.tekskills.sampleapp.data.local.BookmarksDatabase
-import com.tekskills.sampleapp.data.local.BookmarksRepository
 import com.tekskills.sampleapp.databinding.ItemArticleViewtypeListBinding
-import com.tekskills.sampleapp.model.AllNewsItem
+import com.tekskills.sampleapp.model.NewsItem
 import com.tekskills.sampleapp.ui.base.NewsBaseNewsAdapter
 import com.tekskills.sampleapp.ui.base.NewsBaseViewHolder
 import com.tekskills.sampleapp.ui.main.MainViewModel
@@ -24,12 +22,12 @@ class NewsAdapter(
 ) : NewsBaseNewsAdapter<ItemArticleViewtypeListBinding>(onClickListener) {
 
     interface OnClickListener {
-        fun clickListener(allNewsItem: AllNewsItem, imageView: ImageView)
-        fun doubleClickListener(allNewsItem: AllNewsItem, imageView: ImageView)
-        fun readMoreClickListener(allNewsItem: AllNewsItem, imageView: ImageView)
-        fun shareClickListener(allNewsItem: AllNewsItem, imageView: View)
-        fun likeClickListener(allNewsItem: AllNewsItem, imageView: View)
-        fun commentClickListener(allNewsItem: AllNewsItem, imageView: View)
+        fun clickListener(newsItem: NewsItem, imageView: ImageView)
+        fun doubleClickListener(newsItem: NewsItem, imageView: ImageView)
+        fun readMoreClickListener(newsItem: NewsItem, imageView: ImageView)
+        fun shareClickListener(newsItem: NewsItem, imageView: View)
+        fun likeClickListener(newsItem: NewsItem, imageView: View)
+        fun commentClickListener(newsItem: NewsItem, imageView: View)
 
     }
 

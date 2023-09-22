@@ -8,7 +8,7 @@ import com.tekskills.sampleapp.model.BannerItemItem
 
 class BannerItemRepository(private val dao: BannerItemDao){
 
-    val bookmarks = dao.getAllBannerItems()
+    val articles = dao.getAllBannerItems()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBannerItems(newsItems: List<BannerItemItem>)

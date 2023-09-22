@@ -2,17 +2,17 @@ package com.tekskills.sampleapp.data.repo
 
 import com.tekskills.sampleapp.data.remote.NewsService
 import com.tekskills.sampleapp.data.remote.RetrofitInstance
-import com.tekskills.sampleapp.model.AllNews
+import com.tekskills.sampleapp.model.NewsDetails
 import com.tekskills.sampleapp.model.BannerItem
-import com.tekskills.sampleapp.model.PosterItem
+import com.tekskills.sampleapp.model.PosterDetails
 import retrofit2.Response
 
-class ArticleProvider {
+class ArticleProviderRepo {
     private val retService = RetrofitInstance.getRetrofitInstance().create(
         NewsService::class.java
     )
 
-    suspend fun getNews(category: String): Response<AllNews> {
+    suspend fun getNews(category: String): Response<NewsDetails> {
 
         return when (category) {
 
@@ -28,7 +28,7 @@ class ArticleProvider {
         }
     }
 
-    suspend fun getPoster(category: String): Response<PosterItem> {
+    suspend fun getPoster(category: String): Response<PosterDetails> {
 
         return when (category) {
             "Posters" -> retService.getPosters()

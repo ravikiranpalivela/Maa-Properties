@@ -13,17 +13,17 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.tekskills.sampleapp.R
 import com.squareup.picasso.Picasso
-import com.tekskills.sampleapp.model.PosterItemDetails
+import com.tekskills.sampleapp.model.PosterItem
 
 class PostersAdapter(
     private val listener: OnItemClickListener
 ) : RecyclerView.Adapter<PostersAdapter.MyViewHolder>() {
 
-    private val list = ArrayList<PosterItemDetails>()
+    private val list = ArrayList<PosterItem>()
 
     interface OnItemClickListener {
-        fun onItemClick(itemView: View, item: PosterItemDetails)
-        fun onUploadClick(itemView: View, item: PosterItemDetails)
+        fun onItemClick(itemView: View, item: PosterItem)
+        fun onUploadClick(itemView: View, item: PosterItem)
     }
 
     inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -37,8 +37,8 @@ class PostersAdapter(
             clPoster = view.findViewById(R.id.cl_poster)
         }
 
-        fun bind(item: PosterItemDetails, position: Int, listener: OnItemClickListener) {
-            Picasso.get().load(item.posterImagePath)
+        fun bind(item: PosterItem, position: Int, listener: OnItemClickListener) {
+            Picasso.get().load(item.backgroundImagePath)
 //                .resize(75, 75)
 //                .onlyScaleDown()
                 .placeholder(R.drawable.place_holder).into(imageView)
@@ -62,7 +62,7 @@ class PostersAdapter(
         holder.bind(list!![position], position, listener)
     }
 
-    fun setEditorList(articles: ArrayList<PosterItemDetails>) {
+    fun setEditorList(articles: ArrayList<PosterItem>) {
         this.list!!.clear()
         this.list!!.addAll(articles)
         notifyDataSetChanged()

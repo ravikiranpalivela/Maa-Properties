@@ -1,9 +1,7 @@
 package com.tekskills.sampleapp.utils
 
-import android.app.Activity
 import android.content.ContentResolver
 import android.content.ContentUris
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -19,15 +17,13 @@ import java.util.Calendar
 
 
 object ShareLayout {
-    val TEXT_FONT_COLOR = 856
-
     fun simpleLayoutShare(
-        activity: Activity,
+        ctx: Context,
         view: View,
         msg: String?,
         activityOptions: ActivityOptionsCompat? = null
     ) {
-        deleteImagesWithFileNameStartsWith(activity, "VMR_")
+        deleteImagesWithFileNameStartsWith(ctx, "VMR_")
 
         //Capture the Screenshot
         view.isDrawingCacheEnabled = true
@@ -39,32 +35,24 @@ object ShareLayout {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
 
         val imageName = "VMR_" + Calendar.getInstance().time
-
-        val pathofBmp = MediaStore.Images.Media.insertImage(
-            activity.contentResolver,
+        val pathOfBmp = MediaStore.Images.Media.insertImage(
+            ctx.contentResolver,
             bitmap,
             imageName,
             null
         )
 
         //Share through Intent
-        val uri = Uri.parse(pathofBmp)
+        val uri = Uri.parse(pathOfBmp)
         val shareIntent = Intent(Intent.ACTION_SEND)
         shareIntent.type = "image/*"
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Share")
         shareIntent.putExtra(
             Intent.EXTRA_TEXT, msg
         )
-        val activityOptions =
-            ActivityOptionsCompat.makeSceneTransitionAnimation(
-                activity,
-                view,
-                "article_image"
-            )
         shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
-//        activity.startActivityForResult(Intent.createChooser(shareIntent, "hello hello"),TEXT_FONT_COLOR,activityOptions.toBundle())
-        activity.startActivity(Intent.createChooser(shareIntent, "hello hello"),activityOptions.toBundle())
-//        deleteFile(activity,uri)
+        ctx.startActivity(Intent.createChooser(shareIntent, "hello hello"),activityOptions?.toBundle())
+//        deleteFile(ctx,uri)
     }
 
     fun deleteFile(context: Context, uri: Uri): Boolean? {

@@ -21,12 +21,11 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.transition.MaterialFadeThrough
 import com.tekskills.sampleapp.R
 import com.tekskills.sampleapp.data.local.BannerItemRepository
-import com.tekskills.sampleapp.data.local.BannersDatabase
-import com.tekskills.sampleapp.data.local.BookmarksDatabase
-import com.tekskills.sampleapp.data.local.BookmarksRepository
+import com.tekskills.sampleapp.data.local.ArticlesDatabase
+import com.tekskills.sampleapp.data.local.ArticlesRepository
 import com.tekskills.sampleapp.data.prefrences.AppPreferences
 import com.tekskills.sampleapp.databinding.FragmentArticlesBinding
-import com.tekskills.sampleapp.model.AllNewsItem
+import com.tekskills.sampleapp.model.NewsItem
 import com.tekskills.sampleapp.ui.adapter.NewsAdapter
 import com.tekskills.sampleapp.ui.comment.CommentBottomSheet
 import com.tekskills.sampleapp.ui.main.MainActivity
@@ -53,16 +52,14 @@ class ArticlesFragment : Fragment() {
 
         preferences =
             AppPreferences(requireContext())
-        val database: BookmarksDatabase = BookmarksDatabase.getInstance(context = requireContext())
-        val bannerDatabase: BannersDatabase =
-            BannersDatabase.getInstance(context = requireContext())
+        val database: ArticlesDatabase = ArticlesDatabase.getInstance(context = requireContext())
 
         val dao = database.dao
-        val repository = BookmarksRepository(dao)
-        val articleDao = bannerDatabase.bannerDao
-        val bannerRepo = BannerItemRepository(articleDao)
+        val repository = ArticlesRepository(dao)
+        val bannerDao = database.bannerDao
+        val bannerRepo = BannerItemRepository(bannerDao)
         val factory = MainViewModelFactory(repository, bannerRepo, preferences)
-        viewModel = ViewModelProvider(requireActivity(), factory)[MainViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity(),factory)[MainViewModel::class.java]
 
         binding.viewModel = viewModel
 
@@ -138,7 +135,7 @@ class ArticlesFragment : Fragment() {
     }
 
 
-    private fun goToArticleDetailActivity(article: AllNewsItem, imageView: ImageView) {
+    private fun goToArticleDetailActivity(article: NewsItem, imageView: ImageView) {
         val intent = Intent(requireContext(), ArticleDetailsActivity::class.java)
         intent.putExtra("article", ObjectSerializer.serialize(article))
         val activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
@@ -157,28 +154,28 @@ class ArticlesFragment : Fragment() {
                 viewModel,
                 lifecycle,
                 object : NewsAdapter.OnClickListener {
-                    override fun clickListener(allNewsItem: AllNewsItem, imageView: ImageView) {
-                        goToArticleDetailActivity(allNewsItem, imageView)
+                    override fun clickListener(newsItem: NewsItem, imageView: ImageView) {
+                        goToArticleDetailActivity(newsItem, imageView)
                     }
 
                     override fun doubleClickListener(
-                        allNewsItem: AllNewsItem,
+                        newsItem: NewsItem,
                         imageView: ImageView
                     ) {
                         (activity as MainActivity?)!!.appBarLayoutHandle(true)
                     }
 
                     override fun readMoreClickListener(
-                        allNewsItem: AllNewsItem,
+                        newsItem: NewsItem,
                         imageView: ImageView
                     ) {
-                        if (!allNewsItem.websiteUrl.isNullOrEmpty()) {
+                        if (!newsItem.websiteUrl.isNullOrEmpty()) {
                             val intent = Intent(
                                 Intent.ACTION_VIEW,
-                                Uri.parse(allNewsItem.websiteUrl)
+                                Uri.parse(newsItem.websiteUrl)
                             )
 
-                            intent.putExtra("article", ObjectSerializer.serialize(allNewsItem))
+                            intent.putExtra("article", ObjectSerializer.serialize(newsItem))
                             val activityOptions =
                                 ActivityOptionsCompat.makeSceneTransitionAnimation(
                                     requireActivity(),
@@ -191,38 +188,38 @@ class ArticlesFragment : Fragment() {
                         }
                     }
 
-                    override fun shareClickListener(allNewsItem: AllNewsItem, imageView: View) {
+                    override fun shareClickListener(newsItem: NewsItem, imageView: View) {
                         val activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
                             requireActivity(),
                             imageView,
                             "article_image"
                         )
-                        if (!allNewsItem.websiteUrl.isNullOrEmpty() && allNewsItem.websiteUrl != "null") {
+                        if (!newsItem.websiteUrl.isNullOrEmpty() && newsItem.websiteUrl != "null") {
                             val html =
-                                "${allNewsItem.title} \n\nFull article at : ${allNewsItem.websiteUrl}>${allNewsItem.websiteUrl}"
+                                "${newsItem.title} \n\nFull article at : ${newsItem.websiteUrl}>${newsItem.websiteUrl}"
                             ShareLayout.simpleLayoutShare(
-                                requireActivity(),
+                                requireContext(),
                                 imageView,
                                 html,
                                 activityOptions
                             )
                         } else
                             ShareLayout.simpleLayoutShare(
-                                requireActivity(),
+                                requireContext(),
                                 imageView,
-                                allNewsItem.title,
+                                newsItem.title,
                                 activityOptions
                             )
                     }
 
-                    override fun likeClickListener(allNewsItem: AllNewsItem, imageView: View) {
-//                        viewModel.addABookmark(news_id = allNewsItem.newsId, article = allNewsItem)
+                    override fun likeClickListener(newsItem: NewsItem, imageView: View) {
+//                        viewModel.addAArticle(news_id = allNewsItem.newsId, article = allNewsItem)
                     }
 
-                    override fun commentClickListener(allNewsItem: AllNewsItem, imageView: View) {
+                    override fun commentClickListener(newsItem: NewsItem, imageView: View) {
                         val bottomSheetFragment = CommentBottomSheet()
                         val bundle = Bundle()
-                        bundle.putInt("article_id", allNewsItem.newsId)
+                        bundle.putInt("article_id", newsItem.newsId)
                         bottomSheetFragment.arguments = bundle
 
                         bottomSheetFragment.show(

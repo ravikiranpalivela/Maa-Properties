@@ -8,6 +8,7 @@ import com.tekskills.sampleapp.model.BannerItemItem
 
 @Dao
 interface BannerItemDao {
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBannerItems(newsItems: List<BannerItemItem>)
 

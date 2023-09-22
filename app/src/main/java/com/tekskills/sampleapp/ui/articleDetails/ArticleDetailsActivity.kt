@@ -20,7 +20,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.tekskills.sampleapp.R
 import com.tekskills.sampleapp.databinding.ActivityArticleDetailsBinding
-import com.tekskills.sampleapp.model.AllNewsItem
+import com.tekskills.sampleapp.model.NewsItem
 import com.tekskills.sampleapp.ui.base.BaseActivity
 import com.tekskills.sampleapp.ui.main.MainViewModel
 import com.tekskills.sampleapp.utils.ObjectSerializer
@@ -35,7 +35,7 @@ import com.tekskills.sampleapp.utils.video.isYoutubeUrl
 class ArticleDetailsActivity :
     BaseActivity<ActivityArticleDetailsBinding, MainViewModel, ArticleDetailsActivity>() {
 
-    private lateinit var article: AllNewsItem
+    private lateinit var article: NewsItem
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +44,7 @@ class ArticleDetailsActivity :
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.elevation = 0f
 
-        article = ObjectSerializer.deserialize(intent.getStringExtra("article")) as AllNewsItem
+        article = ObjectSerializer.deserialize(intent.getStringExtra("article")) as NewsItem
 
         setUpLayout()
     }
@@ -98,7 +98,7 @@ class ArticleDetailsActivity :
                 object : CountDownTimer(200, 100) {
                     override fun onFinish() {
                         ShareLayout.simpleLayoutShare(
-                            this@ArticleDetailsActivity,
+                            getContext(),
                             clArticleView,
                             " ${article.title} \n ${articleContent.text}",
                             null

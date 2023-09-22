@@ -17,12 +17,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.tekskills.sampleapp.R
-import com.tekskills.sampleapp.data.local.BannersDatabase
-import com.tekskills.sampleapp.data.local.BookmarksAllNews
-import com.tekskills.sampleapp.data.local.BookmarksDatabase
+import com.tekskills.sampleapp.data.local.ArticlesAllNews
+import com.tekskills.sampleapp.data.local.ArticlesDatabase
 import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
 import com.tekskills.sampleapp.databinding.ItemArticleViewtypeListBinding
-import com.tekskills.sampleapp.model.AllNewsItem
+import com.tekskills.sampleapp.model.NewsItem
 import com.tekskills.sampleapp.ui.adapter.NewsAdapter
 import com.tekskills.sampleapp.ui.main.MainViewModel
 import com.tekskills.sampleapp.utils.like.LikeButton
@@ -51,13 +50,17 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
     private var initializedYouTubePlayer: YouTubePlayer? = null
 
     fun bind(
-        article: AllNewsItem,
+        article: NewsItem,
         onClickListener: NewsAdapter.OnClickListener,
     ) {
         // Get the view count using the ViewModel
         val sharedPrefManager: SharedPrefManager = SharedPrefManager.getInstance(activity)
 
         binding.apply {
+
+            getBannerInfo(sharedPrefManager.bannerSelect)
+            getArticleInfo(article.newsId)
+
             if (validateValue(article.description) == "null")
                 descArticle.visibility = View.GONE
             else {
@@ -72,7 +75,7 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                 titleArticle.text = article.title
             }
 
-            var count = viewModel.getBookMarkViewCount(article.newsId)
+            var count = viewModel.getArticleViewCount(article.newsId)
 
             likes.text = count.toString()
 
@@ -105,7 +108,7 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
             })
 
             comment.setOnClickListener {
-                onClickListener.commentClickListener(article,articleImage)
+                onClickListener.commentClickListener(article, articleImage)
             }
 
 //            like.setOnClickListener {
@@ -114,7 +117,7 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
 ////                onClickListener.likeClickListener(article, articleImage)
 //
 ////                updateViewCount(article.newsId, article)
-////                var countData = viewModel.getBookMarkViewCount(article.newsId)
+////                var countData = viewModel.getArticleViewCount(article.newsId)
 ////                countData++
 ////                likes.text = countData.toString()
 //            }
@@ -143,7 +146,7 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                     .build()
             ) {
                 if (it) {
-                    updateViewCount(article.newsId, article)
+//                    updateViewCount(article.newsId, article)
                 }
             }
 
@@ -168,27 +171,21 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
             ivBannerShare.visibility = View.GONE
             ivBannerLogo.visibility = View.GONE
 
-            getBannerInfo(sharedPrefManager.bannerSelect)
-
             ivShare.setOnClickListener {
+                getBannerInfo(sharedPrefManager.bannerSelect)
+                sharedPrefManager.saveBannerSelect()
                 youtubePlayerView.visibility = View.GONE
                 webView.visibility = View.GONE
                 articleImage.visibility = View.VISIBLE
                 btnPlay.visibility = View.VISIBLE
                 ivBannerShare.visibility = View.VISIBLE
                 ivBannerLogo.visibility = View.VISIBLE
-                getBannerInfo(sharedPrefManager.bannerSelect)
-                object : CountDownTimer(200, 100) {
+                object : CountDownTimer(200, 10) {
                     override fun onFinish() {
                         onClickListener.shareClickListener(article, clArticleView)
                         ivBannerShare.visibility = View.GONE
                         ivBannerLogo.visibility = View.GONE
-
-                        sharedPrefManager.saveBannerSelect()
-//                        val prefrences = AppPreferences(activity)
-//
-//                        prefrences.saveBannerEdit()
-
+                        updateShareCount(article.newsId, article)
                     }
 
                     override fun onTick(millisUntilFinished: Long) {}
@@ -265,29 +262,35 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
         }
     }
 
-    fun updateViewCount(articleId: Int, article: AllNewsItem) {
+    fun updateViewCount(articleId: Int, article: NewsItem) {
 
         val executor = Executors.newSingleThreadExecutor()
         executor.execute {
             // Update the view count in the Room database
-            val database: BookmarksDatabase = BookmarksDatabase.getInstance(context = activity)
+            val database: ArticlesDatabase = ArticlesDatabase.getInstance(context = activity)
             val dao = database.dao
-            val existingBookmark = dao.getBookmarksById(articleId)
-            if (existingBookmark != null) {
+            val commentsDao = database.commentDao
+            val existingArticle = dao.getArticlesById(articleId)
+            if (existingArticle != null) {
                 // Update the existing article
-                var count = existingBookmark.view_count + 1
-                dao.incrementViewCount(existingBookmark.news_id, count)
+                var count = existingArticle.view_count + 1
+                dao.incrementViewCount(existingArticle.news_id, count)
             } else {
-                val bookMark = BookmarksAllNews(news_id = articleId, view_count = 1)
+                val insertArticle = ArticlesAllNews(news_id = articleId, view_count = 1)
                 // Insert a new article
-                dao.insertBookmarks(bookMark)
+                dao.insertArticles(insertArticle)
             }
 
             // Fetch the updated data from the database
             activity.runOnUiThread(Runnable {
-                val updatedData = dao.getBookmarksById(articleId)
+                val commentData = commentsDao.getCommentsForItem(article.newsId)
+                val updatedData = dao.getArticlesById(articleId)
                 binding.apply {
                     likes.text = updatedData?.view_count.toString()
+                    shares.text = updatedData?.share_count.toString()
+                    Log.d("TAG", "comments data ${commentData.toString()}")
+                    comments.text =
+                        if (commentData.isEmpty()) "0" else commentData.size.toString()
                 }
             })
 //            database.close()
@@ -295,25 +298,90 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
 
     }
 
-    fun getBannerInfo(bannerSelect: Int) {
+    fun updateShareCount(articleId: Int, article: NewsItem) {
 
         val executor = Executors.newSingleThreadExecutor()
         executor.execute {
             // Update the view count in the Room database
-            val database: BannersDatabase = BannersDatabase.getInstance(context = activity)
-            val dao = database.bannerDao
+            val database: ArticlesDatabase = ArticlesDatabase.getInstance(context = activity)
+            val dao = database.dao
+            val commentsDao = database.commentDao
+            val existingArticle = dao.getArticlesById(articleId)
+            if (existingArticle != null) {
+                // Update the existing article
+                val count = existingArticle.share_count + 1
+                dao.incrementShareCount(existingArticle.news_id, count)
+            } else {
+                val insertArticle = ArticlesAllNews(news_id = articleId, share_count = 1)
+                // Insert a new article
+                dao.insertArticles(insertArticle)
+            }
 
             // Fetch the updated data from the database
             activity.runOnUiThread(Runnable {
+                val commentData = commentsDao.getCommentsForItem(article.newsId)
+                val updatedData = dao.getArticlesById(articleId)
                 binding.apply {
-                    var banners = dao.getAllBannerItems()
+                    likes.text = updatedData?.view_count.toString()
+                    shares.text = updatedData?.share_count.toString()
+                    Log.d("TAG", "comments data ${commentData.toString()}")
+                    comments.text =
+                        if (commentData.isEmpty()) "0" else commentData.size.toString()
+                }
+            })
+//            database.close()
+        }
+
+    }
+
+    private fun getArticleInfo(newsId: Int) {
+
+        val executor = Executors.newSingleThreadExecutor()
+        executor.execute {
+            // Update the view count in the Room database
+            val database: ArticlesDatabase = ArticlesDatabase.getInstance(context = activity)
+            val dao = database.dao
+            val commentsDao = database.commentDao
+
+            // Fetch the updated data from the database
+            activity.runOnUiThread(Runnable {
+                val commentData = commentsDao.getCommentsForItem(newsId)
+                val updatedData = dao.getArticlesById(newsId)
+                binding.apply {
+                    comments.text =
+                        if (commentData.isEmpty()) "0" else commentData.size.toString()
+                    if (updatedData != null) {
+                        likes.text = updatedData.view_count.toString()
+                        shares.text = updatedData.share_count.toString()
+                    }
+                    Log.d("TAG", "comments data ${commentData.toString()}")
+                }
+            })
+//            database.close()
+        }
+    }
+
+    private fun getBannerInfo(bannerSelect: Int) {
+        val executor = Executors.newSingleThreadExecutor()
+        executor.execute {
+            // Update the view count in the Room database
+            val database: ArticlesDatabase = ArticlesDatabase.getInstance(context = activity)
+            val bannerDao = database.bannerDao
+
+            // Fetch the updated data from the database
+            activity.runOnUiThread(Runnable {
+                var banners = bannerDao.getAllBannerItems()
+                binding.apply {
                     var count = bannerSelect + 1
                     if (count < banners.size) {
-                        val updatedData = dao.getAllBannerItems()[count].link
+                        val updatedData = bannerDao.getAllBannerItems()[count].link
+                        displayImage(updatedData, ivBannerShare)
+                    } else if (count > banners.size) {
+                        val num = count / banners.size
+                        val updatedData = bannerDao.getAllBannerItems()[num].link
                         displayImage(updatedData, ivBannerShare)
                     } else if (banners.isNotEmpty()) {
-                        val updatedData = dao.getAllBannerItems()[0].link
-
+                        val updatedData = bannerDao.getAllBannerItems()[0].link
                         displayImage(updatedData, ivBannerShare)
                     } else {
                         val BANNER_SAMPLE =
@@ -324,9 +392,7 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
             })
 //            database.close()
         }
-
     }
-
 
     private fun playVideoUrlData(videoUrl: String) {
         binding.apply {
