@@ -20,10 +20,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.transition.MaterialFadeThrough
 import com.tekskills.sampleapp.R
-import com.tekskills.sampleapp.data.local.BannerItemRepository
 import com.tekskills.sampleapp.data.local.ArticlesDatabase
 import com.tekskills.sampleapp.data.local.ArticlesRepository
-import com.tekskills.sampleapp.data.prefrences.AppPreferences
+import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
 import com.tekskills.sampleapp.databinding.FragmentArticlesBinding
 import com.tekskills.sampleapp.model.NewsItem
 import com.tekskills.sampleapp.ui.adapter.NewsAdapter
@@ -40,7 +39,7 @@ class ArticlesFragment : Fragment() {
     lateinit var viewModel: MainViewModel
     lateinit var binding: FragmentArticlesBinding
     private lateinit var newsListAdapter: NewsAdapter
-    private lateinit var preferences: AppPreferences
+    private lateinit var preferences: SharedPrefManager
 
     var isLoading = false
 
@@ -51,14 +50,12 @@ class ArticlesFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_articles, container, false)
 
         preferences =
-            AppPreferences(requireContext())
+            SharedPrefManager.getInstance(requireContext())
         val database: ArticlesDatabase = ArticlesDatabase.getInstance(context = requireContext())
 
         val dao = database.dao
         val repository = ArticlesRepository(dao)
-        val bannerDao = database.bannerDao
-        val bannerRepo = BannerItemRepository(bannerDao)
-        val factory = MainViewModelFactory(repository, bannerRepo, preferences)
+        val factory = MainViewModelFactory(repository, preferences)
         viewModel = ViewModelProvider(requireActivity(), factory)[MainViewModel::class.java]
 
         binding.viewModel = viewModel
@@ -135,21 +132,6 @@ class ArticlesFragment : Fragment() {
         // handle result of pick image chooser
         super.onActivityResult(requestCode, resultCode, data)
         Log.d("TAG", "onActivityResult response ${resultCode} ${data.toString()}")
-        val TEXT_FONT_COLOR = 856
-
-//        if (resultCode == AppCompatActivity.RESULT_OK) {
-//            if (requestCode == TEXT_FONT_COLOR) {
-//                try {
-//                    val del = DocumentsContract.deleteDocument(
-//                        requireContext().contentResolver,
-//                        data?.data!!
-//                    )
-//                    Log.d("myLogs", "del = $del")
-//                } catch (e: FileNotFoundException) {
-//                    e.printStackTrace()
-//                }
-//            }
-//        }
     }
 
 
@@ -231,14 +213,22 @@ class ArticlesFragment : Fragment() {
                     }
 
                     override fun likeClickListener(newsItem: NewsItem, imageView: View) {
+                        viewModel.postNewsLike(newsItem.newsId)
 //                        viewModel.addAArticle(news_id = allNewsItem.newsId, article = allNewsItem)
                     }
 
                     override fun commentClickListener(newsItem: NewsItem, imageView: View) {
                         val bottomSheetFragment = CommentBottomSheet()
-                        val bundle = Bundle()
-                        bundle.putInt("article_id", newsItem.newsId)
-                        bottomSheetFragment.arguments = bundle
+                        val args = Bundle().apply {
+                            putInt("article_id", newsItem.newsId)
+                            putSerializable("article",newsItem)
+                        }
+                        bottomSheetFragment.arguments = args
+
+//                        val bundle = Bundle()
+//                        bundle.putInt("article_id", newsItem.newsId)
+//                        bundle.putSerializable("article",newsItem)
+//                        bottomSheetFragment.arguments = bundle
 
                         bottomSheetFragment.show(
                             parentFragmentManager,

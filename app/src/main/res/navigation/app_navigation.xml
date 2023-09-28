@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/app_navigation">
+    <fragment
+        android:id="@+id/myArticleFragment"
+        android:name="com.tekskills.sampleapp.ui.articleDetails.ArticlesFragment"
+        android:label="fragment_my_home"
+        tools:layout="@layout/fragment_articles">
+        <action
+            android:id="@+id/action_myArticleFragment_to_ShortsFragment"
+            app:destination="@id/myShortsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_myArticleFragment_to_PosterEditorFragment"
+            app:destination="@id/myPosterEditorFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_myArticleFragment_to_CommentBottomSheet"
+            app:destination="@id/myCommentBottomSheet"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_HomeFragment_to_playerFragment"
+            app:destination="@id/myCommentBottomSheet"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <argument
+            android:name="article_id"
+            android:defaultValue="0" />
+        <argument
+            android:name="article"
+            app:argType="com.tekskills.sampleapp.model.NewsItem" />
+    </fragment>
+    <fragment
+        android:id="@+id/myShortsFragment"
+        android:name="com.tekskills.sampleapp.ui.articleDetails.ShortsFragment"
+        android:label="fragment_my_genres"
+        tools:layout="@layout/fragment_articles">
+        <action
+            android:id="@+id/action_myShortsFragment_to_HomeFragment"
+            app:destination="@id/myArticleFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_myShortsFragment_to_CommentBottomSheet"
+            app:destination="@id/myCommentBottomSheet"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <argument
+            android:name="article_id"
+            android:defaultValue="0" />
+        <argument
+            android:name="article"
+            app:argType="com.tekskills.sampleapp.model.NewsItem" />
+    </fragment>
+    <fragment
+        android:id="@+id/myPosterEditorFragment"
+        android:name="com.tekskills.sampleapp.ui.articleDetails.PosterEditorFragment"
+        android:label="fragment_my_categories"
+        tools:layout="@layout/activity_poster_editor">
+        <action
+            android:id="@+id/action_myPosterEditorFragment_to_ShortsFragment"
+            app:destination="@id/myShortsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_myPosterEditorFragment_to_CommentBottomSheet"
+            app:destination="@id/myCommentBottomSheet"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <argument
+            android:name="article_id"
+            android:defaultValue="0" />
+        <argument
+            android:name="article"
+            app:argType="com.tekskills.sampleapp.model.NewsItem" />
+    </fragment>
+    <fragment
+        android:id="@+id/myCommentBottomSheet"
+        android:name="com.tekskills.sampleapp.ui.comment.CommentBottomSheet"
+        android:label="fragment_my_categories"
+        tools:layout="@layout/bottom_sheet_feedback">
+        <action
+            android:id="@+id/action_myCommentBottomSheet_to_ShortsFragment"
+            app:destination="@id/myShortsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <argument
+            android:name="article_id"
+            android:defaultValue="0" />
+        <argument
+            android:name="article"
+            app:argType="com.tekskills.sampleapp.model.NewsItem" />
+    </fragment>
+</navigation>

@@ -4,14 +4,22 @@ import android.annotation.SuppressLint
 import android.content.Context
 import com.tekskills.sampleapp.R
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
 object TimeUtil {
 
-    fun getTimeAgo(context: Context, timestamp: Long): String {
+    fun getTimeAgo(context: Context, timestampDate: String): String {
         val currentTimeMillis = System.currentTimeMillis()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
+        val dateTime = LocalDateTime.parse(timestampDate, formatter)
+
+        // Convert LocalDateTime to a timestamp (milliseconds since epoch)
+        val timestamp = dateTime.toEpochSecond(java.time.ZoneOffset.UTC) * 1000
+
         val timeDifferenceMillis = currentTimeMillis - timestamp
 
         val resources = context.resources
@@ -38,10 +46,11 @@ object TimeUtil {
                 resources.getQuantityString(R.plurals.hours_ago, hoursAgo.toInt(), hoursAgo)
             }
             else -> {
-                val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                sdf.timeZone = TimeZone.getDefault()
-                val formattedDate = sdf.format(Date(timestamp))
-                resources.getString(R.string.days_ago, formattedDate)
+                val daysAgo = timeDifferenceMillis / dayMillis
+//                val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+//                sdf.timeZone = TimeZone.getDefault()
+//                val formattedDate = sdf.format(Date(timestamp))
+                resources.getQuantityString(R.plurals.days_ago, daysAgo.toInt(),daysAgo)
             }
         }
     }

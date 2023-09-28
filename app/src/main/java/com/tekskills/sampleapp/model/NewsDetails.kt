@@ -1,6 +1,7 @@
 package com.tekskills.sampleapp.model
 
 import com.google.gson.annotations.SerializedName
+import com.tekskills.sampleapp.data.local.CommentItem
 import java.io.Serializable
 
 class NewsDetails : ArrayList<NewsItem>()
@@ -44,5 +45,17 @@ data class NewsItem(
     val videoUrl: String,
     @SerializedName("websiteUrl")
     val websiteUrl: String,
+    @SerializedName("comments")
+    val comments: CommentDetails,
+    @SerializedName("likes")
+    val likes: Int
 //    @SerializedName("source") val source: Source,
 ) : Serializable
+class CommentDetails : ArrayList<Comment>()
+
+data class Comment(
+    @SerializedName("comment")
+    val comment: String,
+    @SerializedName("commentedOn")
+    val commentedOn: String
+)

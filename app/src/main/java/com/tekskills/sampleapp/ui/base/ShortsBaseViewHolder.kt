@@ -19,8 +19,8 @@ import com.tekskills.sampleapp.data.local.ArticlesAllNews
 import com.tekskills.sampleapp.data.local.ArticlesDatabase
 import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
 import com.tekskills.sampleapp.databinding.ItemArticleViewtypeListBinding
+import com.tekskills.sampleapp.model.BannerItem
 import com.tekskills.sampleapp.model.NewsItem
-import com.tekskills.sampleapp.ui.adapter.NewsAdapter
 import com.tekskills.sampleapp.ui.adapter.ShortsAdapter
 import com.tekskills.sampleapp.utils.like.LikeButton
 import com.tekskills.sampleapp.utils.like.OnAnimationEndListener
@@ -53,7 +53,7 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
         binding.apply {
             getArticleInfo(article.newsId)
 
-            getBannerInfo(sharedPrefManager.bannerSelect)
+            getBannerInfo(sharedPrefManager.getBannerDetailsData(),sharedPrefManager.bannerSelect)
 
             if (validateValue(article.videoDescription) == "null")
                 descArticle.visibility = View.GONE
@@ -95,7 +95,8 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
 
             heartButton.setOnAnimationEndListener(object : OnAnimationEndListener {
                 override fun onAnimationEnd(likeButton: LikeButton?) {
-                    updateViewCount(article.id, article)
+                    onClickListener.likeClickListener(article,articleImage)
+//                    updateViewCount(article.id, article)
                 }
             })
 
@@ -125,7 +126,7 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
 
 
             ivShare.setOnClickListener {
-                getBannerInfo(sharedPrefManager.bannerSelect)
+                getBannerInfo(sharedPrefManager.getBannerDetailsData(),sharedPrefManager.bannerSelect)
                 sharedPrefManager.saveBannerSelect()
                 youtubePlayerView.visibility = View.GONE
                 webView.visibility = View.GONE
@@ -173,34 +174,31 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
             clArticleAdView.visibility = View.VISIBLE
             clArticleView.visibility = View.GONE
 
-            getBannerAdsInfo(sharedPrefManager.bannerAdsSelect)
+            getBannerAdsInfo(sharedPrefManager.getBannerDetailsData(),sharedPrefManager.bannerAdsSelect)
 
             sharedPrefManager.saveBannerAdsSelect()
 
         }
     }
 
-    private fun getBannerAdsInfo(bannerSelect: Int) {
+    private fun getBannerAdsInfo(banners: BannerItem?, bannerSelect: Int) {
         val executor = Executors.newSingleThreadExecutor()
         executor.execute {
-            // Update the view count in the Room database
-            val database: ArticlesDatabase = ArticlesDatabase.getInstance(context = activity)
-            val bannerDao = database.bannerDao
-
             // Fetch the updated data from the database
+            SharedPrefManager
             activity.runOnUiThread(Runnable {
-                var banners = bannerDao.getAllBannerItems()
+                if(banners != null)
                 binding.apply {
                     var count = bannerSelect + 1
                     if (count < banners.size) {
-                        val updatedData = bannerDao.getAllBannerItems()[count].link
+                        val updatedData = banners[count].link
                         displayImage(updatedData, ivBannerAds)
                     } else if (count > banners.size) {
                         val num = count % banners.size
-                        val updatedData = bannerDao.getAllBannerItems()[num].link
+                        val updatedData = banners[num].link
                         displayImage(updatedData, ivBannerAds)
                     } else if (banners.isNotEmpty()) {
-                        val updatedData = bannerDao.getAllBannerItems()[0].link
+                        val updatedData = banners[0].link
                         displayImage(updatedData, ivBannerAds)
                     } else {
                         val BANNER_SAMPLE =
@@ -313,27 +311,26 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
         }
     }
 
-    private fun getBannerInfo(bannerSelect: Int) {
+    private fun getBannerInfo(banners: BannerItem?,bannerSelect: Int) {
         val executor = Executors.newSingleThreadExecutor()
         executor.execute {
             // Update the view count in the Room database
             val database: ArticlesDatabase = ArticlesDatabase.getInstance(context = activity)
-            val bannerDao = database.bannerDao
 
             // Fetch the updated data from the database
             activity.runOnUiThread(Runnable {
-                var banners = bannerDao.getAllBannerItems()
+                if(banners != null)
                 binding.apply {
                     var count = bannerSelect + 1
                     if (count < banners.size) {
-                        val updatedData = bannerDao.getAllBannerItems()[count].link
+                        val updatedData = banners[count].link
                         displayImage(updatedData, ivBannerShare)
                     } else if (count > banners.size) {
                         val num = count % banners.size
-                        val updatedData = bannerDao.getAllBannerItems()[num].link
+                        val updatedData = banners[num].link
                         displayImage(updatedData, ivBannerShare)
                     } else if (banners.isNotEmpty()) {
-                        val updatedData = bannerDao.getAllBannerItems()[0].link
+                        val updatedData = banners[0].link
                         displayImage(updatedData, ivBannerShare)
                     } else {
                         val BANNER_SAMPLE =

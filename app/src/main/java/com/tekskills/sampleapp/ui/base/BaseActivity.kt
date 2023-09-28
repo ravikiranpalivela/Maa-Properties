@@ -7,10 +7,9 @@ import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
-import com.tekskills.sampleapp.data.local.BannerItemRepository
 import com.tekskills.sampleapp.data.local.ArticlesDatabase
 import com.tekskills.sampleapp.data.local.ArticlesRepository
-import com.tekskills.sampleapp.data.prefrences.AppPreferences
+import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
 import com.tekskills.sampleapp.ui.main.MainViewModelFactory
 
 abstract class BaseActivity<binding : ViewDataBinding, viewModel : ViewModel, viewModelstoreOwner : ViewModelStoreOwner> :
@@ -25,7 +24,7 @@ abstract class BaseActivity<binding : ViewDataBinding, viewModel : ViewModel, vi
 
     protected lateinit var viewModel: viewModel
 
-    protected lateinit var prefrences: AppPreferences
+    protected lateinit var prefrences: SharedPrefManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,11 +33,9 @@ abstract class BaseActivity<binding : ViewDataBinding, viewModel : ViewModel, vi
             ArticlesDatabase.getInstance(context = applicationContext)
 
         val dao = database.dao
-        val articleDao = database.bannerDao
         val repository = ArticlesRepository(dao)
-        val bannerRepo = BannerItemRepository(articleDao)
-        prefrences = AppPreferences(this)
-        val factory = MainViewModelFactory(repository, bannerRepo,prefrences)
+        prefrences = SharedPrefManager.getInstance(this)
+        val factory = MainViewModelFactory(repository, prefrences)
         viewModel = ViewModelProvider(getViewModelStoreOwner(), factory)[getViewModel()]
     }
 }

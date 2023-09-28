@@ -1,10 +1,13 @@
 package com.tekskills.sampleapp.data.repo
 
+import com.tekskills.sampleapp.data.remote.APIEndPoint
 import com.tekskills.sampleapp.data.remote.NewsService
 import com.tekskills.sampleapp.data.remote.RetrofitInstance
 import com.tekskills.sampleapp.model.NewsDetails
 import com.tekskills.sampleapp.model.BannerItem
+import com.tekskills.sampleapp.model.LikeResponse
 import com.tekskills.sampleapp.model.PosterDetails
+import org.json.JSONObject
 import retrofit2.Response
 
 class ArticleProviderRepo {
@@ -22,7 +25,7 @@ class ArticleProviderRepo {
 
             "Wishes" -> retService.getWishes()
 
-            "Posters" -> retService.getWishes()
+            "Posters" -> retService.getAllNews()
 
             else -> retService.getShorts()
         }
@@ -40,5 +43,44 @@ class ArticleProviderRepo {
 
     suspend fun getBanner(): Response<BannerItem> {
         return retService.getBanners()
+    }
+
+    suspend fun postNewsLike(articleID : String): Response<LikeResponse>
+    {
+        return  retService.postNewsLike(articleID)
+    }
+
+    suspend fun postPostersLike(articleID : String): Response<LikeResponse>
+    {
+        return  retService.postPostersLike(articleID)
+    }
+
+    suspend fun postWishesLike(articleID : String): Response<LikeResponse>
+    {
+        return  retService.postWishesLike(articleID)
+    }
+
+    suspend fun postShortsLike(articleID : String): Response<LikeResponse>
+    {
+        return  retService.postShortsLike(articleID)
+    }
+
+    suspend fun postComments(articleID:String,type:String,text:String): Response<LikeResponse>
+    {
+        val requestBody: MutableMap<String, String> = HashMap()
+        requestBody["type"] = type
+        requestBody["newsId"] = articleID
+        requestBody["comments"] = text
+        return  retService.postComments(requestBody)
+    }
+
+    suspend fun updateNewsLike(articleID:Int,type:String): Response<LikeResponse>
+    {
+        return  retService.updateNewsLike(articleID,type)
+    }
+
+    suspend fun checkLike(): Response<LikeResponse>
+    {
+        return retService.checkLike()
     }
 }

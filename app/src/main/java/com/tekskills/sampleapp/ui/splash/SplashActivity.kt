@@ -8,7 +8,7 @@ import android.os.CountDownTimer
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.*
 import com.tekskills.sampleapp.R
-import com.tekskills.sampleapp.data.prefrences.AppPreferences
+import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
 import com.tekskills.sampleapp.databinding.ActivitySplashBinding
 import com.tekskills.sampleapp.ui.base.BaseActivity
 import com.tekskills.sampleapp.ui.main.MainActivity
@@ -20,7 +20,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding, MainViewModel, Splash
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         val prefrences =
-            AppPreferences(context = this)
+            SharedPrefManager.getInstance(this)
 
         prefrences.theme.asLiveData().observe(this, Observer {
             if (it.equals("Light")) AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)

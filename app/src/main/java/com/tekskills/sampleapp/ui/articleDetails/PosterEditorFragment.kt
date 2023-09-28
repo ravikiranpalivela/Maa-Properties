@@ -36,11 +36,9 @@ import com.bumptech.glide.Glide
 import com.commit451.nativestackblur.NativeStackBlur
 import com.google.android.material.transition.MaterialFadeThrough
 import com.tekskills.sampleapp.R
-import com.tekskills.sampleapp.data.local.BannerItemRepository
 import com.tekskills.sampleapp.data.local.ArticlesAllNews
 import com.tekskills.sampleapp.data.local.ArticlesDatabase
 import com.tekskills.sampleapp.data.local.ArticlesRepository
-import com.tekskills.sampleapp.data.prefrences.AppPreferences
 import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
 import com.tekskills.sampleapp.databinding.ActivityPosterEditorBinding
 import com.tekskills.sampleapp.model.PosterItem
@@ -85,7 +83,7 @@ class PosterEditorFragment : Fragment() {
 
     lateinit var viewModel: MainViewModel
     lateinit var binding: ActivityPosterEditorBinding
-    private lateinit var preferences: AppPreferences
+    private lateinit var preferences: SharedPrefManager
 
     var isLoading = false
 
@@ -96,15 +94,13 @@ class PosterEditorFragment : Fragment() {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.activity_poster_editor, container, false)
 
-        preferences = AppPreferences(requireContext())
+        preferences = SharedPrefManager.getInstance(requireContext())
 
         val database: ArticlesDatabase = ArticlesDatabase.getInstance(context = requireContext())
 
         val dao = database.dao
-        val bannerDao = database.bannerDao
         val repository = ArticlesRepository(dao)
-        val bannerRepo = BannerItemRepository(bannerDao)
-        val factory = MainViewModelFactory(repository, bannerRepo, preferences)
+        val factory = MainViewModelFactory(repository, preferences)
         viewModel = ViewModelProvider(requireActivity(), factory)[MainViewModel::class.java]
 
         binding.viewModel = viewModel
@@ -239,8 +235,9 @@ class PosterEditorFragment : Fragment() {
 
         binding.heartButton.setOnAnimationEndListener(object : OnAnimationEndListener {
             override fun onAnimationEnd(likeButton: LikeButton?) {
-                if (posterItem != null)
-                    updateViewCount(posterItem!!.posterId)
+                viewModel.postNewsLike(posterItem!!.posterId)
+//                if (posterItem != null)
+//                    updateViewCount(posterItem!!.posterId)
             }
         })
 
@@ -413,25 +410,23 @@ class PosterEditorFragment : Fragment() {
     private fun getBannerInfo(bannerSelect: Int) {
         val executor = Executors.newSingleThreadExecutor()
         executor.execute {
-            // Update the view count in the Room database
-            val database: ArticlesDatabase =
-                ArticlesDatabase.getInstance(context = requireContext())
-            val bannerDao = database.bannerDao
 
             // Fetch the updated data from the database
             requireActivity().runOnUiThread(Runnable {
-                var banners = bannerDao.getAllBannerItems()
+                val banners = preferences.getBannerDetailsData()
+
+                if(banners != null)
                 binding.apply {
                     var count = bannerSelect + 1
                     if (count < banners.size) {
-                        val updatedData = bannerDao.getAllBannerItems()[count].link
+                        val updatedData = banners[count].link
                         displayImage(updatedData, ivBannerShare)
                     } else if (count > banners.size) {
                         val num = count / banners.size
-                        val updatedData = bannerDao.getAllBannerItems()[num].link
+                        val updatedData = banners[num].link
                         displayImage(updatedData, ivBannerShare)
                     } else if (banners.isNotEmpty()) {
-                        val updatedData = bannerDao.getAllBannerItems()[0].link
+                        val updatedData = banners[0].link
                         displayImage(updatedData, ivBannerShare)
                     } else {
                         val BANNER_SAMPLE =

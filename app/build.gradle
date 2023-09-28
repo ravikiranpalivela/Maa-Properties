@@ -150,8 +150,6 @@ dependencies {
 
     implementation 'androidx.datastore:datastore-preferences:1.0.0-alpha04'
 
-    implementation 'com.mikepenz:materialdrawer:9.0.1'
-
 //    implementation 'com.google.android.exoplayer:exoplayer:2.18.2'
 //    implementation 'com.google.android.exoplayer:exoplayer:2.15.0'
 
@@ -171,8 +169,6 @@ dependencies {
 
     implementation 'com.daimajia.easing:library:2.0@aar'
     implementation 'com.daimajia.androidanimations:library:2.3@aar'
-
-//    implementation 'com.github.ratty3697:android-smart-animation-library:1.6'
 
 //  room
     def room_version = "2.5.0"

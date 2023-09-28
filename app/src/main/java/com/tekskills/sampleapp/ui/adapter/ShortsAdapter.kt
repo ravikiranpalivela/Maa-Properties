@@ -28,6 +28,7 @@ class ShortsAdapter(
         fun commentClickListener(newsItem: NewsItem, imageView: View)
 
     }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShortsListViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = DataBindingUtil.inflate<ItemArticleViewtypeListBinding>(

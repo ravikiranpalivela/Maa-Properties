@@ -147,11 +147,91 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.mikepenz.materialdrawer.widget.MaterialDrawerSliderView
-            android:id="@+id/slider"
+<!--        <com.mikepenz.materialdrawer.widget.MaterialDrawerSliderView-->
+<!--            android:id="@+id/slider"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_gravity="start"-->
+<!--            android:fitsSystemWindows="true" />-->
+
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/nav_view"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:fitsSystemWindows="true" />
+            android:background="@color/white"
+            android:fitsSystemWindows="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_navigation_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!--                <include-->
+                <!--                    android:id="@+id/include_nav_header"-->
+                <!--                    layout="@layout/nav_header_home"-->
+                <!--                    app:layout_constraintBottom_toTopOf="@+id/el_navigation_menu"-->
+                <!--                    app:layout_constraintEnd_toEndOf="parent"-->
+                <!--                    app:layout_constraintHorizontal_bias="0.5"-->
+                <!--                    app:layout_constraintStart_toStartOf="parent"-->
+                <!--                    app:layout_constraintTop_toTopOf="parent" />-->
+
+                <!--            <ImageView-->
+                <!--                android:id="@+id/iv_navigation_logo"-->
+                <!--                android:layout_width="0dp"-->
+                <!--                android:layout_height="wrap_content"-->
+                <!--                android:layout_gravity="center"-->
+                <!--                android:layout_marginTop="@dimen/widget_size_30"-->
+                <!--                android:background="@drawable/logo"-->
+                <!--                android:contentDescription="@string/intro_image"-->
+                <!--                android:scaleType="fitXY"-->
+                <!--                app:layout_constraintBottom_toTopOf="@+id/el_navigation_menu"-->
+                <!--                app:layout_constraintEnd_toEndOf="parent"-->
+                <!--                app:layout_constraintEnd_toStartOf="@+id/iv_navigation_cancel"-->
+                <!--                app:layout_constraintHorizontal_bias="0.5"-->
+                <!--                app:layout_constraintStart_toStartOf="parent"-->
+                <!--                app:layout_constraintTop_toTopOf="parent" />-->
+
+                <include
+                    android:id="@+id/include_nav_header"
+                    layout="@layout/nav_header_user_details"
+                    app:layout_constraintBottom_toTopOf="@+id/el_navigation_menu"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <!--            <ImageView-->
+                <!--                android:id="@+id/iv_navigation_cancel"-->
+                <!--                android:layout_width="@dimen/widget_size_36"-->
+                <!--                android:layout_height="@dimen/widget_size_36"-->
+                <!--                android:layout_gravity="center"-->
+                <!--                android:layout_marginTop="@dimen/widget_size_40"-->
+                <!--                android:layout_marginRight="@dimen/widget_size_8"-->
+                <!--                android:background="@drawable/ic_close"-->
+                <!--                android:backgroundTint="@color/black"-->
+                <!--                android:contentDescription="@string/intro_image"-->
+                <!--                android:scaleType="fitXY"-->
+                <!--                app:layout_constraintBottom_toTopOf="@+id/el_navigation_menu"-->
+                <!--                app:layout_constraintEnd_toEndOf="parent"-->
+                <!--                app:layout_constraintHorizontal_bias="0.5"-->
+                <!--                app:layout_constraintStart_toEndOf="@+id/include_nav_header"-->
+                <!--                app:layout_constraintTop_toTopOf="parent" />-->
+
+                <ExpandableListView
+                    android:id="@+id/el_navigation_menu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/widget_size_8"
+                    android:background="@android:color/white"
+                    android:groupIndicator="@null"
+                    android:nestedScrollingEnabled="true"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/include_nav_header" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.navigation.NavigationView>
+
     </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

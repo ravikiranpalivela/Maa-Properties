@@ -225,6 +225,16 @@ class NavigationActivity : BaseActivity<ActivityNavigationBinding, MainViewModel
         }
     }
 
+    fun appBarLayoutHandle(value: Boolean) {
+        binding.includeHome.coordinatorLayout.visibility =
+            if (!value)
+                GONE
+            else VISIBLE
+        binding.includeHome.tabLayout.visibility =
+            if (!value)
+                GONE else VISIBLE
+    }
+
     private fun observeUserNetworkConnection() {
         NetworkObserver.getNetworkLiveData(applicationContext)
             .observe(this, Observer { isConnected ->

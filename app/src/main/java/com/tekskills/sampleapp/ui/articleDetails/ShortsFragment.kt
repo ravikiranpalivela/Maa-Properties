@@ -20,10 +20,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.transition.MaterialFadeThrough
 import com.tekskills.sampleapp.R
-import com.tekskills.sampleapp.data.local.BannerItemRepository
 import com.tekskills.sampleapp.data.local.ArticlesDatabase
 import com.tekskills.sampleapp.data.local.ArticlesRepository
-import com.tekskills.sampleapp.data.prefrences.AppPreferences
+import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
 import com.tekskills.sampleapp.databinding.FragmentArticlesBinding
 import com.tekskills.sampleapp.model.NewsItem
 import com.tekskills.sampleapp.ui.adapter.ShortsAdapter
@@ -39,7 +38,7 @@ class ShortsFragment : Fragment() {
     lateinit var viewModel: MainViewModel
     lateinit var binding: FragmentArticlesBinding
     private lateinit var newsListAdapter: ShortsAdapter
-    private lateinit var preferences: AppPreferences
+    private lateinit var preferences: SharedPrefManager
 
     var isLoading = false
 
@@ -50,15 +49,13 @@ class ShortsFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_articles, container, false)
 
         preferences =
-            AppPreferences(requireContext())
+            SharedPrefManager.getInstance(requireContext())
 
         val database: ArticlesDatabase = ArticlesDatabase.getInstance(context = requireContext())
 
         val dao = database.dao
-        val bannerDao = database.bannerDao
         val repository = ArticlesRepository(dao)
-        val bannerRepo = BannerItemRepository(bannerDao)
-        val factory = MainViewModelFactory(repository, bannerRepo, preferences)
+        val factory = MainViewModelFactory(repository, preferences)
         viewModel = ViewModelProvider(requireActivity(), factory).get(MainViewModel::class.java)
 
         binding.viewModel = viewModel
@@ -187,6 +184,7 @@ class ShortsFragment : Fragment() {
                         newsItem: NewsItem,
                         imageView: ImageView
                     ) {
+                        if(MainActivity != null)
                         (activity as MainActivity?)!!.appBarLayoutHandle(true)
                     }
 
@@ -238,6 +236,7 @@ class ShortsFragment : Fragment() {
                     }
 
                     override fun likeClickListener(newsItem: NewsItem, imageView: View) {
+                        viewModel.postNewsLike(newsItem.id)
 //                        viewModel.addAArticle(news_id = allNewsItem.newsId, article = allNewsItem)
                     }
 
@@ -336,6 +335,7 @@ class ShortsFragment : Fragment() {
                 }
 
                 ViewPager2.SCROLL_STATE_IDLE -> {
+                    if(MainActivity != null)
                     (activity as MainActivity?)!!.appBarLayoutHandle(false)
                 }
 

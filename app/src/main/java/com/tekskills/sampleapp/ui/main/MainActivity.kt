@@ -26,25 +26,22 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
 import androidx.core.view.MotionEventCompat
 import androidx.core.view.children
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.mikepenz.materialdrawer.model.ExpandableDrawerItem
-import com.mikepenz.materialdrawer.model.PrimaryDrawerItem
-import com.mikepenz.materialdrawer.model.SecondaryDrawerItem
-import com.mikepenz.materialdrawer.model.interfaces.iconDrawable
-import com.mikepenz.materialdrawer.model.interfaces.nameRes
-import com.mikepenz.materialdrawer.model.interfaces.nameText
-import com.mikepenz.materialdrawer.util.addStickyDrawerItems
-import com.mikepenz.materialdrawer.util.removeAllItems
-import com.mikepenz.materialdrawer.widget.MaterialDrawerSliderView
 import com.tekskills.sampleapp.R
+import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
 import com.tekskills.sampleapp.databinding.ActivityMainBinding
+import com.tekskills.sampleapp.model.ExpandedMenuModel
+import com.tekskills.sampleapp.ui.adapter.ExpandableListAdapter
 import com.tekskills.sampleapp.ui.adapter.ViewPagerAdapter
 import com.tekskills.sampleapp.ui.base.BaseActivity
 import com.tekskills.sampleapp.ui.splash.SplashActivity
@@ -58,10 +55,15 @@ import kotlinx.coroutines.withContext
 
 class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivity>() {
 
+    private var mMenuAdapter: ExpandableListAdapter? = null
+    private var listDataHeader: ArrayList<ExpandedMenuModel>? = null
+    private var listDataChild: HashMap<ExpandedMenuModel, List<String>>? = null
+
+
     override fun onBackPressed() {
         //handle the back press :D close the drawer first and if the drawer is closed close the activity
-        if (binding.dlRoot.isDrawerOpen(binding.slider)) {
-            binding.dlRoot.closeDrawer(binding.slider)
+        if (binding.dlRoot.isDrawerOpen(binding.navView)) {
+            binding.dlRoot.closeDrawer(binding.navView)
         } else {
             super.onBackPressed()
         }
@@ -80,75 +82,143 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivi
         observeRetrofitErrors()
         observeBannerResponse()
 
-        binding.slider.apply {
-            setDrawerItems()
-            setSelection(1, false)
-            setSavedInstance(savedInstanceState)
+        binding.includeNavHeader?.ivNavigationCancel?.setOnClickListener {
+            binding.dlRoot.closeDrawers()
         }
 
-        binding.slider.onDrawerItemClickListener = { v, drawerItem, position ->
-            var intent: Intent? = null
-            when (drawerItem.identifier) {
-                100L -> intent =
-                    Intent(applicationContext, MainActivity::class.java)
+        binding.ivDrawer.setOnClickListener {
+            if (binding.dlRoot.isDrawerOpen(GravityCompat.START)) {
+                binding.dlRoot.closeDrawer(GravityCompat.START)
+            } else {
+                binding.dlRoot.openDrawer(GravityCompat.START)
+            }
+        }
 
-                200L -> intent =
-                    Intent(applicationContext, MainActivity::class.java)
+        setupDrawerContent(binding.navView)
 
-                325L -> intent =
-                    Intent(applicationContext, SplashActivity::class.java)
+        prepareListData()
+        mMenuAdapter = ExpandableListAdapter(
+            this, listDataHeader!!,
+            listDataChild!!, binding.elNavigationMenu
+        )
+        /**
+         * setting expandable list in navigation drawer
+         */
+        binding.elNavigationMenu.setAdapter(mMenuAdapter)
 
-                350L -> intent =
-                    Intent(applicationContext, MainActivity::class.java)
+        binding.elNavigationMenu.setOnChildClickListener { listView, view, grpPos, childPos, l ->
+            var fragment: Fragment? = null
+            var args: Bundle? = null
 
-                475L -> showDialogWithRadioButtons(
-                    "Choose Language", "Telugu", "English", positiveButtonAction = { dialog ->
-                        dialog.dismiss()
-                        val radioGroup =
-                            dialog.findViewById<RadioGroup>(R.id.radiogroup_dialog_main)
-                        val id = radioGroup.checkedRadioButtonId
-                        viewModel.changeLanguage(id)
-                    }
-                )
-
-                425L -> showDialogWithRadioButtons(
-                    "Choose view type", "List", "Tab", positiveButtonAction = { dialog ->
-                        dialog.dismiss()
-                        val radioGroup =
-                            dialog.findViewById<RadioGroup>(R.id.radiogroup_dialog_main)
-                        val id = radioGroup.checkedRadioButtonId
-                        viewModel.changeViewType(id)
-                    }
-                )
-
-                450L -> showDialogWithRadioButtons(
-                    "Choose your theme", "Light", "Dark", positiveButtonAction = { dialog ->
-                        dialog.dismiss()
-                        val radioGroup =
-                            dialog.findViewById<RadioGroup>(R.id.radiogroup_dialog_main)
-
-                        val id = radioGroup.checkedRadioButtonId
-                        when (id) {
-                            R.id.radio_button1 -> {
-                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                                lifecycleScope.launch {
-                                    prefrences.saveUserTheme("Light")
-                                }
-                            }
-
-                            R.id.radio_button2 -> {
-                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                                lifecycleScope.launch {
-                                    prefrences.saveUserTheme("Dark")
-                                }
-                            }
-                        }
-                    }
-                )
+            if (grpPos == 2) {
+//                when (childPos) {
+//                    0 -> {
+//                        fragment = UserDetailsFragment()
+//                        args = Bundle().apply {
+//                            putInt("KEY_PRODUCT_ID", childPos)
+//                        }
+//                    }
+//
+//                    1 -> {
+//                        fragment = MyVideosFragment()
+//                        args = Bundle().apply {
+//                            putInt("KEY_PRODUCT_ID", grpPos)
+//                        }
+//                    }
+//
+//                    2 -> {
+//                        fragment = HelpFAQFragment()
+//                        this.supportFragmentManager.beginTransaction()
+//                            .replace(
+//                                R.id.fragment_home_details,
+//                                fragment,
+//                                fragment?.javaClass?.simpleName
+//                            )
+//                            .addToBackStack("first")
+//                            .commit()
+//                    }
+//
+//                    3 -> {
+//                        fragment = PrivacyPolicyFragment()
+//                        args = Bundle().apply {
+//                            putString("services", "Privacy Policy")
+//                            putString("weburl", "about.html")
+//                            putInt("KEY_PRODUCT_ID", grpPos)
+//                        }
+//                    }
+//
+//                    4 -> {
+//                        fragment = TermsAndConditionsFragment()
+//                        args = Bundle().apply {
+//                            putString("services", "Terms & Conditions")
+//                            putString("weburl", "about.html")
+//                            putInt("KEY_PRODUCT_ID", grpPos)
+//                        }
+//                    }
+//
+//                    5 -> {
+//                        fragment = ContactUsFragment()
+//                        args = Bundle().apply {
+//                            putString("services", "Contact Us")
+//                            putString("weburl", "contact.html")
+//                            putInt("KEY_PRODUCT_ID", grpPos)
+//                        }
+//                    }
+//
+//                    6 -> {
+//                        fragment = AboutUsFragment()
+//                        args = Bundle().apply {
+//                            putString("services", "About Us")
+//                            putString("weburl", "about.html")
+//                            putInt("KEY_PRODUCT_ID", grpPos)
+//                        }
+//                    }
+//
+//                    7 -> {
+//                        viewModel?.clearData()
+//                        signOutAzure()
+//                    }
+//                }
             }
 
-            if (intent != null) {
-                this.startActivity(intent)
+            if (fragment != null && args != null) {
+//                startFragment(fragment, args)
+            }
+
+            binding.dlRoot.closeDrawers()
+            false
+        }
+
+        binding.elNavigationMenu.setOnGroupClickListener { listView, view, grpPos, l ->
+
+            when (grpPos) {
+                0, 1, 2, 3 -> {
+                    val fragment = when (grpPos) {
+                        0 -> intent =
+                            Intent(applicationContext, MainActivity::class.java)
+
+                        1 -> intent =
+                            Intent(applicationContext, MainActivity::class.java)
+
+                        2 -> intent =
+                            Intent(applicationContext, SplashActivity::class.java)
+
+                        3 -> intent =
+                            Intent(applicationContext, MainActivity::class.java)
+
+                        else -> null
+                    }
+                    val args = Bundle().apply {
+                        putInt("KEY_PRODUCT_ID", grpPos)
+                    }
+
+                    fragment?.let {
+                        this.startActivity(intent)
+                        binding.dlRoot.closeDrawers()
+                    }
+                }
+
+                else -> binding.elNavigationMenu.getExpandableListPosition(grpPos)
             }
             false
         }
@@ -187,10 +257,10 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivi
         setUpTabLayout()
 
         binding.ivDrawer.setOnClickListener {
-            if (binding.dlRoot.isDrawerOpen(binding.slider))
-                binding.dlRoot.closeDrawer(binding.slider)
+            if (binding.dlRoot.isDrawerOpen(binding.navView))
+                binding.dlRoot.closeDrawer(binding.navView)
             else
-                binding.dlRoot.openDrawer(binding.slider)
+                binding.dlRoot.openDrawer(binding.navView)
         }
 
         binding.ivLogo.setOnClickListener {
@@ -269,87 +339,6 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivi
         for (fragment in supportFragmentManager.fragments) {
             fragment.onActivityResult(requestCode, resultCode, intent)
         }
-    }
-
-    private fun MaterialDrawerSliderView.setDrawerItems() {
-        removeAllItems()
-        itemAdapter.add(
-            PrimaryDrawerItem().apply {
-                iconDrawable = getDrawable(R.drawable.ic_home)
-                nameRes = R.string.drawer_item_home
-                identifier = 100
-            },
-            PrimaryDrawerItem().apply {
-                iconDrawable = getDrawable(R.drawable.ic_home)
-                nameRes = R.string.drawer_item_about_us
-            },
-            PrimaryDrawerItem().apply {
-                iconDrawable = getDrawable(R.drawable.ic_bookmark)
-                nameRes = R.string.drawer_item_contact_us
-                identifier = 200
-            },
-//            PrimaryDrawerItem().apply {
-//                nameRes = R.string.drawer_item_language; iconicsIcon =
-//                FontAwesome.Icon.faw_blog; identifier = 200
-//            },
-//            ExpandableBadgeDrawerItem().apply {
-//                nameText = "Setting"; iconicsIcon =
-//                GoogleMaterial.Icon.gmd_format_bold; identifier = 300; isSelectable = false; badge =
-//                StringHolder("100")
-//                badgeStyle = BadgeStyle().apply {
-//                    textColor = ColorHolder.fromColor(Color.WHITE); color =
-//                    ColorHolder.fromColorRes(R.color.colorAccent)
-//                }
-//                subItems = mutableListOf(
-//                    SecondaryDrawerItem().apply {
-//                        nameText = "CollapsableItem"; level = 2; iconicsIcon =
-//                        GoogleMaterial.Icon.gmd_format_bold; identifier = 325
-//                    },
-//                    SecondaryDrawerItem().apply {
-//                        nameText = "CollapsableItem 2"; level = 2; iconicsIcon =
-//                        GoogleMaterial.Icon.gmd_format_bold; identifier = 350
-//                    }
-//                )
-//            },
-            ExpandableDrawerItem().apply {
-                nameText = "Settings"
-//                iconicsIcon = FontAwesome.Icon.faw_cog;
-                identifier = 400; isSelectable = false
-                subItems = mutableListOf(
-//                    SecondaryDrawerItem().apply {
-//                        nameText = "Change View Type"; level = 2;
-////                        iconicsIcon = FontAwesome.Icon.faw_list;
-//                        identifier = 425
-//                    },
-                    SecondaryDrawerItem().apply {
-                        nameText = "Change Theme"; level = 2
-//                        iconicsIcon = FontAwesome.Icon.faw_blog;
-                        identifier = 450
-                    },
-                    SecondaryDrawerItem().apply {
-                        nameText = "Change Language"; level = 2
-//                        iconicsIcon = FontAwesome.Icon.faw_language;
-                        identifier = 475
-                    }
-                )
-            },
-//            SectionDrawerItem().apply { nameRes = R.string.drawer_item_section_header },
-//            SecondaryDrawerItem().apply { nameRes = R.string.drawer_item_settings; iconicsIcon = FontAwesome.Icon.faw_cog },
-//            SecondaryDrawerItem().apply { nameRes = R.string.drawer_item_help; iconicsIcon = FontAwesome.Icon.faw_question; isEnabled = false },
-//            SecondaryDrawerItem().apply { nameRes = R.string.drawer_item_open_source; iconicsIcon = FontAwesomeBrand.Icon.fab_github },
-//            SecondaryDrawerItem().apply { nameRes = R.string.drawer_item_contact; iconicsIcon = FontAwesome.Icon.faw_bullhorn }
-        )
-
-        addStickyDrawerItems(
-            SecondaryDrawerItem().apply {
-                nameRes = R.string.drawer_item_language
-                identifier = 11
-            },
-            SecondaryDrawerItem().apply {
-                nameRes = R.string.drawer_item_settings
-                identifier = 12
-            }
-        )
     }
 
     @SuppressLint("ResourceAsColor")
@@ -492,10 +481,38 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivi
         viewModel.responseBannerLiveData.observe(this, Observer {
             if (it != null)
                 it.body()?.let { articles ->
-                    viewModel.addBanners(articles)
+                    val sharedPrefManager: SharedPrefManager = SharedPrefManager.getInstance(this)
+                    sharedPrefManager.setBannerSelectValue()
+                    viewModel.saveBannerData(articles)
                 }
         })
     }
+
+    private fun setupDrawerContent(navigationView: NavigationView) {
+        navigationView.setNavigationItemSelectedListener { menuItem ->
+            menuItem.isChecked = true
+            binding.dlRoot.closeDrawers()
+            true
+        }
+    }
+
+    private fun prepareListData() {
+        listDataHeader = ArrayList()
+        listDataChild = HashMap()
+
+        val items =
+            listOf("Home", "Help & Faq's", "Privacy Policy", "Terms & Conditions", "Settings")
+
+        for (itemText in items) {
+            val item = ExpandedMenuModel().apply {
+                iconName = itemText
+                iconImg = R.drawable.ic_home
+            }
+            listDataHeader?.add(item)
+            listDataChild?.put(item, arrayListOf()) // Empty list for child items
+        }
+    }
+
 
     companion object {
         lateinit var toolbar: Toolbar

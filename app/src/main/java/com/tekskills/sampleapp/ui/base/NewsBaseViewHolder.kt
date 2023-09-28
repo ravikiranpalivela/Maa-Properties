@@ -21,6 +21,7 @@ import com.tekskills.sampleapp.data.local.ArticlesAllNews
 import com.tekskills.sampleapp.data.local.ArticlesDatabase
 import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
 import com.tekskills.sampleapp.databinding.ItemArticleViewtypeListBinding
+import com.tekskills.sampleapp.model.BannerItem
 import com.tekskills.sampleapp.model.NewsItem
 import com.tekskills.sampleapp.ui.adapter.NewsAdapter
 import com.tekskills.sampleapp.ui.main.MainViewModel
@@ -60,7 +61,7 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
             clArticleView.visibility = View.VISIBLE
             clArticleAdView.visibility = View.GONE
 
-            getBannerInfo(sharedPrefManager.bannerSelect)
+            getBannerInfo(sharedPrefManager.getBannerDetailsData(),sharedPrefManager.bannerSelect)
             getArticleInfo(article.newsId)
 
             if (validateValue(article.description) == "null")
@@ -77,9 +78,13 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                 titleArticle.text = article.title
             }
 
-            var count = viewModel.getArticleViewCount(article.newsId)
+//            var count = viewModel.getArticleViewCount(article.newsId)
 
-            likes.text = count.toString()
+//            likes.text = count.toString()
+
+            likes.text = article.likes.toString()
+
+            comments.text = article.comments.size.toString()
 
             article.scheduleDate?.let {
                 publishedAt.text = "Posted date : ${changeDateFormat(it)}"
@@ -105,7 +110,8 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
 
             heartButton.setOnAnimationEndListener(object : OnAnimationEndListener {
                 override fun onAnimationEnd(likeButton: LikeButton?) {
-                    updateViewCount(article.newsId, article)
+                    onClickListener.likeClickListener(article, articleImage)
+//                    updateViewCount(article.newsId, article)
                 }
             })
 
@@ -174,7 +180,10 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
             ivBannerLogo.visibility = View.GONE
 
             ivShare.setOnClickListener {
-                getBannerInfo(sharedPrefManager.bannerSelect)
+                getBannerInfo(
+                    sharedPrefManager.getBannerDetailsData(),
+                    sharedPrefManager.bannerSelect
+                )
                 sharedPrefManager.saveBannerSelect()
                 youtubePlayerView.visibility = View.GONE
                 webView.visibility = View.GONE
@@ -274,13 +283,12 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
             clArticleAdView.visibility = View.VISIBLE
             clArticleView.visibility = View.GONE
 
-            getBannerAdsInfo(sharedPrefManager.bannerAdsSelect)
+            getBannerAdsInfo(sharedPrefManager.getBannerDetailsData(),sharedPrefManager.bannerAdsSelect)
 
             sharedPrefManager.saveBannerAdsSelect()
 
         }
     }
-
 
     fun updateViewCount(articleId: Int, article: NewsItem) {
 
@@ -345,8 +353,8 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                     likes.text = updatedData?.view_count.toString()
                     shares.text = updatedData?.share_count.toString()
                     Log.d("TAG", "comments data ${commentData.toString()}")
-                    comments.text =
-                        if (commentData.isEmpty()) "0" else commentData.size.toString()
+//                    comments.text =
+//                        if (commentData.isEmpty()) "0" else commentData.size.toString()
                 }
             })
 //            database.close()
@@ -368,10 +376,10 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                 val commentData = commentsDao.getCommentsForItem(newsId)
                 val updatedData = dao.getArticlesById(newsId)
                 binding.apply {
-                    comments.text =
-                        if (commentData.isEmpty()) "0" else commentData.size.toString()
+//                    comments.text =
+//                        if (commentData.isEmpty()) "0" else commentData.size.toString()
                     if (updatedData != null) {
-                        likes.text = updatedData.view_count.toString()
+//                        likes.text = updatedData.view_count.toString()
                         shares.text = updatedData.share_count.toString()
                     }
                     Log.d("TAG", "comments data ${commentData.toString()}")
@@ -381,27 +389,24 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
         }
     }
 
-    private fun getBannerInfo(bannerSelect: Int) {
+    private fun getBannerInfo(banners: BannerItem?, bannerSelect: Int) {
         val executor = Executors.newSingleThreadExecutor()
         executor.execute {
-            // Update the view count in the Room database
-            val database: ArticlesDatabase = ArticlesDatabase.getInstance(context = activity)
-            val bannerDao = database.bannerDao
 
             // Fetch the updated data from the database
             activity.runOnUiThread(Runnable {
-                var banners = bannerDao.getAllBannerItems()
+                if(banners != null)
                 binding.apply {
                     var count = bannerSelect + 1
                     if (count < banners.size) {
-                        val updatedData = bannerDao.getAllBannerItems()[count].link
+                        val updatedData = banners[count].link
                         displayImage(updatedData, ivBannerShare)
                     } else if (count > banners.size) {
                         val num = count % banners.size
-                        val updatedData = bannerDao.getAllBannerItems()[num].link
+                        val updatedData = banners[num].link
                         displayImage(updatedData, ivBannerShare)
                     } else if (banners.isNotEmpty()) {
-                        val updatedData = bannerDao.getAllBannerItems()[0].link
+                        val updatedData = banners[0].link
                         displayImage(updatedData, ivBannerShare)
                     } else {
                         val BANNER_SAMPLE =
@@ -414,27 +419,25 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
         }
     }
 
-    private fun getBannerAdsInfo(bannerSelect: Int) {
+    private fun getBannerAdsInfo(banners: BannerItem?,bannerSelect: Int) {
         val executor = Executors.newSingleThreadExecutor()
         executor.execute {
             // Update the view count in the Room database
-            val database: ArticlesDatabase = ArticlesDatabase.getInstance(context = activity)
-            val bannerDao = database.bannerDao
 
             // Fetch the updated data from the database
             activity.runOnUiThread(Runnable {
-                var banners = bannerDao.getAllBannerItems()
+                if(banners != null)
                 binding.apply {
                     var count = bannerSelect + 1
                     if (count < banners.size) {
-                        val updatedData = bannerDao.getAllBannerItems()[count].link
+                        val updatedData = banners[count].link
                         displayImage(updatedData, ivBannerAds)
                     } else if (count > banners.size) {
                         val num = count % banners.size
-                        val updatedData = bannerDao.getAllBannerItems()[num].link
+                        val updatedData = banners[num].link
                         displayImage(updatedData, ivBannerAds)
                     } else if (banners.isNotEmpty()) {
-                        val updatedData = bannerDao.getAllBannerItems()[0].link
+                        val updatedData = banners[0].link
                         displayImage(updatedData, ivBannerAds)
                     } else {
                         val BANNER_SAMPLE =

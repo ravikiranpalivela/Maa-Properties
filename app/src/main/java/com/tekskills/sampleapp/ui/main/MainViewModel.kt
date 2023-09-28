@@ -3,12 +3,12 @@ package com.tekskills.sampleapp.ui.main
 import androidx.databinding.Bindable
 import androidx.databinding.Observable
 import androidx.lifecycle.*
+import com.google.gson.Gson
 import com.tekskills.sampleapp.R
-import com.tekskills.sampleapp.data.local.BannerItemRepository
 import com.tekskills.sampleapp.data.local.ArticleViewCount
 import com.tekskills.sampleapp.data.local.ArticlesAllNews
 import com.tekskills.sampleapp.data.local.ArticlesRepository
-import com.tekskills.sampleapp.data.prefrences.AppPreferences
+import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
 import com.tekskills.sampleapp.data.repo.ArticleProviderRepo
 import com.tekskills.sampleapp.model.NewsDetails
 import com.tekskills.sampleapp.model.BannerItem
@@ -21,8 +21,7 @@ import java.lang.Exception
 
 class MainViewModel(
     private val repository: ArticlesRepository,
-    private val bannerRepo: BannerItemRepository,
-    private val prefrences: AppPreferences
+    private val prefrences: SharedPrefManager
 ) : ViewModel(), Observable {
     override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {
 
@@ -35,7 +34,7 @@ class MainViewModel(
     @Bindable
     var isLoading: MutableLiveData<Boolean> = MutableLiveData()
 
-    val category: MutableLiveData<String> = MutableLiveData("Top Headlines")
+    val category: MutableLiveData<String> = MutableLiveData("All")
 
     private val message: MutableLiveData<Event<String>> = MutableLiveData()
     val errorMessage get() = message
@@ -49,7 +48,7 @@ class MainViewModel(
     val _viewCount: MutableLiveData<ArticleViewCount> = MutableLiveData<ArticleViewCount>()
     val viewCount: LiveData<ArticleViewCount> get() = _viewCount
 
-    val appPreferences: AppPreferences
+    val appPreferences: SharedPrefManager
         get() = prefrences
 
     fun refreshResponse() {
@@ -89,6 +88,50 @@ class MainViewModel(
         } else {
             responseLiveData.postValue(null)
             message.value = Event(response.errorBody().toString())
+        }
+    }
+
+    fun postNewsLike(newsID: Int) {
+        viewModelScope.launch {
+//           val response = ArticleProviderRepo().checkLike()
+            val response = when (category.value) {
+                "All" -> ArticleProviderRepo().updateNewsLike(newsID,"NEWS")
+
+                "News" -> ArticleProviderRepo().updateNewsLike(newsID,"NEWS")
+
+                "Wishes" -> ArticleProviderRepo().updateNewsLike(newsID,"WISH")
+
+                "Posters" -> ArticleProviderRepo().updateNewsLike(newsID,"POSTER")
+
+                else -> ArticleProviderRepo().updateNewsLike(newsID,"SORT")
+            }
+            if (response.isSuccessful) {
+                getAllNews()
+            } else {
+                message.value = Event(response.errorBody().toString())
+            }
+        }
+    }
+
+    fun postComments(newsID: String,comment:String) {
+        viewModelScope.launch {
+
+            val response = when (category.value) {
+                "All" -> ArticleProviderRepo().postComments(newsID,"NEWS",comment)
+
+                "News" -> ArticleProviderRepo().postComments(newsID,"NEWS",comment)
+
+                "Wishes" -> ArticleProviderRepo().postComments(newsID,"WISH",comment)
+
+                "Posters" -> ArticleProviderRepo().postComments(newsID,"POSTER",comment)
+
+                else -> ArticleProviderRepo().postComments(newsID,"SORT",comment)
+            }
+            if (response.isSuccessful) {
+                getAllNews()
+            } else {
+                message.value = Event(response.errorBody().toString())
+            }
         }
     }
 
@@ -155,16 +198,6 @@ class MainViewModel(
         }
     }
 
-    fun addBanners(article: List<BannerItemItem>) {
-        viewModelScope.launch {
-            bannerRepo.insertBannerItems(article)
-        }
-    }
-
-    fun getBanners(): List<BannerItemItem> {
-        return bannerRepo.getAllBannerItems()
-    }
-
     fun deleteAArticle(bookmark: ArticlesAllNews) {
         viewModelScope.launch {
             repository.deleteArticleFromArticles(bookmark)
@@ -176,6 +209,20 @@ class MainViewModel(
             repository.deleteALlArticleFromArticles()
         }
     }
+
+    fun saveBannerData(dataModel: BannerItem) {
+        val gson = Gson()
+        val jsonString = gson.toJson(dataModel)
+        appPreferences.saveBannerData(jsonString)
+    }
+
+    // Retrieve the data from SharedPreferences
+    fun getBannerData(): BannerItem? {
+        val gson = Gson()
+        val jsonString = appPreferences.getBannerData()
+        return gson.fromJson(jsonString, BannerItem::class.java)
+    }
+
 
     fun getArticleCount(news_id: Int): Int {
         var count = 0

@@ -8,21 +8,22 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.tekskills.sampleapp.R
-import com.tekskills.sampleapp.data.local.CommentItem
+import com.tekskills.sampleapp.model.Comment
+import com.tekskills.sampleapp.model.CommentDetails
 import com.tekskills.sampleapp.utils.TimeUtil
 
-class CommentsListAdapter(private val context: Context,private val listener: (genresDateModel: CommentItem, position: Int) -> Unit) :
+class CommentsListAdapter(private val context: Context,private val listener: (genresDateModel: Comment, position: Int) -> Unit) :
     RecyclerView.Adapter<CommentsListAdapter.MyViewHolder>() {
-    private val list = ArrayList<CommentItem>()
+    private val list = ArrayList<Comment>()
 
     inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        fun bind(genresDateModel: CommentItem) {
+        fun bind(genresDateModel: Comment) {
             val title = itemView.findViewById<TextView>(R.id.tv_title_comment)
             val cardView = itemView.findViewById<CardView>(R.id.card_calendar)
             val calendarDate = itemView.findViewById<TextView>(R.id.tv_date)
 
-            title.text = genresDateModel.text
-            calendarDate.text = TimeUtil.getTimeAgo(context, genresDateModel.lastUpdate)
+            title.text = genresDateModel.comment
+            calendarDate.text = TimeUtil.getTimeAgo(context, genresDateModel.commentedOn)
             cardView.setOnClickListener {
                 listener.invoke(genresDateModel, adapterPosition)
             }
@@ -43,7 +44,7 @@ class CommentsListAdapter(private val context: Context,private val listener: (ge
         return list.size
     }
 
-    fun setData(calendarList: ArrayList<CommentItem>) {
+    fun setData(calendarList: CommentDetails) {
         list.clear()
         list.addAll(calendarList)
         notifyDataSetChanged()
