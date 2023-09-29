@@ -25,7 +25,8 @@ import com.tekskills.sampleapp.data.local.ArticlesRepository
 import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
 import com.tekskills.sampleapp.databinding.FragmentArticlesBinding
 import com.tekskills.sampleapp.model.NewsItem
-import com.tekskills.sampleapp.ui.adapter.ShortsAdapter
+import com.tekskills.sampleapp.ui.adapter.NewsAdapter
+import com.tekskills.sampleapp.ui.adapter.OnNewsClickListener
 import com.tekskills.sampleapp.ui.comment.CommentBottomSheet
 import com.tekskills.sampleapp.ui.main.MainActivity
 import com.tekskills.sampleapp.ui.main.MainViewModel
@@ -33,11 +34,12 @@ import com.tekskills.sampleapp.ui.main.MainViewModelFactory
 import com.tekskills.sampleapp.utils.ObjectSerializer
 import com.tekskills.sampleapp.utils.ShareLayout
 
-class ShortsFragment : Fragment() {
+
+class NewsDetailsFragment : Fragment() {
 
     lateinit var viewModel: MainViewModel
     lateinit var binding: FragmentArticlesBinding
-    private lateinit var newsListAdapter: ShortsAdapter
+    private lateinit var newsListAdapter: NewsAdapter
     private lateinit var preferences: SharedPrefManager
 
     var isLoading = false
@@ -50,44 +52,18 @@ class ShortsFragment : Fragment() {
 
         preferences =
             SharedPrefManager.getInstance(requireContext())
-
         val database: ArticlesDatabase = ArticlesDatabase.getInstance(context = requireContext())
 
         val dao = database.dao
         val repository = ArticlesRepository(dao)
         val factory = MainViewModelFactory(repository, preferences)
-        viewModel = ViewModelProvider(requireActivity(), factory).get(MainViewModel::class.java)
+        viewModel = ViewModelProvider(requireActivity(), factory)[MainViewModel::class.java]
 
         binding.viewModel = viewModel
 
         defineViews()
         enterTransition = MaterialFadeThrough()
         return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        // Handle the back button press
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            showExitConfirmationDialog()
-        }
-    }
-
-    private fun showExitConfirmationDialog() {
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Exit Application")
-        builder.setMessage("Are you sure you want to exit the application?")
-        builder.setPositiveButton("Yes") { _, _ ->
-            // User clicked Yes, so exit the application
-            requireActivity().finish()
-        }
-        builder.setNegativeButton("No") { dialog, _ ->
-            // User clicked No, so dismiss the dialog
-            dialog.dismiss()
-        }
-        val dialog = builder.create()
-        dialog.show()
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -107,7 +83,6 @@ class ShortsFragment : Fragment() {
                     AnimationUtils.loadLayoutAnimation(context, R.anim.layout_down_to_up)
                 binding.pager.layoutAnimation = layoutAnimationController
                 displayArticles()
-
             } else {
                 if (!binding.swipeRefreshLayout.isRefreshing) binding.swipeRefreshLayout.isRefreshing =
                     true
@@ -121,7 +96,6 @@ class ShortsFragment : Fragment() {
     }
 
     private fun displayArticles() {
-
         viewModel.responseLiveData.observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 it.body()?.let { news ->
@@ -137,7 +111,6 @@ class ShortsFragment : Fragment() {
         })
     }
 
-
     fun addNullItems(list: List<NewsItem>): ArrayList<NewsItem?> {
         val newList = arrayListOf<NewsItem?>()
 
@@ -146,14 +119,13 @@ class ShortsFragment : Fragment() {
                 newList.add(item)
             } else {
                 if (counter % 4 != 0) {
-                    newList.add(item) // Add a null item every 3rd position
-                } else{
+                    newList.add(item)
+                } else {
                     newList.add(null)
                     newList.add(item)
                 }
             }
         }
-
         return newList
     }
 
@@ -171,11 +143,12 @@ class ShortsFragment : Fragment() {
     }
 
     private fun initAdapter() {
-
         newsListAdapter =
-            ShortsAdapter(
+            NewsAdapter(
                 requireActivity(),
-                lifecycle, object : ShortsAdapter.OnClickListener {
+                viewModel,
+                lifecycle,
+                object : OnNewsClickListener {
                     override fun clickListener(newsItem: NewsItem, imageView: ImageView) {
                         goToArticleDetailActivity(newsItem, imageView)
                     }
@@ -184,7 +157,6 @@ class ShortsFragment : Fragment() {
                         newsItem: NewsItem,
                         imageView: ImageView
                     ) {
-                        if(MainActivity != null)
                         (activity as MainActivity?)!!.appBarLayoutHandle(true)
                     }
 
@@ -233,12 +205,12 @@ class ShortsFragment : Fragment() {
                                 newsItem.title,
                                 activityOptions
                             )
-                        viewModel.postNewsShare(newsItem.id)
 
+                        viewModel.postNewsShare(newsItem.newsId)
                     }
 
                     override fun likeClickListener(newsItem: NewsItem, imageView: View) {
-                        viewModel.postNewsLike(newsItem.id,"SORT")
+                        viewModel.postNewsLike(newsItem.newsId,"NEWS")
 //                        viewModel.addAArticle(news_id = allNewsItem.newsId, article = allNewsItem)
                     }
 
@@ -250,72 +222,17 @@ class ShortsFragment : Fragment() {
                         }
                         bottomSheetFragment.arguments = args
 
+//                        val bundle = Bundle()
+//                        bundle.putInt("article_id", newsItem.newsId)
+//                        bundle.putSerializable("article",newsItem)
+//                        bottomSheetFragment.arguments = bundle
+
                         bottomSheetFragment.show(
                             parentFragmentManager,
                             CommentBottomSheet.TAG
                         )
                     }
                 })
-
-//                    override fun shareClickListener(
-//                        article: AllNewsItem, itemView: View) {
-//                        if (!article.websiteUrl.isNullOrEmpty()) {
-//                            val intent = Intent(
-//                                Intent.ACTION_VIEW,
-//                                Uri.parse(article.websiteUrl)
-//                            )
-//
-//                            intent.putExtra("article", ObjectSerializer.serialize(article))
-//                            val activityOptions =
-//                                ActivityOptionsCompat.makeSceneTransitionAnimation(
-//                                    requireActivity(),
-//                                    imageView,
-//                                    "article_image"
-//                                )
-//                            intent.putExtra("fab_visibility", View.VISIBLE)
-//                            val chooseIntent = Intent.createChooser(intent, "Choose from below")
-//                            startActivity(chooseIntent, activityOptions.toBundle())
-////                        startActivity(intent, activityOptions.toBundle())
-//                        }
-//
-//                    }
-//
-//                    override fun readMoreClickListener(
-//                        article: AllNewsItem,
-//                        itemView: ImageView
-//                    ) {
-//                        val activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
-//                            requireActivity(),
-//                            itemView,
-//                            "article_image"
-//                        )
-//                        if (!article.websiteUrl.isNullOrEmpty() && article.websiteUrl != "null") {
-//                            val html =
-//                                "${article.title} \n\nFull article at : ${article.websiteUrl}>${article.websiteUrl}"
-//                            ShareLayout.simpleLayoutShare(
-//                                requireContext(),
-//                                itemView,
-//                                html,
-//                                activityOptions
-//                            )
-//                        } else
-//                            ShareLayout.simpleLayoutShare(
-//                                requireContext(),
-//                                itemView,
-//                                article.title,
-//                                activityOptions
-//                            )
-//                    }
-//
-//                    override fun likeClickListener(allNewsItem: AllNewsItem, imageView: View) {
-//
-//                    }
-//
-//                    override fun commentClickListener(allNewsItem: AllNewsItem, imageView: View) {
-//
-//                    }
-//
-//                })
 
         binding.pager.orientation = ViewPager2.ORIENTATION_VERTICAL
         binding.pager.registerOnPageChangeCallback(onPageChangeCallback)
@@ -326,6 +243,27 @@ class ShortsFragment : Fragment() {
 //            })
 
         binding.pager.setPageTransformer(CardTransformer(1.2f))
+
+//        binding.pager.setOnClickListener(object : DoubleClickListener() {
+//            override fun onDoubleClick(v: View) {
+//                Log.d("Event", "action response double click")
+//                (activity as MainActivity?)!!.appBarLayoutHandle(true)
+////                Toast.makeText(context,"Double Clicked Attempts", Toast.LENGTH_SHORT).show()
+//            }
+//        })
+
+//        binding.root.setOnClickListener(object : DoubleClickListener() {
+//            override fun onDoubleClick(v: View) {
+//                Log.d("Event", "action response root double click")
+//                (activity as MainActivity?)!!.appBarLayoutHandle(true)
+////                Toast.makeText(context,"Double Clicked Attempts", Toast.LENGTH_SHORT).show()
+//            }
+//        })
+
+//        binding.pager.setOnScrollChangeListener { view, i, i2, i3, i4 ->
+//            (activity as MainActivity?)!!.appBarLayoutHandle()
+//
+//        }
 
     }
 
@@ -339,7 +277,6 @@ class ShortsFragment : Fragment() {
                 }
 
                 ViewPager2.SCROLL_STATE_IDLE -> {
-                    if(MainActivity != null)
                     (activity as MainActivity?)!!.appBarLayoutHandle(false)
                 }
 
@@ -350,6 +287,29 @@ class ShortsFragment : Fragment() {
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        // Handle the back button press
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            showExitConfirmationDialog()
+        }
+    }
+
+    private fun showExitConfirmationDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Exit Application")
+        builder.setMessage("Are you sure you want to exit the application?")
+        builder.setPositiveButton("Yes") { _, _ ->
+            // User clicked Yes, so exit the application
+            requireActivity().finish()
+        }
+        builder.setNegativeButton("No") { dialog, _ ->
+            // User clicked No, so dismiss the dialog
+            dialog.dismiss()
+        }
+        val dialog = builder.create()
+        dialog.show()
+    }
 
     class CardTransformer(scalingStart: Float) : ViewPager2.PageTransformer {
         private val scalingStart: Float

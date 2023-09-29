@@ -1,12 +1,22 @@
 package com.tekskills.sampleapp.model
 
 import com.google.gson.annotations.SerializedName
-import com.tekskills.sampleapp.data.local.CommentItem
 import java.io.Serializable
 
-class NewsDetails : ArrayList<NewsItem>()
+data class AllNewsDetailsData(
+    @SerializedName("news")
+    val news: AllNewsDetails,
+    @SerializedName("wish")
+    val wish: AllNewsDetails,
+    @SerializedName("sort")
+    val sort: AllNewsDetails,
+    @SerializedName("poster")
+    val poster: AllNewsDetails
+)
 
-data class NewsItem(
+class AllNewsDetails : ArrayList<AllNewsItem?>()
+
+data class AllNewsItem(
     @SerializedName("description")
     val description: String,
     @SerializedName("newsId")
@@ -49,15 +59,29 @@ data class NewsItem(
     val comments: CommentDetails,
     @SerializedName("likes")
     val likes: Int,
-    @SerializedName("share")
-    val share: Int
+    @SerializedName("backgroundImage")
+    val backgroundImage: String?,
+    @SerializedName("backgroundImagePath")
+    val backgroundImagePath: String,
+    @SerializedName("mainImage")
+    val mainImage: String?,
+    @SerializedName("posterId")
+    val posterId: Int,
+    @SerializedName("posterImagePath")
+    val posterImagePath: String,
+    @SerializedName("posterName")
+    val posterName: String,
+    @SerializedName("submitedBy")
+    val submitedBy: String,
+    @SerializedName("submittedOn")
+    var submittedOn: String,
+    @SerializedName("ImgID")
+    val imageID: Int,
+    @SerializedName("link")
+    val link: String,
+    @SerializedName("name")
+    val name: String,
+    @SerializedName("newsType")
+    var newsType: String,
 //    @SerializedName("source") val source: Source,
 ) : Serializable
-class CommentDetails : ArrayList<Comment>()
-
-data class Comment(
-    @SerializedName("comment")
-    val comment: String,
-    @SerializedName("commentedOn")
-    val commentedOn: String
-)

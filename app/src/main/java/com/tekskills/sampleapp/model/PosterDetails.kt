@@ -22,5 +22,11 @@ data class PosterItem(
     @SerializedName("submittedOn")
     val submittedOn: String,
     @SerializedName("ImgID")
-    val imageID: Int
+    val imageID: Int,
+    @SerializedName("comments")
+    val comments: CommentDetails,
+    @SerializedName("likes")
+    val likes: Int,
+    @SerializedName("share")
+    val share: Int
 )

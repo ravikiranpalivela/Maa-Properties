@@ -26,6 +26,7 @@ import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
 import com.tekskills.sampleapp.databinding.FragmentArticlesBinding
 import com.tekskills.sampleapp.model.NewsItem
 import com.tekskills.sampleapp.ui.adapter.NewsAdapter
+import com.tekskills.sampleapp.ui.adapter.OnNewsClickListener
 import com.tekskills.sampleapp.ui.comment.CommentBottomSheet
 import com.tekskills.sampleapp.ui.main.MainActivity
 import com.tekskills.sampleapp.ui.main.MainViewModel
@@ -34,7 +35,7 @@ import com.tekskills.sampleapp.utils.ObjectSerializer
 import com.tekskills.sampleapp.utils.ShareLayout
 
 
-class ArticlesFragment : Fragment() {
+class WishesDetailsFragment : Fragment() {
 
     lateinit var viewModel: MainViewModel
     lateinit var binding: FragmentArticlesBinding
@@ -153,7 +154,7 @@ class ArticlesFragment : Fragment() {
                 requireActivity(),
                 viewModel,
                 lifecycle,
-                object : NewsAdapter.OnClickListener {
+                object : OnNewsClickListener {
                     override fun clickListener(newsItem: NewsItem, imageView: ImageView) {
                         goToArticleDetailActivity(newsItem, imageView)
                     }
@@ -210,10 +211,13 @@ class ArticlesFragment : Fragment() {
                                 newsItem.title,
                                 activityOptions
                             )
+
+                        viewModel.postNewsShare(newsItem.newsId)
+
                     }
 
                     override fun likeClickListener(newsItem: NewsItem, imageView: View) {
-                        viewModel.postNewsLike(newsItem.newsId)
+                        viewModel.postNewsLike(newsItem.newsId,"WISH")
 //                        viewModel.addAArticle(news_id = allNewsItem.newsId, article = allNewsItem)
                     }
 
@@ -221,7 +225,7 @@ class ArticlesFragment : Fragment() {
                         val bottomSheetFragment = CommentBottomSheet()
                         val args = Bundle().apply {
                             putInt("article_id", newsItem.newsId)
-                            putSerializable("article",newsItem)
+                            putSerializable("comments", newsItem.comments)
                         }
                         bottomSheetFragment.arguments = args
 

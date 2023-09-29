@@ -54,4 +54,23 @@ object TimeUtil {
             }
         }
     }
+
+    fun getLatestDate(): String {
+        val timestamp = System.currentTimeMillis()
+        val date = Date(timestamp)
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+        return dateFormat.format(date)
+    }
+
+    fun dateToTimestamp(dateString: String): Long {
+        try {
+            val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+            sdf.timeZone = TimeZone.getTimeZone("UTC") // Set the time zone if needed
+            val date = sdf.parse(dateString)
+            return date?.time ?: 0
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return 0
+        }
+    }
 }

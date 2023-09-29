@@ -10,12 +10,17 @@ import com.tekskills.sampleapp.data.local.ArticlesAllNews
 import com.tekskills.sampleapp.data.local.ArticlesRepository
 import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
 import com.tekskills.sampleapp.data.repo.ArticleProviderRepo
+import com.tekskills.sampleapp.model.AllNewsDetailsData
 import com.tekskills.sampleapp.model.NewsDetails
 import com.tekskills.sampleapp.model.BannerItem
-import com.tekskills.sampleapp.model.BannerItemItem
 import com.tekskills.sampleapp.model.PosterDetails
+import com.tekskills.sampleapp.model.VideoInfo
 import com.tekskills.sampleapp.utils.Event
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.ResponseBody
 import retrofit2.Response
 import java.lang.Exception
 
@@ -42,6 +47,8 @@ class MainViewModel(
     var responseLiveData: MutableLiveData<Response<NewsDetails>?> = MutableLiveData()
     var responseEditorLiveData: MutableLiveData<Response<PosterDetails>?> = MutableLiveData()
     var responseBannerLiveData: MutableLiveData<Response<BannerItem>?> = MutableLiveData()
+    var responseAllNewsLiveData: MutableLiveData<Response<AllNewsDetailsData>?> = MutableLiveData()
+    val videoInfoLiveData = MutableLiveData<VideoInfo>()
 
     var bookmarkList: LiveData<List<ArticlesAllNews>> = repository.articles
 
@@ -56,8 +63,11 @@ class MainViewModel(
             isLoading.value = true
             try {
                 when (category.value!!) {
-                    "All", "News", "Wishes" -> {
-                        getAllNews()
+                    "All" ->{
+                        getAllNewsDetails()
+                    }
+                    "News", "Wishes" -> {
+                        getNewsDetails()
                     }
 
                     "Posters" -> {
@@ -65,7 +75,7 @@ class MainViewModel(
                     }
 
                     else -> {
-                        getAllNews()
+                        getAllNewsDetails()
                     }
                 }
             } catch (e: Exception) {
@@ -81,7 +91,7 @@ class MainViewModel(
         }
     }
 
-    private suspend fun getAllNews() {
+    private suspend fun getNewsDetails() {
         val response = ArticleProviderRepo().getNews(category.value!!)
         if (response.isSuccessful) {
             responseLiveData.postValue(response)
@@ -91,11 +101,44 @@ class MainViewModel(
         }
     }
 
-    fun postNewsLike(newsID: Int) {
+    fun fetchVideoInfo(videoUrl: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val videoInfo = getVideoInfo(videoUrl)
+                videoInfoLiveData.postValue(videoInfo)
+            } catch (e: Exception) {
+                // Handle any errors or exceptions here
+            }
+        }
+    }
+
+    private fun getVideoInfo(videoUrl: String): VideoInfo {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url(videoUrl)
+            .build()
+
+        val response = client.newCall(request).execute()
+        if (response.isSuccessful) {
+            val responseBody: ResponseBody? = response.body
+            responseBody?.let {
+                // Parse the video information from the response
+                val title = "Video Title" // Replace with your parsing logic
+                val description = "Video Description" // Replace with your parsing logic
+                val duration = "Video Duration" // Replace with your parsing logic
+
+                return VideoInfo(title, description, duration, videoUrl)
+            }
+        }
+
+        throw Exception("Failed to fetch video information")
+    }
+
+    fun postNewsLike(newsID: Int,newsType: String) {
         viewModelScope.launch {
 //           val response = ArticleProviderRepo().checkLike()
             val response = when (category.value) {
-                "All" -> ArticleProviderRepo().updateNewsLike(newsID,"NEWS")
+                "All" -> ArticleProviderRepo().updateNewsLike(newsID,newsType)
 
                 "News" -> ArticleProviderRepo().updateNewsLike(newsID,"NEWS")
 
@@ -106,9 +149,73 @@ class MainViewModel(
                 else -> ArticleProviderRepo().updateNewsLike(newsID,"SORT")
             }
             if (response.isSuccessful) {
-                getAllNews()
+                refreshUpdatedResponse()
             } else {
                 message.value = Event(response.errorBody().toString())
+            }
+        }
+    }
+
+    fun postNewsShare(newsID: Int,newsType: String) {
+        viewModelScope.launch {
+//           val response = ArticleProviderRepo().checkLike()
+            val response = when (category.value) {
+                "All" -> ArticleProviderRepo().updateNewsShare(newsID,newsType)
+
+                "News" -> ArticleProviderRepo().updateNewsShare(newsID,"NEWS")
+
+                "Wishes" -> ArticleProviderRepo().updateNewsShare(newsID,"WISH")
+
+                "Posters" -> ArticleProviderRepo().updateNewsShare(newsID,"POSTER")
+
+                else -> ArticleProviderRepo().updateNewsShare(newsID,"SORT")
+            }
+            if (response.isSuccessful) {
+                refreshUpdatedResponse()
+            } else {
+                message.value = Event(response.errorBody().toString())
+            }
+        }
+    }
+
+    fun postNewsShare(newsID: Int) {
+        viewModelScope.launch {
+//           val response = ArticleProviderRepo().checkLike()
+            val response = when (category.value) {
+                "All" -> ArticleProviderRepo().updateNewsShare(newsID,"NEWS")
+
+                "News" -> ArticleProviderRepo().updateNewsShare(newsID,"NEWS")
+
+                "Wishes" -> ArticleProviderRepo().updateNewsShare(newsID,"WISH")
+
+                "Posters" -> ArticleProviderRepo().updateNewsShare(newsID,"POSTER")
+
+                else -> ArticleProviderRepo().updateNewsShare(newsID,"SORT")
+            }
+            if (response.isSuccessful) {
+                refreshUpdatedResponse()
+            } else {
+                message.value = Event(response.errorBody().toString())
+            }
+        }
+    }
+
+    suspend fun refreshUpdatedResponse()
+    {
+        when (category.value!!) {
+            "All" ->{
+                getAllNewsDetails()
+            }
+            "News", "Wishes" -> {
+                getNewsDetails()
+            }
+
+            "Posters" -> {
+                getPosterDetails()
+            }
+
+            else -> {
+                getAllNewsDetails()
             }
         }
     }
@@ -128,7 +235,7 @@ class MainViewModel(
                 else -> ArticleProviderRepo().postComments(newsID,"SORT",comment)
             }
             if (response.isSuccessful) {
-                getAllNews()
+                refreshUpdatedResponse()
             } else {
                 message.value = Event(response.errorBody().toString())
             }
@@ -136,11 +243,21 @@ class MainViewModel(
     }
 
     private suspend fun getPosterDetails() {
-        val response = ArticleProviderRepo().getPoster(category.value!!)
+        val response = ArticleProviderRepo().getPoster()
         if (response.isSuccessful) {
             responseEditorLiveData.postValue(response)
         } else {
             responseEditorLiveData.postValue(null)
+            message.value = Event(response.errorBody().toString())
+        }
+    }
+
+    private suspend fun getAllNewsDetails() {
+        val response = ArticleProviderRepo().getAllNewsDetails()
+        if (response.isSuccessful) {
+            responseAllNewsLiveData.postValue(response)
+        } else {
+            responseAllNewsLiveData.postValue(null)
             message.value = Event(response.errorBody().toString())
         }
     }

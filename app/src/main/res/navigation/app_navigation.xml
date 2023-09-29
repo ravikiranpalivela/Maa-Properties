@@ -5,7 +5,7 @@
     android:id="@+id/app_navigation">
     <fragment
         android:id="@+id/myArticleFragment"
-        android:name="com.tekskills.sampleapp.ui.articleDetails.ArticlesFragment"
+        android:name="com.tekskills.sampleapp.ui.articleDetails.NewsDetailsFragment"
         android:label="fragment_my_home"
         tools:layout="@layout/fragment_articles">
         <action
@@ -40,8 +40,14 @@
             android:name="article_id"
             android:defaultValue="0" />
         <argument
+            android:name="article_Type"
+            android:defaultValue="NEWS" />
+        <argument
             android:name="article"
             app:argType="com.tekskills.sampleapp.model.NewsItem" />
+        <argument
+            android:name="comments"
+            app:argType="com.tekskills.sampleapp.model.CommentDetails" />
     </fragment>
     <fragment
         android:id="@+id/myShortsFragment"
@@ -66,8 +72,14 @@
             android:name="article_id"
             android:defaultValue="0" />
         <argument
+            android:name="article_Type"
+            android:defaultValue="NEWS" />
+        <argument
             android:name="article"
             app:argType="com.tekskills.sampleapp.model.NewsItem" />
+        <argument
+            android:name="comments"
+            app:argType="com.tekskills.sampleapp.model.CommentDetails" />
     </fragment>
     <fragment
         android:id="@+id/myPosterEditorFragment"
@@ -92,8 +104,14 @@
             android:name="article_id"
             android:defaultValue="0" />
         <argument
+            android:name="article_Type"
+            android:defaultValue="NEWS" />
+        <argument
             android:name="article"
             app:argType="com.tekskills.sampleapp.model.NewsItem" />
+        <argument
+            android:name="comments"
+            app:argType="com.tekskills.sampleapp.model.CommentDetails" />
     </fragment>
     <fragment
         android:id="@+id/myCommentBottomSheet"
@@ -111,7 +129,7 @@
             android:name="article_id"
             android:defaultValue="0" />
         <argument
-            android:name="article"
-            app:argType="com.tekskills.sampleapp.model.NewsItem" />
+            android:name="comments"
+            app:argType="com.tekskills.sampleapp.model.CommentDetails" />
     </fragment>
 </navigation>

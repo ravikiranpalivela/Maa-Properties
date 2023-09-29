@@ -1,14 +1,13 @@
 package com.tekskills.sampleapp.data.remote
 
+import com.tekskills.sampleapp.model.AllNewsDetailsData
 import com.tekskills.sampleapp.model.NewsDetails
 import com.tekskills.sampleapp.model.BannerItem
 import com.tekskills.sampleapp.model.LikeResponse
 import com.tekskills.sampleapp.model.PosterDetails
-import org.json.JSONObject
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -21,7 +20,7 @@ interface NewsService{
     suspend fun getWishes(): Response<NewsDetails>
 
     @GET(APIEndPoint.GET_ALL_NEWS_LIST)
-    suspend fun getAllNews(): Response<NewsDetails>
+    suspend fun getAllNews(): Response<AllNewsDetailsData>
 
     @GET(APIEndPoint.GET_MAIN_NEWS_LIST)
     suspend fun getMainNews(): Response<NewsDetails>
@@ -59,7 +58,13 @@ interface NewsService{
 
     @PUT("https://admin2.maaproperties.com/api/common")
     suspend fun updateNewsLike(
-        @Query("id") id: Int = 855,
+        @Query("id") id: Int = 0,
+        @Query("type") type: String = "news"
+    ): Response<LikeResponse>
+
+    @PUT("https://admin2.maaproperties.com/api/common/share")
+    suspend fun updateNewsShare(
+        @Query("id") id: Int = 0,
         @Query("type") type: String = "news"
     ): Response<LikeResponse>
 
@@ -67,4 +72,14 @@ interface NewsService{
     suspend fun updateNewsLike(@Url url: String): Response<LikeResponse>
     @PUT("https://admin2.maaproperties.com/api/common?id=855&type=news")
     suspend fun checkLike(): Response<LikeResponse>
+
+    @GET
+    suspend fun getVideoInfo(@Url videoUrl: String): VideoInfoResponse
 }
+
+data class VideoInfoResponse(
+//    @Json(name = "download_url")
+    val downloadUrl: String,
+//    @Json(name = "preview_url")
+    val previewUrl: String
+)

@@ -86,13 +86,13 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivi
             binding.dlRoot.closeDrawers()
         }
 
-        binding.ivDrawer.setOnClickListener {
-            if (binding.dlRoot.isDrawerOpen(GravityCompat.START)) {
-                binding.dlRoot.closeDrawer(GravityCompat.START)
-            } else {
-                binding.dlRoot.openDrawer(GravityCompat.START)
-            }
-        }
+//        binding.ivDrawer.setOnClickListener {
+//            if (binding.dlRoot.isDrawerOpen(GravityCompat.START)) {
+//                binding.dlRoot.closeDrawer(GravityCompat.START)
+//            } else {
+//                binding.dlRoot.openDrawer(GravityCompat.START)
+//            }
+//        }
 
         setupDrawerContent(binding.navView)
 

@@ -1,13 +1,12 @@
 package com.tekskills.sampleapp.data.repo
 
-import com.tekskills.sampleapp.data.remote.APIEndPoint
 import com.tekskills.sampleapp.data.remote.NewsService
 import com.tekskills.sampleapp.data.remote.RetrofitInstance
+import com.tekskills.sampleapp.model.AllNewsDetailsData
 import com.tekskills.sampleapp.model.NewsDetails
 import com.tekskills.sampleapp.model.BannerItem
 import com.tekskills.sampleapp.model.LikeResponse
 import com.tekskills.sampleapp.model.PosterDetails
-import org.json.JSONObject
 import retrofit2.Response
 
 class ArticleProviderRepo {
@@ -19,68 +18,76 @@ class ArticleProviderRepo {
 
         return when (category) {
 
-            "All" -> retService.getAllNews()
+            "All" -> retService.getMainNews()
 
-            "News" -> retService.getAllNews()
+            "News" -> retService.getMainNews()
 
             "Wishes" -> retService.getWishes()
 
-            "Posters" -> retService.getAllNews()
+            "Posters" -> retService.getMainNews()
 
             else -> retService.getShorts()
         }
     }
 
-    suspend fun getPoster(category: String): Response<PosterDetails> {
-
-        return when (category) {
-            "Posters" -> retService.getPosters()
-            else -> {
-                retService.getPosters()
-            }
-        }
+    suspend fun getAllNewsDetails(): Response<AllNewsDetailsData> {
+        return retService.getAllNews()
     }
+
+    suspend fun getPoster(): Response<PosterDetails> {
+        return retService.getPosters()
+    }
+//    suspend fun getPoster(category: String): Response<PosterDetails> {
+//
+//        return when (category) {
+//            "Posters" -> retService.getPosters()
+//            else -> {
+//                retService.getPosters()
+//            }
+//        }
+//    }
 
     suspend fun getBanner(): Response<BannerItem> {
         return retService.getBanners()
     }
 
-    suspend fun postNewsLike(articleID : String): Response<LikeResponse>
-    {
-        return  retService.postNewsLike(articleID)
+    suspend fun postNewsLike(articleID: String): Response<LikeResponse> {
+        return retService.postNewsLike(articleID)
     }
 
-    suspend fun postPostersLike(articleID : String): Response<LikeResponse>
-    {
-        return  retService.postPostersLike(articleID)
+    suspend fun postPostersLike(articleID: String): Response<LikeResponse> {
+        return retService.postPostersLike(articleID)
     }
 
-    suspend fun postWishesLike(articleID : String): Response<LikeResponse>
-    {
-        return  retService.postWishesLike(articleID)
+    suspend fun postWishesLike(articleID: String): Response<LikeResponse> {
+        return retService.postWishesLike(articleID)
     }
 
-    suspend fun postShortsLike(articleID : String): Response<LikeResponse>
-    {
-        return  retService.postShortsLike(articleID)
+    suspend fun postShortsLike(articleID: String): Response<LikeResponse> {
+        return retService.postShortsLike(articleID)
     }
 
-    suspend fun postComments(articleID:String,type:String,text:String): Response<LikeResponse>
-    {
+    suspend fun postComments(
+        articleID: String,
+        type: String,
+        text: String
+    ): Response<LikeResponse> {
         val requestBody: MutableMap<String, String> = HashMap()
         requestBody["type"] = type
         requestBody["newsId"] = articleID
         requestBody["comments"] = text
-        return  retService.postComments(requestBody)
+        return retService.postComments(requestBody)
     }
 
-    suspend fun updateNewsLike(articleID:Int,type:String): Response<LikeResponse>
-    {
-        return  retService.updateNewsLike(articleID,type)
+    suspend fun updateNewsLike(articleID: Int, type: String): Response<LikeResponse> {
+        return retService.updateNewsLike(articleID, type)
     }
 
-    suspend fun checkLike(): Response<LikeResponse>
-    {
+    suspend fun updateNewsShare(articleID: Int, type: String): Response<LikeResponse> {
+        return retService.updateNewsShare(articleID, type)
+    }
+
+    suspend fun checkLike(): Response<LikeResponse> {
         return retService.checkLike()
     }
 }

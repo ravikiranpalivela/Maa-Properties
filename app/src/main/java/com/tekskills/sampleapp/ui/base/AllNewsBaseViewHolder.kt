@@ -21,9 +21,11 @@ import com.tekskills.sampleapp.data.local.ArticlesAllNews
 import com.tekskills.sampleapp.data.local.ArticlesDatabase
 import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
 import com.tekskills.sampleapp.databinding.ItemArticleViewtypeListBinding
+import com.tekskills.sampleapp.model.AllNewsItem
 import com.tekskills.sampleapp.model.BannerItem
 import com.tekskills.sampleapp.model.NewsItem
 import com.tekskills.sampleapp.ui.adapter.AllNewsDetailsAdapter
+import com.tekskills.sampleapp.ui.adapter.OnAllNewsClickListener
 import com.tekskills.sampleapp.ui.adapter.OnNewsClickListener
 import com.tekskills.sampleapp.ui.main.MainViewModel
 import com.tekskills.sampleapp.utils.like.LikeButton
@@ -38,7 +40,7 @@ import com.tekskills.sampleapp.utils.video.isValidUrl
 import com.tekskills.sampleapp.utils.video.isYoutubeUrl
 import java.util.concurrent.Executors
 
-abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
+abstract class AllNewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
     private val activity: Activity,
     private val viewModel: MainViewModel,
     private val bindingView: viewDataBinding,
@@ -52,8 +54,8 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
     private var initializedYouTubePlayer: YouTubePlayer? = null
 
     fun bind(
-        article: NewsItem,
-        onClickListener: OnNewsClickListener,
+        article: AllNewsItem,
+        onClickListener: OnAllNewsClickListener,
     ) {
         // Get the view count using the ViewModel
         val sharedPrefManager: SharedPrefManager = SharedPrefManager.getInstance(activity)
@@ -84,8 +86,6 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
 //            likes.text = count.toString()
 
             likes.text = article.likes.toString()
-
-            shares.text = article.share.toString()
 
             comments.text = article.comments.size.toString()
 
@@ -278,7 +278,7 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
 
 
     fun bindAdView(
-        onClickListener: OnNewsClickListener,
+        onClickListener: OnAllNewsClickListener,
     ) {
         val sharedPrefManager: SharedPrefManager = SharedPrefManager.getInstance(activity)
 
@@ -320,11 +320,11 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                 val commentData = commentsDao.getCommentsForItem(article.newsId)
                 val updatedData = dao.getArticlesById(articleId)
                 binding.apply {
-//                    likes.text = updatedData?.view_count.toString()
-//                    shares.text = updatedData?.share_count.toString()
+                    likes.text = updatedData?.view_count.toString()
+                    shares.text = updatedData?.share_count.toString()
                     Log.d("TAG", "comments data ${commentData.toString()}")
-//                    comments.text =
-//                        if (commentData.isEmpty()) "0" else commentData.size.toString()
+                    comments.text =
+                        if (commentData.isEmpty()) "0" else commentData.size.toString()
                 }
             })
 //            database.close()
@@ -332,7 +332,7 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
 
     }
 
-    fun updateShareCount(articleId: Int, article: NewsItem) {
+    fun updateShareCount(articleId: Int, article: AllNewsItem) {
 
         val executor = Executors.newSingleThreadExecutor()
         executor.execute {
@@ -356,8 +356,8 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                 val commentData = commentsDao.getCommentsForItem(article.newsId)
                 val updatedData = dao.getArticlesById(articleId)
                 binding.apply {
-//                    likes.text = updatedData?.view_count.toString()
-//                    shares.text = updatedData?.share_count.toString()
+                    likes.text = updatedData?.view_count.toString()
+                    shares.text = updatedData?.share_count.toString()
                     Log.d("TAG", "comments data ${commentData.toString()}")
 //                    comments.text =
 //                        if (commentData.isEmpty()) "0" else commentData.size.toString()
@@ -386,7 +386,7 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
 //                        if (commentData.isEmpty()) "0" else commentData.size.toString()
                     if (updatedData != null) {
 //                        likes.text = updatedData.view_count.toString()
-//                        shares.text = updatedData.share_count.toString()
+                        shares.text = updatedData.share_count.toString()
                     }
                     Log.d("TAG", "comments data ${commentData.toString()}")
                 }

@@ -53,7 +53,7 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
         binding.apply {
             getArticleInfo(article.newsId)
 
-            getBannerInfo(sharedPrefManager.getBannerDetailsData(),sharedPrefManager.bannerSelect)
+            getBannerInfo(sharedPrefManager.getBannerDetailsData(), sharedPrefManager.bannerSelect)
 
             if (validateValue(article.videoDescription) == "null")
                 descArticle.visibility = View.GONE
@@ -95,7 +95,7 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
 
             heartButton.setOnAnimationEndListener(object : OnAnimationEndListener {
                 override fun onAnimationEnd(likeButton: LikeButton?) {
-                    onClickListener.likeClickListener(article,articleImage)
+                    onClickListener.likeClickListener(article, articleImage)
 //                    updateViewCount(article.id, article)
                 }
             })
@@ -126,7 +126,10 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
 
 
             ivShare.setOnClickListener {
-                getBannerInfo(sharedPrefManager.getBannerDetailsData(),sharedPrefManager.bannerSelect)
+                getBannerInfo(
+                    sharedPrefManager.getBannerDetailsData(),
+                    sharedPrefManager.bannerSelect
+                )
                 sharedPrefManager.saveBannerSelect()
                 youtubePlayerView.visibility = View.GONE
                 webView.visibility = View.GONE
@@ -174,7 +177,10 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
             clArticleAdView.visibility = View.VISIBLE
             clArticleView.visibility = View.GONE
 
-            getBannerAdsInfo(sharedPrefManager.getBannerDetailsData(),sharedPrefManager.bannerAdsSelect)
+            getBannerAdsInfo(
+                sharedPrefManager.getBannerDetailsData(),
+                sharedPrefManager.bannerAdsSelect
+            )
 
             sharedPrefManager.saveBannerAdsSelect()
 
@@ -186,27 +192,28 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
         executor.execute {
             // Fetch the updated data from the database
             SharedPrefManager
-            activity.runOnUiThread(Runnable {
-                if(banners != null)
-                binding.apply {
-                    var count = bannerSelect + 1
-                    if (count < banners.size) {
-                        val updatedData = banners[count].link
-                        displayImage(updatedData, ivBannerAds)
-                    } else if (count > banners.size) {
-                        val num = count % banners.size
-                        val updatedData = banners[num].link
-                        displayImage(updatedData, ivBannerAds)
-                    } else if (banners.isNotEmpty()) {
-                        val updatedData = banners[0].link
-                        displayImage(updatedData, ivBannerAds)
-                    } else {
-                        val BANNER_SAMPLE =
-                            "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
-                        displayImage(BANNER_SAMPLE, ivBannerAds)
+
+            if (banners != null)
+                activity.runOnUiThread(Runnable {
+                    binding.apply {
+                        var count = bannerSelect + 1
+                        if (count < banners.size) {
+                            val updatedData = banners[count].link
+                            displayImage(updatedData, ivBannerAds)
+                        } else if (count > banners.size) {
+                            val num = count % banners.size
+                            val updatedData = banners[num].link
+                            displayImage(updatedData, ivBannerAds)
+                        } else if (banners.isNotEmpty()) {
+                            val updatedData = banners[0].link
+                            displayImage(updatedData, ivBannerAds)
+                        } else {
+                            val BANNER_SAMPLE =
+                                "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
+                            displayImage(BANNER_SAMPLE, ivBannerAds)
+                        }
                     }
-                }
-            })
+                })
 //            database.close()
         }
     }
@@ -311,34 +318,40 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
         }
     }
 
-    private fun getBannerInfo(banners: BannerItem?,bannerSelect: Int) {
+    private fun getBannerInfo(banners: BannerItem?, bannerSelect: Int) {
         val executor = Executors.newSingleThreadExecutor()
         executor.execute {
             // Update the view count in the Room database
             val database: ArticlesDatabase = ArticlesDatabase.getInstance(context = activity)
 
             // Fetch the updated data from the database
-            activity.runOnUiThread(Runnable {
-                if(banners != null)
-                binding.apply {
-                    var count = bannerSelect + 1
-                    if (count < banners.size) {
-                        val updatedData = banners[count].link
-                        displayImage(updatedData, ivBannerShare)
-                    } else if (count > banners.size) {
-                        val num = count % banners.size
-                        val updatedData = banners[num].link
-                        displayImage(updatedData, ivBannerShare)
-                    } else if (banners.isNotEmpty()) {
-                        val updatedData = banners[0].link
-                        displayImage(updatedData, ivBannerShare)
-                    } else {
-                        val BANNER_SAMPLE =
-                            "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
-                        displayImage(BANNER_SAMPLE, ivBannerShare)
+
+            if (banners != null)
+                activity.runOnUiThread(Runnable {
+                    binding.apply {
+                        var count = bannerSelect + 1
+                        if(banners.size == 0)
+                        {
+                            val BANNER_SAMPLE =
+                                "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
+                            displayImage(BANNER_SAMPLE, ivBannerShare)
+                        }else if (count < banners.size) {
+                            val updatedData = banners[count].link
+                            displayImage(updatedData, ivBannerShare)
+                        } else if (count > banners.size) {
+                            val num = count % banners.size
+                            val updatedData = banners[num].link
+                            displayImage(updatedData, ivBannerShare)
+                        } else if (banners.isNotEmpty()) {
+                            val updatedData = banners[0].link
+                            displayImage(updatedData, ivBannerShare)
+                        } else {
+                            val BANNER_SAMPLE =
+                                "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
+                            displayImage(BANNER_SAMPLE, ivBannerShare)
+                        }
                     }
-                }
-            })
+                })
 //            database.close()
         }
 

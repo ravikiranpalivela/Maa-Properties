@@ -33,9 +33,10 @@ class CommentBottomSheet : BottomSheetDialogFragment() {
     private lateinit var preferences: SharedPrefManager
 
     private var article_id = 0
+
     private lateinit var adapter: CommentsListAdapter
     private val genresList = CommentDetails()
-    private lateinit var article: NewsItem
+    private lateinit var comments: CommentDetails
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,7 +52,7 @@ class CommentBottomSheet : BottomSheetDialogFragment() {
             }
         }
         val args: CommentBottomSheetArgs by navArgs()
-        article = args.article
+        comments = args.comments
         article_id = args.articleId
 
         preferences =
@@ -64,7 +65,7 @@ class CommentBottomSheet : BottomSheetDialogFragment() {
         val factory = MainViewModelFactory(repository, preferences)
         viewModel = ViewModelProvider(requireActivity(), factory)[MainViewModel::class.java]
 
-        Log.d("TAG", "article id ${article_id} and comments ${article}")
+        Log.d("TAG", "article id ${article_id} and comments ${comments}")
         return inflater.inflate(R.layout.bottom_sheet_feedback, container, false)
     }
 
@@ -87,7 +88,8 @@ class CommentBottomSheet : BottomSheetDialogFragment() {
     private fun setUpGenresData(genresDetails: CommentDetails) {
         genresList.clear()
         genresList.addAll(genresDetails)
-        adapter.setData(article.comments)
+        adapter.setData(comments)
+
         Log.d("TAG", "comments data ${genresList.toString()}")
     }
 
@@ -95,12 +97,13 @@ class CommentBottomSheet : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         if (savedInstanceState != null) {
             val args: CommentBottomSheetArgs by navArgs()
-            article = args.article
+            comments = args.comments
             article_id = args.articleId
 //            article_id = savedInstanceState.getInt("article_id")
             Log.d("TAG", "article id ${article_id}")
         }
-        setUpGenresAdapter(article.comments)
+        setUpGenresAdapter(comments)
+
         binding.userInput.setOnEditorActionListener { _, i, _ ->
             if (i == EditorInfo.IME_ACTION_DONE) {
                 dismiss()
@@ -135,7 +138,7 @@ class CommentBottomSheet : BottomSheetDialogFragment() {
                 )
             )
             requireActivity().runOnUiThread(Runnable {
-                setUpGenresAdapter(article.comments)
+                setUpGenresAdapter(comments)
             })
         }
     }

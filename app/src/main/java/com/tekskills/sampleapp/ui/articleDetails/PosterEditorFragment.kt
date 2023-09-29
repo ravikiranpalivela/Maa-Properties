@@ -179,7 +179,7 @@ class PosterEditorFragment : Fragment() {
         binding.editorPager.orientation = ViewPager2.ORIENTATION_VERTICAL
         binding.editorPager.registerOnPageChangeCallback(onPageChangeCallback)
         binding.editorPager.adapter = recyclerAdapter
-        binding.editorPager.setPageTransformer(ArticlesFragment.CardTransformer(1.2f))
+        binding.editorPager.setPageTransformer(NewsDetailsFragment.CardTransformer(1.2f))
     }
 
     private val onPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
@@ -235,7 +235,7 @@ class PosterEditorFragment : Fragment() {
 
         binding.heartButton.setOnAnimationEndListener(object : OnAnimationEndListener {
             override fun onAnimationEnd(likeButton: LikeButton?) {
-                viewModel.postNewsLike(posterItem!!.posterId)
+                viewModel.postNewsLike(posterItem!!.posterId,"POSTER")
 //                if (posterItem != null)
 //                    updateViewCount(posterItem!!.posterId)
             }
@@ -286,10 +286,11 @@ class PosterEditorFragment : Fragment() {
         binding.comment.setOnClickListener {
             if (posterItem != null) {
                 val bottomSheetFragment = CommentBottomSheet()
-                val bundle = Bundle()
-                bundle.putInt("article_id", posterItem!!.posterId)
-                bottomSheetFragment.arguments = bundle
-
+                val args = Bundle().apply {
+                    putInt("article_id", posterItem!!.posterId)
+                    putSerializable("comments", posterItem!!.comments)
+                }
+                bottomSheetFragment.arguments = args
                 bottomSheetFragment.show(
                     parentFragmentManager,
                     CommentBottomSheet.TAG
@@ -412,29 +413,29 @@ class PosterEditorFragment : Fragment() {
         executor.execute {
 
             // Fetch the updated data from the database
-            requireActivity().runOnUiThread(Runnable {
-                val banners = preferences.getBannerDetailsData()
+            val banners = preferences.getBannerDetailsData()
 
-                if(banners != null)
-                binding.apply {
-                    var count = bannerSelect + 1
-                    if (count < banners.size) {
-                        val updatedData = banners[count].link
-                        displayImage(updatedData, ivBannerShare)
-                    } else if (count > banners.size) {
-                        val num = count / banners.size
-                        val updatedData = banners[num].link
-                        displayImage(updatedData, ivBannerShare)
-                    } else if (banners.isNotEmpty()) {
-                        val updatedData = banners[0].link
-                        displayImage(updatedData, ivBannerShare)
-                    } else {
-                        val BANNER_SAMPLE =
-                            "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
-                        displayImage(BANNER_SAMPLE, ivBannerShare)
+            if (banners != null)
+                requireActivity().runOnUiThread(Runnable {
+                    binding.apply {
+                        var count = bannerSelect + 1
+                        if (count < banners.size) {
+                            val updatedData = banners[count].link
+                            displayImage(updatedData, ivBannerShare)
+                        } else if (count > banners.size) {
+                            val num = count / banners.size
+                            val updatedData = banners[num].link
+                            displayImage(updatedData, ivBannerShare)
+                        } else if (banners.isNotEmpty()) {
+                            val updatedData = banners[0].link
+                            displayImage(updatedData, ivBannerShare)
+                        } else {
+                            val BANNER_SAMPLE =
+                                "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
+                            displayImage(BANNER_SAMPLE, ivBannerShare)
+                        }
                     }
-                }
-            })
+                })
 //            database.close()
         }
     }
