@@ -17,13 +17,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.tekskills.sampleapp.R
-import com.tekskills.sampleapp.data.local.ArticlesAllNews
-import com.tekskills.sampleapp.data.local.ArticlesDatabase
 import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
 import com.tekskills.sampleapp.databinding.ItemArticleViewtypeListBinding
 import com.tekskills.sampleapp.model.BannerItem
 import com.tekskills.sampleapp.model.NewsItem
-import com.tekskills.sampleapp.ui.adapter.AllNewsDetailsAdapter
+import com.tekskills.sampleapp.model.PublicAdsDetails
 import com.tekskills.sampleapp.ui.adapter.OnNewsClickListener
 import com.tekskills.sampleapp.ui.main.MainViewModel
 import com.tekskills.sampleapp.utils.like.LikeButton
@@ -63,7 +61,6 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
             clArticleAdView.visibility = View.GONE
 
             getBannerInfo(sharedPrefManager.getBannerDetailsData(), sharedPrefManager.bannerSelect)
-            getArticleInfo(article.newsId)
 
             if (validateValue(article.description) == "null")
                 descArticle.visibility = View.GONE
@@ -199,7 +196,6 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                         onClickListener.shareClickListener(article, clArticleView)
                         ivBannerShare.visibility = View.GONE
                         ivBannerLogo.visibility = View.GONE
-                        updateShareCount(article.newsId, article)
                     }
 
                     override fun onTick(millisUntilFinished: Long) {}
@@ -287,111 +283,17 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
             clArticleView.visibility = View.GONE
 
             getBannerAdsInfo(
-                sharedPrefManager.getBannerDetailsData(),
-                sharedPrefManager.bannerAdsSelect
+                sharedPrefManager.getPublicAdsDetailsData(),
+                sharedPrefManager.publicAdsAdsSelect
             )
 
-            sharedPrefManager.saveBannerAdsSelect()
-
-        }
-    }
-
-    fun updateViewCount(articleId: Int, article: NewsItem) {
-
-        val executor = Executors.newSingleThreadExecutor()
-        executor.execute {
-            // Update the view count in the Room database
-            val database: ArticlesDatabase = ArticlesDatabase.getInstance(context = activity)
-            val dao = database.dao
-            val commentsDao = database.commentDao
-            val existingArticle = dao.getArticlesById(articleId)
-            if (existingArticle != null) {
-                // Update the existing article
-                var count = existingArticle.view_count + 1
-                dao.incrementViewCount(existingArticle.news_id, count)
-            } else {
-                val insertArticle = ArticlesAllNews(news_id = articleId, view_count = 1)
-                // Insert a new article
-                dao.insertArticles(insertArticle)
+            root.setOnClickListener() {
+                Log.d("Event", "action response double click")
+                onClickListener.doubleClickListener(null, articleImage)
             }
 
-            // Fetch the updated data from the database
-            activity.runOnUiThread(Runnable {
-                val commentData = commentsDao.getCommentsForItem(article.newsId)
-                val updatedData = dao.getArticlesById(articleId)
-                binding.apply {
-//                    likes.text = updatedData?.view_count.toString()
-//                    shares.text = updatedData?.share_count.toString()
-                    Log.d("TAG", "comments data ${commentData.toString()}")
-//                    comments.text =
-//                        if (commentData.isEmpty()) "0" else commentData.size.toString()
-                }
-            })
-//            database.close()
-        }
+            sharedPrefManager.savePublicAdsAdsSelect()
 
-    }
-
-    fun updateShareCount(articleId: Int, article: NewsItem) {
-
-        val executor = Executors.newSingleThreadExecutor()
-        executor.execute {
-            // Update the view count in the Room database
-            val database: ArticlesDatabase = ArticlesDatabase.getInstance(context = activity)
-            val dao = database.dao
-            val commentsDao = database.commentDao
-            val existingArticle = dao.getArticlesById(articleId)
-            if (existingArticle != null) {
-                // Update the existing article
-                val count = existingArticle.share_count + 1
-                dao.incrementShareCount(existingArticle.news_id, count)
-            } else {
-                val insertArticle = ArticlesAllNews(news_id = articleId, share_count = 1)
-                // Insert a new article
-                dao.insertArticles(insertArticle)
-            }
-
-            // Fetch the updated data from the database
-            activity.runOnUiThread(Runnable {
-                val commentData = commentsDao.getCommentsForItem(article.newsId)
-                val updatedData = dao.getArticlesById(articleId)
-                binding.apply {
-//                    likes.text = updatedData?.view_count.toString()
-//                    shares.text = updatedData?.share_count.toString()
-                    Log.d("TAG", "comments data ${commentData.toString()}")
-//                    comments.text =
-//                        if (commentData.isEmpty()) "0" else commentData.size.toString()
-                }
-            })
-//            database.close()
-        }
-
-    }
-
-    private fun getArticleInfo(newsId: Int) {
-
-        val executor = Executors.newSingleThreadExecutor()
-        executor.execute {
-            // Update the view count in the Room database
-            val database: ArticlesDatabase = ArticlesDatabase.getInstance(context = activity)
-            val dao = database.dao
-            val commentsDao = database.commentDao
-
-            // Fetch the updated data from the database
-            activity.runOnUiThread(Runnable {
-                val commentData = commentsDao.getCommentsForItem(newsId)
-                val updatedData = dao.getArticlesById(newsId)
-                binding.apply {
-//                    comments.text =
-//                        if (commentData.isEmpty()) "0" else commentData.size.toString()
-                    if (updatedData != null) {
-//                        likes.text = updatedData.view_count.toString()
-//                        shares.text = updatedData.share_count.toString()
-                    }
-                    Log.d("TAG", "comments data ${commentData.toString()}")
-                }
-            })
-//            database.close()
         }
     }
 
@@ -431,7 +333,7 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
         }
     }
 
-    private fun getBannerAdsInfo(banners: BannerItem?, bannerSelect: Int) {
+    private fun getBannerAdsInfo(banners: PublicAdsDetails?, bannerSelect: Int) {
         val executor = Executors.newSingleThreadExecutor()
         executor.execute {
             // Update the view count in the Room database
@@ -448,14 +350,14 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                                 "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
                             displayImage(BANNER_SAMPLE, ivBannerShare)
                         }else if (count < banners.size) {
-                            val updatedData = banners[count].link
+                            val updatedData = banners[count].filePath
                             displayImage(updatedData, ivBannerAds)
                         } else if (count > banners.size) {
                             val num = count % banners.size
-                            val updatedData = banners[num].link
+                            val updatedData = banners[num].filePath
                             displayImage(updatedData, ivBannerAds)
                         } else if (banners.isNotEmpty()) {
-                            val updatedData = banners[0].link
+                            val updatedData = banners[0].filePath
                             displayImage(updatedData, ivBannerAds)
                         } else {
                             val BANNER_SAMPLE =

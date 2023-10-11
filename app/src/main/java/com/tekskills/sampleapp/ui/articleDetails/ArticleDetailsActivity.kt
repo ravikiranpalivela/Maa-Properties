@@ -23,6 +23,7 @@ import com.tekskills.sampleapp.databinding.ActivityArticleDetailsBinding
 import com.tekskills.sampleapp.model.NewsItem
 import com.tekskills.sampleapp.ui.base.BaseActivity
 import com.tekskills.sampleapp.ui.main.MainViewModel
+import com.tekskills.sampleapp.utils.AppConstant.ARTICLE
 import com.tekskills.sampleapp.utils.ObjectSerializer
 import com.tekskills.sampleapp.utils.ShareLayout
 import com.tekskills.sampleapp.utils.video.changeDateFormat
@@ -44,7 +45,7 @@ class ArticleDetailsActivity :
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.elevation = 0f
 
-        article = ObjectSerializer.deserialize(intent.getStringExtra("article")) as NewsItem
+        article = ObjectSerializer.deserialize(intent.getStringExtra(ARTICLE)) as NewsItem
 
         setUpLayout()
     }

@@ -83,5 +83,7 @@ data class AllNewsItem(
     val name: String,
     @SerializedName("newsType")
     var newsType: String,
+    @SerializedName("share")
+    val share: Int
 //    @SerializedName("source") val source: Source,
 ) : Serializable

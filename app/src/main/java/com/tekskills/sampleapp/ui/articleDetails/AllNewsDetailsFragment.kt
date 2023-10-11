@@ -20,20 +20,19 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.transition.MaterialFadeThrough
 import com.tekskills.sampleapp.R
-import com.tekskills.sampleapp.data.local.ArticlesDatabase
-import com.tekskills.sampleapp.data.local.ArticlesRepository
 import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
+import com.tekskills.sampleapp.data.repo.ArticleProviderRepo
 import com.tekskills.sampleapp.databinding.FragmentArticlesBinding
 import com.tekskills.sampleapp.model.AllNewsDetails
 import com.tekskills.sampleapp.model.AllNewsItem
-import com.tekskills.sampleapp.model.NewsItem
 import com.tekskills.sampleapp.ui.adapter.AllNewsDetailsAdapter
 import com.tekskills.sampleapp.ui.adapter.OnAllNewsClickListener
-import com.tekskills.sampleapp.ui.adapter.OnNewsClickListener
 import com.tekskills.sampleapp.ui.comment.CommentBottomSheet
 import com.tekskills.sampleapp.ui.main.MainActivity
 import com.tekskills.sampleapp.ui.main.MainViewModel
 import com.tekskills.sampleapp.ui.main.MainViewModelFactory
+import com.tekskills.sampleapp.utils.AppConstant.ARTICLE
+import com.tekskills.sampleapp.utils.AppConstant.ADS_COUNT
 import com.tekskills.sampleapp.utils.ObjectSerializer
 import com.tekskills.sampleapp.utils.ShareLayout
 import com.tekskills.sampleapp.utils.TimeUtil.dateToTimestamp
@@ -60,10 +59,7 @@ class AllNewsDetailsFragment : Fragment() {
 
         preferences =
             SharedPrefManager.getInstance(requireContext())
-        val database: ArticlesDatabase = ArticlesDatabase.getInstance(context = requireContext())
-
-        val dao = database.dao
-        val repository = ArticlesRepository(dao)
+        val repository = ArticleProviderRepo()
         val factory = MainViewModelFactory(repository, preferences)
         viewModel = ViewModelProvider(requireActivity(), factory)[MainViewModel::class.java]
 
@@ -197,10 +193,10 @@ class AllNewsDetailsFragment : Fragment() {
         val newList = AllNewsDetails()
 
         for ((counter, item) in list.withIndex()) {
-            if (counter < 4) {
+            if (counter < ADS_COUNT) {
                 newList.add(item)
             } else {
-                if (counter % 4 != 0) {
+                if (counter % ADS_COUNT != 0) {
                     newList.add(item)
                 } else {
                     newList.add(null)
@@ -235,7 +231,7 @@ class AllNewsDetailsFragment : Fragment() {
                     }
 
                     override fun doubleClickListener(
-                        newsItem: AllNewsItem,
+                        newsItem: AllNewsItem?,
                         imageView: ImageView
                     ) {
                         (activity as MainActivity?)!!.appBarLayoutHandle(true)
@@ -251,7 +247,7 @@ class AllNewsDetailsFragment : Fragment() {
                                 Uri.parse(newsItem.websiteUrl)
                             )
 
-                            intent.putExtra("article", ObjectSerializer.serialize(newsItem))
+                            intent.putExtra(ARTICLE, ObjectSerializer.serialize(newsItem))
                             val activityOptions =
                                 ActivityOptionsCompat.makeSceneTransitionAnimation(
                                     requireActivity(),
@@ -265,6 +261,7 @@ class AllNewsDetailsFragment : Fragment() {
                     }
 
                     override fun shareClickListener(newsItem: AllNewsItem, imageView: View) {
+                        (activity as MainActivity?)!!.appBarLayoutHandle(true)
                         val activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
                             requireActivity(),
                             imageView,
@@ -286,13 +283,12 @@ class AllNewsDetailsFragment : Fragment() {
                                 newsItem.title,
                                 activityOptions
                             )
-//                        viewModel.postNewsShare(newsItem.newsId)
+                        viewModel.postNewsShare(newsItem.newsId,newsItem.newsType)
 
                     }
 
                     override fun likeClickListener(newsItem: AllNewsItem, imageView: View) {
                         viewModel.postNewsLike(newsItem.newsId,newsItem.newsType)
-//                        viewModel.addAArticle(news_id = allNewsItem.newsId, article = allNewsItem)
                     }
 
                     override fun commentClickListener(newsItem: AllNewsItem, imageView: View) {
@@ -305,11 +301,6 @@ class AllNewsDetailsFragment : Fragment() {
                         }
                         bottomSheetFragment.arguments = args
 
-//                        val bundle = Bundle()
-//                        bundle.putInt("article_id", newsItem.newsId)
-//                        bundle.putSerializable("article",newsItem)
-//                        bottomSheetFragment.arguments = bundle
-
                         bottomSheetFragment.show(
                             parentFragmentManager,
                             CommentBottomSheet.TAG
@@ -319,34 +310,8 @@ class AllNewsDetailsFragment : Fragment() {
 
         binding.pager.orientation = ViewPager2.ORIENTATION_VERTICAL
         binding.pager.registerOnPageChangeCallback(onPageChangeCallback)
-
-//        viewModel.appPreferences.viewtype.asLiveData()
-//            .observe(viewLifecycleOwner, Observer { viewType ->
         binding.pager.adapter = newsListAdapter
-//            })
-
         binding.pager.setPageTransformer(CardTransformer(1.2f))
-
-//        binding.pager.setOnClickListener(object : DoubleClickListener() {
-//            override fun onDoubleClick(v: View) {
-//                Log.d("Event", "action response double click")
-//                (activity as MainActivity?)!!.appBarLayoutHandle(true)
-////                Toast.makeText(context,"Double Clicked Attempts", Toast.LENGTH_SHORT).show()
-//            }
-//        })
-
-//        binding.root.setOnClickListener(object : DoubleClickListener() {
-//            override fun onDoubleClick(v: View) {
-//                Log.d("Event", "action response root double click")
-//                (activity as MainActivity?)!!.appBarLayoutHandle(true)
-////                Toast.makeText(context,"Double Clicked Attempts", Toast.LENGTH_SHORT).show()
-//            }
-//        })
-
-//        binding.pager.setOnScrollChangeListener { view, i, i2, i3, i4 ->
-//            (activity as MainActivity?)!!.appBarLayoutHandle()
-//
-//        }
 
     }
 

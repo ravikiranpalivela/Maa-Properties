@@ -7,9 +7,11 @@ import com.tekskills.sampleapp.model.NewsDetails
 import com.tekskills.sampleapp.model.BannerItem
 import com.tekskills.sampleapp.model.LikeResponse
 import com.tekskills.sampleapp.model.PosterDetails
+import com.tekskills.sampleapp.model.PublicAdsDetails
 import retrofit2.Response
 
 class ArticleProviderRepo {
+
     private val retService = RetrofitInstance.getRetrofitInstance().create(
         NewsService::class.java
     )
@@ -37,34 +39,13 @@ class ArticleProviderRepo {
     suspend fun getPoster(): Response<PosterDetails> {
         return retService.getPosters()
     }
-//    suspend fun getPoster(category: String): Response<PosterDetails> {
-//
-//        return when (category) {
-//            "Posters" -> retService.getPosters()
-//            else -> {
-//                retService.getPosters()
-//            }
-//        }
-//    }
 
     suspend fun getBanner(): Response<BannerItem> {
         return retService.getBanners()
     }
 
-    suspend fun postNewsLike(articleID: String): Response<LikeResponse> {
-        return retService.postNewsLike(articleID)
-    }
-
-    suspend fun postPostersLike(articleID: String): Response<LikeResponse> {
-        return retService.postPostersLike(articleID)
-    }
-
-    suspend fun postWishesLike(articleID: String): Response<LikeResponse> {
-        return retService.postWishesLike(articleID)
-    }
-
-    suspend fun postShortsLike(articleID: String): Response<LikeResponse> {
-        return retService.postShortsLike(articleID)
+    suspend fun getPublicAds(): Response<PublicAdsDetails> {
+        return retService.getPublicAds()
     }
 
     suspend fun postComments(
@@ -87,7 +68,4 @@ class ArticleProviderRepo {
         return retService.updateNewsShare(articleID, type)
     }
 
-    suspend fun checkLike(): Response<LikeResponse> {
-        return retService.checkLike()
-    }
 }

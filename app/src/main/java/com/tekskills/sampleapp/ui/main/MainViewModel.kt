@@ -5,15 +5,13 @@ import androidx.databinding.Observable
 import androidx.lifecycle.*
 import com.google.gson.Gson
 import com.tekskills.sampleapp.R
-import com.tekskills.sampleapp.data.local.ArticleViewCount
-import com.tekskills.sampleapp.data.local.ArticlesAllNews
-import com.tekskills.sampleapp.data.local.ArticlesRepository
 import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
 import com.tekskills.sampleapp.data.repo.ArticleProviderRepo
 import com.tekskills.sampleapp.model.AllNewsDetailsData
 import com.tekskills.sampleapp.model.NewsDetails
 import com.tekskills.sampleapp.model.BannerItem
 import com.tekskills.sampleapp.model.PosterDetails
+import com.tekskills.sampleapp.model.PublicAdsDetails
 import com.tekskills.sampleapp.model.VideoInfo
 import com.tekskills.sampleapp.utils.Event
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +23,7 @@ import retrofit2.Response
 import java.lang.Exception
 
 class MainViewModel(
-    private val repository: ArticlesRepository,
+    private val repository: ArticleProviderRepo,
     private val prefrences: SharedPrefManager
 ) : ViewModel(), Observable {
     override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {
@@ -47,13 +45,9 @@ class MainViewModel(
     var responseLiveData: MutableLiveData<Response<NewsDetails>?> = MutableLiveData()
     var responseEditorLiveData: MutableLiveData<Response<PosterDetails>?> = MutableLiveData()
     var responseBannerLiveData: MutableLiveData<Response<BannerItem>?> = MutableLiveData()
+    var responsePublicAdsLiveData: MutableLiveData<Response<PublicAdsDetails>?> = MutableLiveData()
     var responseAllNewsLiveData: MutableLiveData<Response<AllNewsDetailsData>?> = MutableLiveData()
     val videoInfoLiveData = MutableLiveData<VideoInfo>()
-
-    var bookmarkList: LiveData<List<ArticlesAllNews>> = repository.articles
-
-    val _viewCount: MutableLiveData<ArticleViewCount> = MutableLiveData<ArticleViewCount>()
-    val viewCount: LiveData<ArticleViewCount> get() = _viewCount
 
     val appPreferences: SharedPrefManager
         get() = prefrences
@@ -88,6 +82,7 @@ class MainViewModel(
 
         viewModelScope.launch {
             getBannerDetails()
+            getPublicAdsDetails()
         }
     }
 
@@ -272,6 +267,16 @@ class MainViewModel(
         }
     }
 
+    private suspend fun getPublicAdsDetails() {
+        val response = ArticleProviderRepo().getPublicAds()
+        if (response.isSuccessful) {
+            responsePublicAdsLiveData.postValue(response)
+        } else {
+            responsePublicAdsLiveData.postValue(null)
+            message.value = Event(response.errorBody().toString())
+        }
+    }
+
     fun changeViewType(id: Int) {
 
         when (id) {
@@ -309,28 +314,16 @@ class MainViewModel(
         refreshResponse()
     }
 
-    fun addAArticle(id: Int = 0, news_id: Int, viewCount: Int) {
-        viewModelScope.launch {
-            repository.insertOrUpdateArticleViewCount(id, news_id, viewCount)
-        }
-    }
-
-    fun deleteAArticle(bookmark: ArticlesAllNews) {
-        viewModelScope.launch {
-            repository.deleteArticleFromArticles(bookmark)
-        }
-    }
-
-    fun clearAllArticles() {
-        viewModelScope.launch {
-            repository.deleteALlArticleFromArticles()
-        }
-    }
-
     fun saveBannerData(dataModel: BannerItem) {
         val gson = Gson()
         val jsonString = gson.toJson(dataModel)
         appPreferences.saveBannerData(jsonString)
+    }
+
+    fun savePublicAdsData(dataModel: PublicAdsDetails) {
+        val gson = Gson()
+        val jsonString = gson.toJson(dataModel)
+        appPreferences.savePublicAdsData(jsonString)
     }
 
     // Retrieve the data from SharedPreferences
@@ -338,25 +331,5 @@ class MainViewModel(
         val gson = Gson()
         val jsonString = appPreferences.getBannerData()
         return gson.fromJson(jsonString, BannerItem::class.java)
-    }
-
-
-    fun getArticleCount(news_id: Int): Int {
-        var count = 0
-        viewModelScope.launch {
-            _viewCount.postValue(repository.getArticleViewCount(news_id))
-        }
-        if (viewCount.value != null)
-            viewCount.value?.let {
-                count = it.view_count
-            }
-        else
-            count = 0
-
-        return count
-    }
-
-    fun getArticleViewCount(news_id: Int): Int {
-        return getArticleCount(news_id)
     }
 }

@@ -18,7 +18,9 @@
         <item name="android:windowSoftInputMode">adjustResize</item>
         <item name="android:windowIsFloating">false</item>
     </style>
-
+    <style name="ProgressBar" parent="ThemeOverlay.MaterialComponents.Light">
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
     <style name="MyBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">#00000000</item>
     </style>

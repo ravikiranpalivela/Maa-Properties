@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.preferencesKey
 import androidx.datastore.preferences.createDataStore
 import com.google.gson.Gson
 import com.tekskills.sampleapp.model.BannerItem
+import com.tekskills.sampleapp.model.PublicAdsDetails
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -68,11 +69,6 @@ class SharedPrefManager private constructor(private val mCtx: Context) {
             return sharedPreferences.getInt("BannerSelect", 0)
         }
 
-    val bannerAdsSelect: Int
-        get() {
-            return sharedPreferences.getInt("BannerAdsSelect", 0)
-        }
-
     fun saveBannerSelect() {
         var count = bannerSelect + 1
         val editor = sharedPreferences.edit()
@@ -99,19 +95,44 @@ class SharedPrefManager private constructor(private val mCtx: Context) {
         var count = 0
         val editor = sharedPreferences.edit()
         editor.putInt("BannerSelect", count)
-        editor.putInt("BannerAdsSelect", count)
         editor.apply()
     }
 
-    fun saveBannerAdsSelect() {
-        var count = bannerAdsSelect + 1
+    val publicAdsAdsSelect: Int
+        get() {
+            return sharedPreferences.getInt("PublicAdsAdsSelect", 0)
+        }
+
+    fun getPublicAdsData(): String? {
+        return sharedPreferences.getString("PublicAdsData", null)
+    }
+
+    fun getPublicAdsDetailsData(): PublicAdsDetails? {
+        val gson = Gson()
+        val jsonString = sharedPreferences.getString("PublicAdsData", null)
+        return gson.fromJson(jsonString, PublicAdsDetails::class.java)
+    }
+
+    fun setPublicAdsSelectValue() {
+        var count = 0
         val editor = sharedPreferences.edit()
-        editor.putInt("BannerAdsSelect", count)
+        editor.putInt("PublicAdsAdsSelect", count)
+        editor.apply()
+    }
+
+    fun savePublicAdsAdsSelect() {
+        var count = publicAdsAdsSelect + 1
+        val editor = sharedPreferences.edit()
+        editor.putInt("PublicAdsAdsSelect", count)
         editor.apply()
     }
 
     fun getPrefData(key: String, defValue: String): String {
         return sharedPreferences.getString(key, defValue)!!
+    }
+
+    fun savePublicAdsData(jsonString: String) {
+        sharedPreferences.edit().putString("PublicAdsData", jsonString).apply()
     }
 
     fun clear() {

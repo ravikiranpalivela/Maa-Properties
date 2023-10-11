@@ -36,10 +36,8 @@ import com.bumptech.glide.Glide
 import com.commit451.nativestackblur.NativeStackBlur
 import com.google.android.material.transition.MaterialFadeThrough
 import com.tekskills.sampleapp.R
-import com.tekskills.sampleapp.data.local.ArticlesAllNews
-import com.tekskills.sampleapp.data.local.ArticlesDatabase
-import com.tekskills.sampleapp.data.local.ArticlesRepository
 import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
+import com.tekskills.sampleapp.data.repo.ArticleProviderRepo
 import com.tekskills.sampleapp.databinding.ActivityPosterEditorBinding
 import com.tekskills.sampleapp.model.PosterItem
 import com.tekskills.sampleapp.ui.adapter.PostersAdapter
@@ -96,10 +94,7 @@ class PosterEditorFragment : Fragment() {
 
         preferences = SharedPrefManager.getInstance(requireContext())
 
-        val database: ArticlesDatabase = ArticlesDatabase.getInstance(context = requireContext())
-
-        val dao = database.dao
-        val repository = ArticlesRepository(dao)
+        val repository = ArticleProviderRepo()
         val factory = MainViewModelFactory(repository, preferences)
         viewModel = ViewModelProvider(requireActivity(), factory)[MainViewModel::class.java]
 
@@ -167,6 +162,10 @@ class PosterEditorFragment : Fragment() {
                 override fun onUploadClick(itemView: View, item: PosterItem) {
                     posterItem = item
                     viewInitializer(item.backgroundImagePath)
+                    binding.comments.text = item.comments.size.toString()
+                    binding.likes.text = item.likes.toString()
+                    binding.shares.text = item.share.toString()
+
                     clPosterView = itemView
                     makeMaskImage(
                         item.backgroundImagePath,
@@ -207,8 +206,7 @@ class PosterEditorFragment : Fragment() {
         val sharedPrefManager: SharedPrefManager = SharedPrefManager.getInstance(requireActivity())
 
         getBannerInfo(sharedPrefManager.bannerSelect)
-        if (posterItem != null)
-            getArticleInfo(posterItem!!.posterId)
+
 //        val BANNER_SAMPLE =
 //            "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
 //        displayImage(BANNER_SAMPLE, binding.ivBannerShare)
@@ -269,8 +267,6 @@ class PosterEditorFragment : Fragment() {
                                 " ",
                                 activityOptions
                             )
-                            if (posterItem != null)
-                                updateShareCount(posterItem!!.posterId)
                             ivBannerShare.visibility = View.GONE
                             ivBannerLogo.visibility = View.GONE
                             visibleEditor()
@@ -304,107 +300,6 @@ class PosterEditorFragment : Fragment() {
 
         binding.editorViewToSave.setOnClickListener {
             hideControl()
-        }
-    }
-
-    fun updateViewCount(articleId: Int) {
-
-        val executor = Executors.newSingleThreadExecutor()
-        executor.execute {
-            // Update the view count in the Room database
-            val database: ArticlesDatabase = ArticlesDatabase.getInstance(requireContext())
-            val dao = database.dao
-            val commentsDao = database.commentDao
-
-            val existingArticle = dao.getArticlesById(articleId)
-            if (existingArticle != null) {
-                // Update the existing article
-                var count = existingArticle.view_count + 1
-                dao.incrementViewCount(existingArticle.news_id, count)
-            } else {
-                val article = ArticlesAllNews(news_id = articleId, view_count = 1)
-                dao.insertArticles(article)
-            }
-
-            // Fetch the updated data from the database
-            requireActivity().runOnUiThread(Runnable {
-                val commentData = commentsDao.getCommentsForItem(articleId)
-                val updatedData = dao.getArticlesById(articleId)
-                binding.apply {
-                    likes.text = updatedData?.view_count.toString()
-                    shares.text = updatedData?.share_count.toString()
-                    Log.d("TAG", "comments data ${commentData.toString()}")
-                    comments.text =
-                        if (commentData.isEmpty()) "0" else commentData.size.toString()
-                }
-            })
-//            database.close()
-        }
-
-    }
-
-    fun updateShareCount(articleId: Int) {
-
-        val executor = Executors.newSingleThreadExecutor()
-        executor.execute {
-            // Update the view count in the Room database
-            val database: ArticlesDatabase =
-                ArticlesDatabase.getInstance(context = requireContext())
-            val dao = database.dao
-            val commentsDao = database.commentDao
-            val existingArticle = dao.getArticlesById(articleId)
-            if (existingArticle != null) {
-                // Update the existing article
-                val count = existingArticle.share_count + 1
-                dao.incrementShareCount(existingArticle.news_id, count)
-            } else {
-                val insertArticle = ArticlesAllNews(news_id = articleId, share_count = 1)
-                // Insert a new article
-                dao.insertArticles(insertArticle)
-            }
-
-            // Fetch the updated data from the database
-            requireActivity().runOnUiThread(Runnable {
-                val commentData = commentsDao.getCommentsForItem(articleId)
-                val updatedData = dao.getArticlesById(articleId)
-                binding.apply {
-                    likes.text = updatedData?.view_count.toString()
-                    shares.text = updatedData?.share_count.toString()
-                    Log.d("TAG", "comments data ${commentData.toString()}")
-                    comments.text =
-                        if (commentData.isEmpty()) "0" else commentData.size.toString()
-                }
-            })
-//            database.close()
-        }
-
-    }
-
-    private fun getArticleInfo(newsId: Int) {
-
-        val executor = Executors.newSingleThreadExecutor()
-        executor.execute {
-            // Update the view count in the Room database
-            val database: ArticlesDatabase =
-                ArticlesDatabase.getInstance(context = requireContext())
-            val dao = database.dao
-            val commentsDao = database.commentDao
-
-            // Fetch the updated data from the database
-            requireActivity().runOnUiThread(Runnable {
-                val commentData = commentsDao.getCommentsForItem(newsId)
-                val updatedData = dao.getArticlesById(newsId)
-                binding.apply {
-                    comments.text =
-                        if (commentData.isEmpty()) "0" else commentData.size.toString()
-                    if (updatedData != null) {
-                        likes.text = updatedData.view_count.toString()
-                        shares.text = updatedData.share_count.toString()
-                    }
-                    Log.d("TAG", "comments data ${commentData.toString()}")
-                }
-            })
-//            database.close()
         }
     }
 

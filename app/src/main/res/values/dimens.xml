@@ -1,102 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <dimen name="margin_1">1dp</dimen>
-
-    <!-- common sizes -->
-
-    <!-- Elevations -->
-    <!-- https://material.io/guidelines/material-design/elevation-shadows.html -->
-    <!-- (+1 dp for each sub menu) -->
-
-    <!-- Typography -->
-    <!-- english like, dense and tall are not much different to bring separably -->
-    <!-- you want to know each language belongs to which category refer to: -->
-    <!-- https://material.io/guidelines/style/typography.html -->
-
-    <!-- Metrics & Keylines -->
-    <!-- https://material.io/guidelines/layout/metrics-keylines.html -->
-    <!-- List -->
-    <!-- Details -->
-    <!-- Navigation Drawer -->
-
-    <!-- AppBar -->
-    <!-- https://material.io/guidelines/layout/structure.html -->
-
-    <!-- Bottom Navigation -->
-    <!-- Navigation Bar https://material.io/guidelines/components/bottom-navigation.html -->
-
-    <!-- Bottom sheets -->
-    <!-- List Style -->
-    <!-- middle vertical alignment -->
-    <!-- Grid Style -->
-    <!-- center-aligned below each icon -->
-
-    <!-- Buttons -->
-
-    <!-- Floating action button -->
-
-    <!-- Cards -->
-
-    <!-- Chips -->
-
-    <!-- Data tables -->
-    <!-- No useful dimen -->
-
-    <!-- Dialogs -->
-
-    <!-- Dividers -->
-
-    <!-- Expansion panels -->
-    <!-- No useful dimen -->
-
-    <!-- Grid lists -->
-    <!--https://material.io/guidelines/components/grid-lists.html-->
-
-    <!-- Lists -->
-
-    <!-- Lists: Controls -->
-    <!-- No useful dimen -->
-
-    <!-- Menus -->
-
-    <!-- Pickers -->
-    <!-- No useful dimen -->
-
-    <!-- Progress & activity -->
-    <!-- No useful dimen -->
-
-    <!-- Selection controls -->
-    <!-- No useful dimen -->
-
-    <!-- Sliders -->
-    <!-- No useful dimen -->
-
-    <!-- Snackbars & toasts -->
-
-    <!-- Steppers -->
-
-    <!-- Subheaders -->
-    <!-- No useful dimen -->
-
-    <!-- Tabs -->
-
-    <!-- Text fields -->
-
-    <!-- Toolbars -->
-    <!-- No useful dimen -->
-
-    <!-- Tooltips -->
-    <!-- No useful dimen -->
-
-    <!-- Default screen margins, per the Android Design guidelines. -->
-
-    <!--   ******************************Widget******************************* -->
-
     <!--   ******************************Font******************************* -->
     <dimen name="font_size_16">16sp</dimen>
     <dimen name="font_size_20">20sp</dimen>
+    <dimen name="font_size_12">12sp</dimen>
     <!--   ******************************Widget******************************* -->
+    <dimen name="widget_size_1">1dp</dimen>
     <dimen name="widget_size_2">2dp</dimen>
     <dimen name="widget_size_4">4dp</dimen>
     <dimen name="widget_size_8">8dp</dimen>
@@ -114,5 +23,4 @@
     <dimen name="reactions_text_horizontal_padding">12dp</dimen>
     <dimen name="reactions_text_vertical_padding">4dp</dimen>
     <dimen name="reactions_text_size">16sp</dimen>
-    <dimen name="font_size_12">12sp</dimen>
 </resources>

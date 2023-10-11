@@ -1,7 +1,6 @@
 package com.tekskills.sampleapp.model
 
 import com.google.gson.annotations.SerializedName
-import com.tekskills.sampleapp.data.local.CommentItem
 import java.io.Serializable
 
 class NewsDetails : ArrayList<NewsItem>()

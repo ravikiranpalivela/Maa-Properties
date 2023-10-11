@@ -13,14 +13,11 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.tekskills.sampleapp.R
-import com.tekskills.sampleapp.data.local.ArticlesDatabase
-import com.tekskills.sampleapp.data.local.ArticlesRepository
-import com.tekskills.sampleapp.data.local.CommentItem
 import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
+import com.tekskills.sampleapp.data.repo.ArticleProviderRepo
 import com.tekskills.sampleapp.databinding.BottomSheetFeedbackBinding
 import com.tekskills.sampleapp.model.Comment
 import com.tekskills.sampleapp.model.CommentDetails
-import com.tekskills.sampleapp.model.NewsItem
 import com.tekskills.sampleapp.ui.adapter.CommentsListAdapter
 import com.tekskills.sampleapp.ui.main.MainViewModel
 import com.tekskills.sampleapp.ui.main.MainViewModelFactory
@@ -57,10 +54,8 @@ class CommentBottomSheet : BottomSheetDialogFragment() {
 
         preferences =
             SharedPrefManager.getInstance(requireContext())
-        val database: ArticlesDatabase = ArticlesDatabase.getInstance(context = requireContext())
 
-        val dao = database.dao
-        val repository = ArticlesRepository(dao)
+        val repository = ArticleProviderRepo()
 
         val factory = MainViewModelFactory(repository, preferences)
         viewModel = ViewModelProvider(requireActivity(), factory)[MainViewModel::class.java]
@@ -119,28 +114,6 @@ class CommentBottomSheet : BottomSheetDialogFragment() {
         }
         binding.userInput.imeOptions = EditorInfo.IME_ACTION_DONE
         binding.userInput.setRawInputType(InputType.TYPE_CLASS_TEXT)
-    }
-
-    fun updateViewCount(articleId: Int, articleText: String) {
-
-        val executor = Executors.newSingleThreadExecutor()
-        executor.execute {
-            // Update the view count in the Room database
-            val database: ArticlesDatabase =
-                ArticlesDatabase.getInstance(context = requireContext())
-            val dao = database.commentDao
-
-            dao.insertComment(
-                CommentItem(
-                    itemId = articleId,
-                    text = articleText,
-                    lastUpdate = System.currentTimeMillis()
-                )
-            )
-            requireActivity().runOnUiThread(Runnable {
-                setUpGenresAdapter(comments)
-            })
-        }
     }
 
     override fun getTheme(): Int {

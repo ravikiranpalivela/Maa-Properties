@@ -5,6 +5,7 @@ import com.tekskills.sampleapp.model.NewsDetails
 import com.tekskills.sampleapp.model.BannerItem
 import com.tekskills.sampleapp.model.LikeResponse
 import com.tekskills.sampleapp.model.PosterDetails
+import com.tekskills.sampleapp.model.PublicAdsDetails
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -34,44 +35,23 @@ interface NewsService{
     @GET(APIEndPoint.GET_BANNER_LIST)
     suspend fun getBanners(): Response<BannerItem>
 
-    @PUT("${APIEndPoint.POST_NEWS_LIKE}/{id}")
-    suspend fun postNewsLike(@Path("id") id:String): Response<LikeResponse>
+    @GET(APIEndPoint.GET_PUBLIC_ADS)
+    suspend fun getPublicAds(): Response<PublicAdsDetails>
 
-    @PUT("${APIEndPoint.POST_WISHES_LIKE}/{id}")
-    suspend fun postWishesLike(@Path("id") articleID:String): Response<LikeResponse>
-
-    @PUT("${APIEndPoint.POST_SHORTS_LIKE}/{id}")
-    suspend fun postShortsLike(@Path("id") articleID:String): Response<LikeResponse>
-
-    @PUT("${APIEndPoint.POST_POSTER_LIKE}/{id}")
-    suspend fun postPostersLike(@Path("id") articleID:String): Response<LikeResponse>
-//    @Headers("Content-Type: application/json","X-HTTP-Method-Override: POST")
-    @POST("https://admin2.maaproperties.com/api/common")
+    @POST(APIEndPoint.POST_COMMENTS)
     suspend fun postComments(@Body user: Map<String,String>): Response<LikeResponse>
 
-//    @Headers("Content-Type: application/json")
-//    @PUT(APIEndPoint.PUT_LIKES_COMMON)
-//    suspend fun updateNewsLike(
-//        @Query("id") id: Int,
-//        @Query("type") type: String,
-//    ): Response<LikeResponse>
-
-    @PUT("https://admin2.maaproperties.com/api/common")
+    @PUT(APIEndPoint.PUT_LIKES_COMMON)
     suspend fun updateNewsLike(
         @Query("id") id: Int = 0,
         @Query("type") type: String = "news"
     ): Response<LikeResponse>
 
-    @PUT("https://admin2.maaproperties.com/api/common/share")
+    @PUT(APIEndPoint.PUT_SHARE_COMMON)
     suspend fun updateNewsShare(
         @Query("id") id: Int = 0,
         @Query("type") type: String = "news"
     ): Response<LikeResponse>
-
-    @PUT
-    suspend fun updateNewsLike(@Url url: String): Response<LikeResponse>
-    @PUT("https://admin2.maaproperties.com/api/common?id=855&type=news")
-    suspend fun checkLike(): Response<LikeResponse>
 
     @GET
     suspend fun getVideoInfo(@Url videoUrl: String): VideoInfoResponse

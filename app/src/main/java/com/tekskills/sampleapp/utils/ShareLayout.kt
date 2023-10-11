@@ -2,17 +2,22 @@ package com.tekskills.sampleapp.utils
 
 import android.content.ContentResolver
 import android.content.ContentUris
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import androidx.core.app.ActivityOptionsCompat
+import com.tekskills.sampleapp.utils.AppConstant.ARTICLE
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
 import java.util.Calendar
 
 
@@ -34,6 +39,13 @@ object ShareLayout {
         val bytes = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) saveImageInQ(ctx,bitmap)
+        else saveTheImageLegacyStyle(bitmap)
+
+
+        val iconsStoragePath =
+            ctx.getExternalFilesDir(ARTICLE).toString()
+
         val imageName = "VMR_" + Calendar.getInstance().time
         val pathOfBmp = MediaStore.Images.Media.insertImage(
             ctx.contentResolver,
@@ -53,6 +65,42 @@ object ShareLayout {
         shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
         ctx.startActivity(Intent.createChooser(shareIntent, "hello hello"),activityOptions?.toBundle())
 //        deleteFile(ctx,uri)
+    }
+
+    fun saveImageInQ(ctx: Context, bitmap: Bitmap):Uri {
+        val filename = "IMG_${System.currentTimeMillis()}.jpg"
+        var fos: OutputStream? = null
+        var imageUri: Uri? = null
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
+            put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+            put(MediaStore.Video.Media.IS_PENDING, 1)
+        }
+
+        //use application context to get contentResolver
+        val contentResolver = ctx.contentResolver
+
+        contentResolver.also { resolver ->
+            imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+            fos = imageUri?.let { resolver.openOutputStream(it) }
+        }
+
+        fos?.use { bitmap.compress(Bitmap.CompressFormat.JPEG, 70, it) }
+
+        contentValues.clear()
+        contentValues.put(MediaStore.Video.Media.IS_PENDING, 0)
+        contentResolver.update(imageUri!!, contentValues, null, null)
+
+        return imageUri!!
+    }
+
+    fun saveTheImageLegacyStyle(bitmap:Bitmap){
+        val filename = "IMG_${System.currentTimeMillis()}.jpg"
+        val imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+        val image = File(imagesDir, filename)
+        val fos = FileOutputStream(image)
+        fos.use {bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)}
     }
 
     fun deleteFile(context: Context, uri: Uri): Boolean? {

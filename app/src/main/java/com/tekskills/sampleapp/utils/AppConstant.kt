@@ -1,7 +1,5 @@
 package com.tekskills.sampleapp.utils
 
-import retrofit2.http.Field
-
 object AppConstant {
     const val CONTENT = "content"
     const val VIDEO_MIME_TYPE = "video/*"
@@ -39,4 +37,7 @@ object AppConstant {
     const val Name = "Name"
     const val Description = "Description"
     const val Banner = "Banner"
+
+    const val ADS_COUNT :Int = 5
+    const val ARTICLE = "article"
 }

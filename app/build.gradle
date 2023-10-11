@@ -13,11 +13,10 @@ android {
 
     defaultConfig {
         applicationId "com.tekskills.sampleapp"
-        minSdk 31
+        minSdk 24
         targetSdk 33
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -113,7 +112,6 @@ android {
     }
 }
 
-
 dependencies {
 //    implementation 'androidx.core:core-ktx:1.10.1'
     implementation platform('org.jetbrains.kotlin:kotlin-bom:1.8.0')
@@ -159,7 +157,7 @@ dependencies {
 //    implementation 'org.videolan.android:libvlc-all:3.3.13'
 
 //    implementation "androidx.work:work-runtime:2.5.0"
-    implementation 'com.theartofdev.edmodo:android-image-cropper:2.7.+'
+    implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
 
     implementation 'com.github.Commit451:NativeStackBlur:1.0.7'
 

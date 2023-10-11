@@ -486,6 +486,15 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivi
                     viewModel.saveBannerData(articles)
                 }
         })
+
+        viewModel.responsePublicAdsLiveData.observe(this, Observer {
+            if (it != null)
+                it.body()?.let { articles ->
+                    val sharedPrefManager: SharedPrefManager = SharedPrefManager.getInstance(this)
+                    sharedPrefManager.setPublicAdsSelectValue()
+                    viewModel.savePublicAdsData(articles)
+                }
+        })
     }
 
     private fun setupDrawerContent(navigationView: NavigationView) {

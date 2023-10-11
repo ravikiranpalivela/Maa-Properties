@@ -20,9 +20,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.transition.MaterialFadeThrough
 import com.tekskills.sampleapp.R
-import com.tekskills.sampleapp.data.local.ArticlesDatabase
-import com.tekskills.sampleapp.data.local.ArticlesRepository
 import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
+import com.tekskills.sampleapp.data.repo.ArticleProviderRepo
 import com.tekskills.sampleapp.databinding.FragmentArticlesBinding
 import com.tekskills.sampleapp.model.NewsItem
 import com.tekskills.sampleapp.ui.adapter.ShortsAdapter
@@ -30,6 +29,8 @@ import com.tekskills.sampleapp.ui.comment.CommentBottomSheet
 import com.tekskills.sampleapp.ui.main.MainActivity
 import com.tekskills.sampleapp.ui.main.MainViewModel
 import com.tekskills.sampleapp.ui.main.MainViewModelFactory
+import com.tekskills.sampleapp.utils.AppConstant.ARTICLE
+import com.tekskills.sampleapp.utils.AppConstant.ADS_COUNT
 import com.tekskills.sampleapp.utils.ObjectSerializer
 import com.tekskills.sampleapp.utils.ShareLayout
 
@@ -51,10 +52,7 @@ class ShortsFragment : Fragment() {
         preferences =
             SharedPrefManager.getInstance(requireContext())
 
-        val database: ArticlesDatabase = ArticlesDatabase.getInstance(context = requireContext())
-
-        val dao = database.dao
-        val repository = ArticlesRepository(dao)
+        val repository = ArticleProviderRepo()
         val factory = MainViewModelFactory(repository, preferences)
         viewModel = ViewModelProvider(requireActivity(), factory).get(MainViewModel::class.java)
 
@@ -142,11 +140,11 @@ class ShortsFragment : Fragment() {
         val newList = arrayListOf<NewsItem?>()
 
         for ((counter, item) in list.withIndex()) {
-            if (counter < 4) {
+            if (counter < ADS_COUNT) {
                 newList.add(item)
             } else {
-                if (counter % 4 != 0) {
-                    newList.add(item) // Add a null item every 3rd position
+                if (counter % ADS_COUNT != 0) {
+                    newList.add(item)
                 } else{
                     newList.add(null)
                     newList.add(item)
@@ -160,7 +158,7 @@ class ShortsFragment : Fragment() {
 
     private fun goToArticleDetailActivity(article: NewsItem, imageView: ImageView) {
         val intent = Intent(requireContext(), ArticleDetailsActivity::class.java)
-        intent.putExtra("article", ObjectSerializer.serialize(article))
+        intent.putExtra(ARTICLE, ObjectSerializer.serialize(article))
         val activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
             requireActivity(),
             imageView,
@@ -198,7 +196,7 @@ class ShortsFragment : Fragment() {
                                 Uri.parse(newsItem.websiteUrl)
                             )
 
-                            intent.putExtra("article", ObjectSerializer.serialize(newsItem))
+                            intent.putExtra(ARTICLE, ObjectSerializer.serialize(newsItem))
                             val activityOptions =
                                 ActivityOptionsCompat.makeSceneTransitionAnimation(
                                     requireActivity(),
@@ -265,7 +263,7 @@ class ShortsFragment : Fragment() {
 //                                Uri.parse(article.websiteUrl)
 //                            )
 //
-//                            intent.putExtra("article", ObjectSerializer.serialize(article))
+//                            intent.putExtra(ARTICLE, ObjectSerializer.serialize(article))
 //                            val activityOptions =
 //                                ActivityOptionsCompat.makeSceneTransitionAnimation(
 //                                    requireActivity(),
