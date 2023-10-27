@@ -11,7 +11,6 @@
     <string name="write_comment">Write Comment</string>
     <string name="submit">Submit</string>
 
-
     <string-array name="intro_title_list">
         <item>All</item>
         <item>News</item>
@@ -49,9 +48,12 @@
         <item quantity="one">%d day ago</item>
         <item quantity="other">%d days ago</item>
     </plurals>
+
     <string name="days_ago">%s days ago</string>
     <string name="admob_banner_id">ca-app-pub-3940256099942544/6300978111</string>
     <string name="admob_medium_banner_id">ca-app-pub-3940256099942544/6300978111</string>
     <string name="admob_app_id">ca-app-pub-3940256099942544~3347511713</string>
     <string name="loading">Loading...</string>
+    <string name="poll_question">Do you want to poll?</string>
+
 </resources>

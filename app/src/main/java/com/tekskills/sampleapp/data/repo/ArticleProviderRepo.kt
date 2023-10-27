@@ -9,6 +9,7 @@ import com.tekskills.sampleapp.model.LikeResponse
 import com.tekskills.sampleapp.model.PosterDetails
 import com.tekskills.sampleapp.model.PublicAdsDetails
 import retrofit2.Response
+import retrofit2.http.Query
 
 class ArticleProviderRepo {
 
@@ -62,6 +63,19 @@ class ArticleProviderRepo {
 
     suspend fun updateNewsLike(articleID: Int, type: String): Response<LikeResponse> {
         return retService.updateNewsLike(articleID, type)
+    }
+
+    suspend fun updateNewsVote(pollID: Int, articleID: Int, desc: String, pollOption: String): Response<LikeResponse> {
+        return retService.updatePollingVote(pollID,pollOption,desc, articleID)
+    }
+
+    suspend fun postPollingVote(pollID: Int, articleID: Int, desc: String, pollOption: String): Response<LikeResponse> {
+        val requestBody: MutableMap<String, String> = HashMap()
+        requestBody["newsId"] = articleID.toString()
+        requestBody["pollId"] = pollID.toString()
+        requestBody["pollOption"] = pollOption
+        requestBody["description"] = desc
+        return retService.postPollingVote(requestBody)
     }
 
     suspend fun updateNewsShare(articleID: Int, type: String): Response<LikeResponse> {

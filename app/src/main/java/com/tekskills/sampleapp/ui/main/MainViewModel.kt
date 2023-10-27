@@ -57,9 +57,10 @@ class MainViewModel(
             isLoading.value = true
             try {
                 when (category.value!!) {
-                    "All" ->{
+                    "All" -> {
                         getAllNewsDetails()
                     }
+
                     "News", "Wishes" -> {
                         getNewsDetails()
                     }
@@ -129,19 +130,19 @@ class MainViewModel(
         throw Exception("Failed to fetch video information")
     }
 
-    fun postNewsLike(newsID: Int,newsType: String) {
+    fun postNewsLike(newsID: Int, newsType: String) {
         viewModelScope.launch {
 //           val response = ArticleProviderRepo().checkLike()
             val response = when (category.value) {
-                "All" -> ArticleProviderRepo().updateNewsLike(newsID,newsType)
+                "All" -> ArticleProviderRepo().updateNewsLike(newsID, newsType)
 
-                "News" -> ArticleProviderRepo().updateNewsLike(newsID,"NEWS")
+                "News" -> ArticleProviderRepo().updateNewsLike(newsID, "NEWS")
 
-                "Wishes" -> ArticleProviderRepo().updateNewsLike(newsID,"WISH")
+                "Wishes" -> ArticleProviderRepo().updateNewsLike(newsID, "WISH")
 
-                "Posters" -> ArticleProviderRepo().updateNewsLike(newsID,"POSTER")
+                "Posters" -> ArticleProviderRepo().updateNewsLike(newsID, "POSTER")
 
-                else -> ArticleProviderRepo().updateNewsLike(newsID,"SORT")
+                else -> ArticleProviderRepo().updateNewsLike(newsID, "SORT")
             }
             if (response.isSuccessful) {
                 refreshUpdatedResponse()
@@ -151,19 +152,30 @@ class MainViewModel(
         }
     }
 
-    fun postNewsShare(newsID: Int,newsType: String) {
+    fun updateNewsVote(pollID: Int, articleID: Int, desc: String, pollOption: String) {
+        viewModelScope.launch {
+            val response = ArticleProviderRepo().updateNewsVote(pollID, articleID, desc, pollOption)
+            if (response.isSuccessful) {
+                refreshUpdatedResponse()
+            } else {
+                message.value = Event(response.errorBody().toString())
+            }
+        }
+    }
+
+    fun postNewsShare(newsID: Int, newsType: String) {
         viewModelScope.launch {
 //           val response = ArticleProviderRepo().checkLike()
             val response = when (category.value) {
-                "All" -> ArticleProviderRepo().updateNewsShare(newsID,newsType)
+                "All" -> ArticleProviderRepo().updateNewsShare(newsID, newsType)
 
-                "News" -> ArticleProviderRepo().updateNewsShare(newsID,"NEWS")
+                "News" -> ArticleProviderRepo().updateNewsShare(newsID, "NEWS")
 
-                "Wishes" -> ArticleProviderRepo().updateNewsShare(newsID,"WISH")
+                "Wishes" -> ArticleProviderRepo().updateNewsShare(newsID, "WISH")
 
-                "Posters" -> ArticleProviderRepo().updateNewsShare(newsID,"POSTER")
+                "Posters" -> ArticleProviderRepo().updateNewsShare(newsID, "POSTER")
 
-                else -> ArticleProviderRepo().updateNewsShare(newsID,"SORT")
+                else -> ArticleProviderRepo().updateNewsShare(newsID, "SORT")
             }
             if (response.isSuccessful) {
                 refreshUpdatedResponse()
@@ -177,15 +189,15 @@ class MainViewModel(
         viewModelScope.launch {
 //           val response = ArticleProviderRepo().checkLike()
             val response = when (category.value) {
-                "All" -> ArticleProviderRepo().updateNewsShare(newsID,"NEWS")
+                "All" -> ArticleProviderRepo().updateNewsShare(newsID, "NEWS")
 
-                "News" -> ArticleProviderRepo().updateNewsShare(newsID,"NEWS")
+                "News" -> ArticleProviderRepo().updateNewsShare(newsID, "NEWS")
 
-                "Wishes" -> ArticleProviderRepo().updateNewsShare(newsID,"WISH")
+                "Wishes" -> ArticleProviderRepo().updateNewsShare(newsID, "WISH")
 
-                "Posters" -> ArticleProviderRepo().updateNewsShare(newsID,"POSTER")
+                "Posters" -> ArticleProviderRepo().updateNewsShare(newsID, "POSTER")
 
-                else -> ArticleProviderRepo().updateNewsShare(newsID,"SORT")
+                else -> ArticleProviderRepo().updateNewsShare(newsID, "SORT")
             }
             if (response.isSuccessful) {
                 refreshUpdatedResponse()
@@ -195,12 +207,12 @@ class MainViewModel(
         }
     }
 
-    suspend fun refreshUpdatedResponse()
-    {
+    suspend fun refreshUpdatedResponse() {
         when (category.value!!) {
-            "All" ->{
+            "All" -> {
                 getAllNewsDetails()
             }
+
             "News", "Wishes" -> {
                 getNewsDetails()
             }
@@ -215,19 +227,19 @@ class MainViewModel(
         }
     }
 
-    fun postComments(newsID: String,comment:String) {
+    fun postComments(newsID: String, comment: String) {
         viewModelScope.launch {
 
             val response = when (category.value) {
-                "All" -> ArticleProviderRepo().postComments(newsID,"NEWS",comment)
+                "All" -> ArticleProviderRepo().postComments(newsID, "NEWS", comment)
 
-                "News" -> ArticleProviderRepo().postComments(newsID,"NEWS",comment)
+                "News" -> ArticleProviderRepo().postComments(newsID, "NEWS", comment)
 
-                "Wishes" -> ArticleProviderRepo().postComments(newsID,"WISH",comment)
+                "Wishes" -> ArticleProviderRepo().postComments(newsID, "WISH", comment)
 
-                "Posters" -> ArticleProviderRepo().postComments(newsID,"POSTER",comment)
+                "Posters" -> ArticleProviderRepo().postComments(newsID, "POSTER", comment)
 
-                else -> ArticleProviderRepo().postComments(newsID,"SORT",comment)
+                else -> ArticleProviderRepo().postComments(newsID, "SORT", comment)
             }
             if (response.isSuccessful) {
                 refreshUpdatedResponse()

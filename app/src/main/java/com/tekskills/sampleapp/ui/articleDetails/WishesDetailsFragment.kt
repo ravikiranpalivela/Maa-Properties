@@ -238,6 +238,10 @@ class WishesDetailsFragment : Fragment() {
                             CommentBottomSheet.TAG
                         )
                     }
+
+                    override fun voteClickListener(newsItem: NewsItem, pollOption: String) {
+
+                    }
                 })
 
         binding.pager.orientation = ViewPager2.ORIENTATION_VERTICAL

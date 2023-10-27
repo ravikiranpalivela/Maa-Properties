@@ -37,6 +37,7 @@ object AppConstant {
     const val Name = "Name"
     const val Description = "Description"
     const val Banner = "Banner"
+    const val APP_JSON = "Content-Type: application/json"
 
     const val ADS_COUNT :Int = 5
     const val ARTICLE = "article"

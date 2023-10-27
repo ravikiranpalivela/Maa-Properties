@@ -6,16 +6,19 @@ import com.tekskills.sampleapp.model.BannerItem
 import com.tekskills.sampleapp.model.LikeResponse
 import com.tekskills.sampleapp.model.PosterDetails
 import com.tekskills.sampleapp.model.PublicAdsDetails
+import com.tekskills.sampleapp.utils.AppConstant.APP_JSON
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 import retrofit2.http.Url
 
-interface NewsService{
+interface NewsService {
 
     @GET(APIEndPoint.GET_WISHES_LIST)
     suspend fun getWishes(): Response<NewsDetails>
@@ -39,12 +42,26 @@ interface NewsService{
     suspend fun getPublicAds(): Response<PublicAdsDetails>
 
     @POST(APIEndPoint.POST_COMMENTS)
-    suspend fun postComments(@Body user: Map<String,String>): Response<LikeResponse>
+    suspend fun postComments(@Body user: Map<String, String>): Response<LikeResponse>
 
     @PUT(APIEndPoint.PUT_LIKES_COMMON)
     suspend fun updateNewsLike(
         @Query("id") id: Int = 0,
         @Query("type") type: String = "news"
+    ): Response<LikeResponse>
+
+    @POST(APIEndPoint.POST_VOTE)
+    suspend fun updatePollingVote(
+        @Query("pollId") pollId: Int = 0,
+        @Query("pollOption") pollOption: String = "news",
+        @Query("description") description: String = "news",
+        @Query("newsId") newsId: Int = 0,
+    ): Response<LikeResponse>
+
+    @Headers(APP_JSON)
+    @POST(APIEndPoint.POST_VOTE)
+    suspend fun postPollingVote(
+        @Body user: Map<String, String>
     ): Response<LikeResponse>
 
     @PUT(APIEndPoint.PUT_SHARE_COMMON)

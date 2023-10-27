@@ -21,6 +21,7 @@ import com.tekskills.sampleapp.model.BannerItem
 import com.tekskills.sampleapp.model.NewsItem
 import com.tekskills.sampleapp.model.PublicAdsDetails
 import com.tekskills.sampleapp.ui.adapter.ShortsAdapter
+import com.tekskills.sampleapp.ui.main.MainActivity
 import com.tekskills.sampleapp.utils.like.LikeButton
 import com.tekskills.sampleapp.utils.like.OnAnimationEndListener
 import com.tekskills.sampleapp.utils.like.OnLikeListener
@@ -79,7 +80,6 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                 true
             }
 
-
             heartButton.setOnLikeListener(object : OnLikeListener {
                 override fun liked(likeButton: LikeButton?) {
 //                    Toast.makeText(activity, "Liked!", Toast.LENGTH_SHORT).show();
@@ -123,6 +123,7 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
 
 
             ivShare.setOnClickListener {
+                (activity as MainActivity?)!!.appBarLayoutHandle(true)
                 getBannerInfo(
                     sharedPrefManager.getBannerDetailsData(),
                     sharedPrefManager.bannerSelect

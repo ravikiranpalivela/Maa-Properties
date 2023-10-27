@@ -14,7 +14,7 @@
             android:layout_width="250dp"
             android:layout_height="250dp"
             android:padding="4dp"
-            android:src="@mipmap/ic_logo_round"
+            android:src="@mipmap/ic_launcher_round"
             android:scaleType="fitXY"
             android:layout_gravity="center"
             app:layout_constraintBottom_toBottomOf="parent"

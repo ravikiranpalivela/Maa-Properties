@@ -261,7 +261,6 @@ class AllNewsDetailsFragment : Fragment() {
                     }
 
                     override fun shareClickListener(newsItem: AllNewsItem, imageView: View) {
-                        (activity as MainActivity?)!!.appBarLayoutHandle(true)
                         val activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
                             requireActivity(),
                             imageView,

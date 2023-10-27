@@ -19,6 +19,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.You
 import com.tekskills.sampleapp.R
 import com.tekskills.sampleapp.databinding.ItemArticleViewtypeListBinding
 import com.tekskills.sampleapp.model.NewsItem
+import com.tekskills.sampleapp.ui.main.MainActivity
 import com.tekskills.sampleapp.utils.video.changeDateFormat
 import com.tekskills.sampleapp.utils.video.getThumbnail
 import com.tekskills.sampleapp.utils.video.getVideoId
@@ -80,6 +81,7 @@ abstract class BaseViewHolder<viewDataBinding : ViewDataBinding>(
             ivBannerLogo.visibility = View.GONE
 
             ivShare.setOnClickListener {
+                (activity as MainActivity?)!!.appBarLayoutHandle(true)
                 youtubePlayerView.visibility = View.GONE
                 webView.visibility = View.GONE
                 articleImage.visibility = View.VISIBLE

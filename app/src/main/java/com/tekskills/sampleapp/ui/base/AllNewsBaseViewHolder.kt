@@ -24,6 +24,7 @@ import com.tekskills.sampleapp.model.BannerItem
 import com.tekskills.sampleapp.model.NewsItem
 import com.tekskills.sampleapp.model.PublicAdsDetails
 import com.tekskills.sampleapp.ui.adapter.OnAllNewsClickListener
+import com.tekskills.sampleapp.ui.main.MainActivity
 import com.tekskills.sampleapp.ui.main.MainViewModel
 import com.tekskills.sampleapp.utils.like.LikeButton
 import com.tekskills.sampleapp.utils.like.OnAnimationEndListener
@@ -177,6 +178,7 @@ abstract class AllNewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
             ivBannerLogo.visibility = View.GONE
 
             ivShare.setOnClickListener {
+                (activity as MainActivity?)!!.appBarLayoutHandle(true)
                 getBannerInfo(
                     sharedPrefManager.getBannerDetailsData(),
                     sharedPrefManager.bannerSelect

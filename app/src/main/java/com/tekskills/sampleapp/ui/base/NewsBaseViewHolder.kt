@@ -1,6 +1,7 @@
 package com.tekskills.sampleapp.ui.base
 
 import android.app.Activity
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.CountDownTimer
@@ -10,19 +11,25 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.widget.ImageView
+import android.widget.RadioButton
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.android.material.chip.Chip
+import com.google.android.material.radiobutton.MaterialRadioButton
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.tekskills.sampleapp.R
 import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
 import com.tekskills.sampleapp.databinding.ItemArticleViewtypeListBinding
 import com.tekskills.sampleapp.model.BannerItem
 import com.tekskills.sampleapp.model.NewsItem
+import com.tekskills.sampleapp.model.PollDetails
 import com.tekskills.sampleapp.model.PublicAdsDetails
 import com.tekskills.sampleapp.ui.adapter.OnNewsClickListener
+import com.tekskills.sampleapp.ui.main.MainActivity
 import com.tekskills.sampleapp.ui.main.MainViewModel
 import com.tekskills.sampleapp.utils.like.LikeButton
 import com.tekskills.sampleapp.utils.like.OnAnimationEndListener
@@ -180,6 +187,7 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
             ivBannerLogo.visibility = View.GONE
 
             ivShare.setOnClickListener {
+                (activity as MainActivity?)!!.appBarLayoutHandle(true)
                 getBannerInfo(
                     sharedPrefManager.getBannerDetailsData(),
                     sharedPrefManager.bannerSelect
@@ -200,6 +208,32 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
 
                     override fun onTick(millisUntilFinished: Long) {}
                 }.start()
+            }
+
+            article.pollDetails?.let {
+                article.pollDetails?.options?.let { poll ->
+                    if (poll.isNotEmpty()) {
+                        binding.llPollQuestion.visibility = View.VISIBLE
+                        setupSurveyUi(article.pollDetails)
+                    } else binding.llPollQuestion.visibility = View.GONE
+                }
+            }
+
+            binding.chipVote.setOnCheckedStateChangeListener { group, checkedIds ->
+                Log.d("TAG", "onCheckedChanged")
+                val id = checkedIds[0]
+                val chip = group.findViewById(id) as Chip
+                onClickListener.voteClickListener(article, chip.text.toString())
+            }
+
+            binding.radioGroup.setOnCheckedChangeListener { radioGroup, i ->
+                Log.d("TAG", "onCheckedChanged")
+                val chip = radioGroup.findViewById(i) as RadioButton
+                if(chip.text == "Yes")
+                {
+                    binding.llPolling.visibility = View.VISIBLE
+                    setupSurveyUi(article.pollDetails)
+                } else binding.llPolling.visibility = View.GONE
             }
 
             if (validateUrlValue(article.videoPath) != "null"
@@ -272,7 +306,6 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
         }
     }
 
-
     fun bindAdView(
         onClickListener: OnNewsClickListener,
     ) {
@@ -307,12 +340,11 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                 activity.runOnUiThread(Runnable {
                     binding.apply {
                         var count = bannerSelect + 1
-                        if(banners.size == 0)
-                        {
+                        if (banners.size == 0) {
                             val BANNER_SAMPLE =
                                 "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
                             displayImage(BANNER_SAMPLE, ivBannerShare)
-                        }else if (count < banners.size) {
+                        } else if (count < banners.size) {
                             val updatedData = banners[count].link
                             displayImage(updatedData, ivBannerShare)
                         } else if (count > banners.size) {
@@ -333,23 +365,58 @@ abstract class NewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
         }
     }
 
+    private fun setupSurveyUi(survey: PollDetails) {
+        binding.apply {
+            binding.tvPoleTitle.text = survey.title
+            if (survey.noOfPolling > 0)
+                binding.tvNoVotesPole.text = "No of votes Polled: ${survey.noOfPolling}"
+
+//            binding.radioGroup.removeAllViews()
+            binding.chipVote.removeAllViews()
+            binding.chipVote.isSingleSelection = true
+
+            survey.options.forEach { option ->
+                MaterialRadioButton(activity)
+                    .apply { text = option }
+                    .also {
+//                        binding.radioGroup.addView(it)
+                    }
+                binding.chipVote.addView(createTagChip(activity, option))
+//                MaterialRadioButton(activity)
+//                    .apply { text = option }
+//                    .also { binding.chipVote.addView(it) }
+            }
+        }
+    }
+
+    private fun createTagChip(context: Context, chipName: String): Chip {
+        return Chip(context).apply {
+            text = chipName
+            isCloseIconVisible = false
+            isCheckable = true
+            isCheckedIconVisible = true
+//            checkedIcon = ContextCompat.getDrawable(context,R.drawable.chip_selector)
+            chipIcon = ContextCompat.getDrawable(context,R.drawable.chip_selector)
+            setChipBackgroundColorResource(R.color.bg_chip_state_list)
+            setChipIconResource(R.drawable.chip_selector)
+            setTextColor(ContextCompat.getColor(context, R.color.black))
+//            setTextAppearance(R.style.ChipTextAppearance)
+        }
+    }
+
     private fun getBannerAdsInfo(banners: PublicAdsDetails?, bannerSelect: Int) {
         val executor = Executors.newSingleThreadExecutor()
         executor.execute {
-            // Update the view count in the Room database
-
-            // Fetch the updated data from the database
 
             if (banners != null)
                 activity.runOnUiThread(Runnable {
                     binding.apply {
                         var count = bannerSelect + 1
-                        if(banners.size == 0)
-                        {
+                        if (banners.size == 0) {
                             val BANNER_SAMPLE =
                                 "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
                             displayImage(BANNER_SAMPLE, ivBannerShare)
-                        }else if (count < banners.size) {
+                        } else if (count < banners.size) {
                             val updatedData = banners[count].filePath
                             displayImage(updatedData, ivBannerAds)
                         } else if (count > banners.size) {

@@ -240,6 +240,7 @@ class PosterEditorFragment : Fragment() {
         })
 
         binding.ivShare.setOnClickListener {
+            (activity as MainActivity?)!!.appBarLayoutHandle(true)
             binding.apply {
                 getBannerInfo(sharedPrefManager.bannerSelect)
                 sharedPrefManager.saveBannerSelect()

@@ -109,7 +109,7 @@
                     android:layout_marginStart="2dp"
                     android:layout_marginTop="2dp"
                     android:layout_marginEnd="2dp"
-                    android:background="@mipmap/ic_logo_round"
+                    android:background="@mipmap/ic_launcher_round"
                     android:minHeight="50dp"
                     android:scaleType="fitXY"
                     android:visibility="gone" />

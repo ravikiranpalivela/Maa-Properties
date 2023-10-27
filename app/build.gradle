@@ -15,9 +15,31 @@ android {
         applicationId "com.tekskills.sampleapp"
         minSdk 24
         targetSdk 33
-        versionCode 1
-        versionName "1.0"
+        versionCode 231027003
+        versionName "1.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        def env = System.getenv()
+
+        print "versionCode ::: " + env['VERSION_NUMBER']
+        if (env['VERSION_NUMBER'] != null) {
+            //If version number available from environment
+            versionCode env['VERSION_NUMBER'].toInteger()
+        } else {
+            // Build number not available. Build number should be entered manually.
+            versionCode 231027003
+        }
+
+        print "versionName ::: " + env['VERSION_NAME']
+
+        if (env['VERSION_NAME'] != null) {
+            //If build number available from environment appending to build value in the versionName.
+            versionName "1.0." + env['VERSION_NAME']
+        } else {
+            // Build number not available. Build number should be entered manually.
+            versionName "1.0.1"
+        }
+
     }
 
     signingConfigs {
@@ -81,15 +103,19 @@ android {
             resValue "string", "videoUrl", "https://ottappfunctions.azurewebsites.net/api/"
 
             manifestPlaceholders = [
-                    appIcon  : "@mipmap/ic_logo",
-                    roundIcon: "@mipmap/ic_logo_round"
+                    appIcon  : "@mipmap/ic_launcher",
+                    roundIcon: "@mipmap/ic_launcher_round"
             ]
             signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             debuggable true
         }
     }
-
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            outputFileName = "VMR-${variant.name}-v.${variant.versionCode}.apk"
+        }
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17

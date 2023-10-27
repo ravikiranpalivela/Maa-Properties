@@ -231,6 +231,10 @@ class NewsDetailsFragment : Fragment() {
                             CommentBottomSheet.TAG
                         )
                     }
+
+                    override fun voteClickListener(newsItem: NewsItem, pollOption: String) {
+                        viewModel.updateNewsVote(newsItem.pollDetails.pollId,newsItem.pollDetails.newsId,"",pollOption)
+                    }
                 })
 
         binding.pager.orientation = ViewPager2.ORIENTATION_VERTICAL
