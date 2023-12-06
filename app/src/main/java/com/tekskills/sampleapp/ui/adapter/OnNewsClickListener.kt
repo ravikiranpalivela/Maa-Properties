@@ -11,7 +11,6 @@ interface OnNewsClickListener {
     fun shareClickListener(newsItem: NewsItem, imageView: View)
     fun likeClickListener(newsItem: NewsItem, imageView: View)
     fun commentClickListener(newsItem: NewsItem, imageView: View)
-
     fun voteClickListener(newsItem: NewsItem, pollOption: String)
 
 }

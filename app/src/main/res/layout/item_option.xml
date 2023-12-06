@@ -6,70 +6,69 @@
     style="@style/Widget.Material3.CardView.Outlined"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="16dp"
-    android:layout_marginTop="8dp"
-    android:layout_marginEnd="16dp"
-    app:cardCornerRadius="24dp">
+    android:layout_margin="@dimen/widget_size_2"
+    android:padding="@dimen/widget_size_1"
+    app:cardCornerRadius="@dimen/widget_size_8">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/ll_poll_options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
+        android:padding="@dimen/widget_size_1">
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tvOption"
-                style="@style/TextAppearance.Material3.TitleMedium"
+                style="@style/stlTxtHeading"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:text="Option" />
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipVote"
-                style="@style/Widget.Material3.Chip.Filter.Elevated"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/ll_poll_progress"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginBottom="4dp"
-                android:checkable="false"
-                android:clickable="false"
-                android:elevation="0dp"
-                app:chipBackgroundColor="?attr/colorSecondaryContainer"
-                app:chipCornerRadius="24dp"
-                tools:text="5 votes" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/widget_size_1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvOption">
 
-        </LinearLayout>
+                <ProgressBar
+                    android:id="@+id/percentage"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:progress="21"
+                    android:progressDrawable="@drawable/progress_bar" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/percentage_text"
+                    style="@style/stlTxtSubHeading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/widget_size_8"
+                    android:textStyle="bold"
+                    tools:text="21%" />
 
-            <ProgressBar
-                android:id="@+id/percentage"
-                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:progress="21"
-                android:progressDrawable="@drawable/progress_bar" />
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/percentage_text"
-                style="@style/TextAppearance.Material3.LabelMedium"
+                android:id="@+id/chipVote"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                tools:text="21%" />
-
-        </LinearLayout>
-
-    </LinearLayout>
+                android:paddingHorizontal="@dimen/widget_size_4"
+                android:paddingVertical="@dimen/widget_size_2"
+                android:background="@drawable/votes_background"
+                android:gravity="center"
+                android:fontFamily="@font/poppins"
+                android:textSize="@dimen/font_size_8"
+                android:textColor="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="5 votes" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

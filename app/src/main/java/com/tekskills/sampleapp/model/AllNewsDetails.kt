@@ -84,6 +84,16 @@ data class AllNewsItem(
     @SerializedName("newsType")
     var newsType: String,
     @SerializedName("share")
-    val share: Int
+    val share: Int,
+    @SerializedName("pollDetails")
+    val pollDetails: PollDetails,
+//    @SerializedName("pollOptions")
+//    val pollOptions: List<String>,
+    @SerializedName("submittedAnswer")
+    val submittedAnswer: String,
+    @SerializedName("isPoll")
+    val isPoll: String,
+    @SerializedName("likeByUser")
+    val likeByUser: Boolean,
 //    @SerializedName("source") val source: Source,
 ) : Serializable

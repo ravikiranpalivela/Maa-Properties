@@ -12,14 +12,14 @@
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/app_bar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="@dimen/app_bar_height"
             android:fitsSystemWindows="true"
             android:theme="@style/AppTheme.AppBarOverlay">
 
 <!--            <com.google.android.material.appbar.CollapsingToolbarLayout-->
 <!--                android:id="@+id/toolbar_layout"-->
 <!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="?attr/actionBarSize"-->
+<!--                android:layout_height="@dimen/app_bar_height"-->
 <!--                android:fitsSystemWindows="true"-->
 <!--                app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"-->
 <!--                app:statusBarScrim="@color/colorPrimary">-->
@@ -39,7 +39,7 @@
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
+                    android:layout_height="@dimen/app_bar_height"
                     android:background="@android:color/transparent"
                     android:visibility="gone"
                     android:elevation="0dp"
@@ -52,13 +52,13 @@
                     <!--                    />-->
                     <ImageView
                         android:id="@+id/iv_logo"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
+                        android:layout_width="@dimen/default_icon_size"
+                        android:layout_height="@dimen/default_icon_size"
                         android:layout_gravity="left"
-                        android:layout_marginStart="4dp"
+                        android:layout_marginStart="@dimen/widget_size_4"
                         android:clickable="true"
                         android:focusable="true"
-                        android:padding="2dp"
+                        android:padding="@dimen/widget_size_2"
                         android:background="@drawable/ic_arrow_back"
                         android:transitionName="article_image"
                         android:visibility="visible"

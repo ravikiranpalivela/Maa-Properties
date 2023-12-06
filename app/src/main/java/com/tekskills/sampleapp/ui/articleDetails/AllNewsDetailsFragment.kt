@@ -25,6 +25,7 @@ import com.tekskills.sampleapp.data.repo.ArticleProviderRepo
 import com.tekskills.sampleapp.databinding.FragmentArticlesBinding
 import com.tekskills.sampleapp.model.AllNewsDetails
 import com.tekskills.sampleapp.model.AllNewsItem
+import com.tekskills.sampleapp.model.NewsItem
 import com.tekskills.sampleapp.ui.adapter.AllNewsDetailsAdapter
 import com.tekskills.sampleapp.ui.adapter.OnAllNewsClickListener
 import com.tekskills.sampleapp.ui.comment.CommentBottomSheet
@@ -95,7 +96,7 @@ class AllNewsDetailsFragment : Fragment() {
         })
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.refreshResponse()
+            viewModel.refreshResponse(preferences.getDeviceID())
         }
     }
 
@@ -282,12 +283,12 @@ class AllNewsDetailsFragment : Fragment() {
                                 newsItem.title,
                                 activityOptions
                             )
-                        viewModel.postNewsShare(newsItem.newsId,newsItem.newsType)
+                        viewModel.postNewsShare(newsItem.newsId,preferences.getDeviceID(),newsItem.newsType)
 
                     }
 
                     override fun likeClickListener(newsItem: AllNewsItem, imageView: View) {
-                        viewModel.postNewsLike(newsItem.newsId,newsItem.newsType)
+                        viewModel.postNewsLike(newsItem.newsId,preferences.getDeviceID(),newsItem.newsType)
                     }
 
                     override fun commentClickListener(newsItem: AllNewsItem, imageView: View) {
@@ -304,6 +305,10 @@ class AllNewsDetailsFragment : Fragment() {
                             parentFragmentManager,
                             CommentBottomSheet.TAG
                         )
+                    }
+
+                    override fun voteClickListener(newsItem: AllNewsItem, pollOption: String) {
+                        viewModel.updateNewsVote(preferences.getDeviceID()?:"android",newsItem.pollDetails.pollId,newsItem.pollDetails.newsId,"",pollOption)
                     }
                 })
 

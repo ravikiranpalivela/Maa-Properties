@@ -106,6 +106,8 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivi
          */
         binding.elNavigationMenu.setAdapter(mMenuAdapter)
 
+        Log.d("TAG", "device ID ${viewModel.appPreferences.getDeviceID()}")
+
         binding.elNavigationMenu.setOnChildClickListener { listView, view, grpPos, childPos, l ->
             var fragment: Fragment? = null
             var args: Bundle? = null
@@ -228,7 +230,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivi
         override fun onPageSelected(position: Int) {
             super.onPageSelected(position)
             viewModel.category.value = getTitle(position)
-            viewModel.refreshResponse()
+            viewModel.refreshResponse(prefrences.getDeviceID())
         }
 
         override fun onPageScrollStateChanged(state: Int) {
@@ -444,7 +446,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivi
                 } else {
                     binding.textViewNetworkStatus.text = "Back Online"
 
-                    viewModel.refreshResponse()
+                    viewModel.refreshResponse(prefrences.getDeviceID())
 
                     binding.networkStatusLayout.apply {
                         animate()
@@ -471,7 +473,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel, MainActivi
         viewModel.errorMessage.observe(this, Observer {
             if (it != null) {
                 it.getContentIfNotHandled().let {
-                    Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
                 }
             }
         })

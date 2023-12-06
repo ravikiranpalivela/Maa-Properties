@@ -13,7 +13,7 @@
             android:id="@+id/app_logo"
             android:layout_width="250dp"
             android:layout_height="250dp"
-            android:padding="4dp"
+            android:padding="@dimen/widget_size_4"
             android:src="@mipmap/ic_launcher_round"
             android:scaleType="fitXY"
             android:layout_gravity="center"

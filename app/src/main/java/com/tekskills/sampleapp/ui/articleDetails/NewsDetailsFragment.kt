@@ -90,7 +90,7 @@ class NewsDetailsFragment : Fragment() {
         })
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.refreshResponse()
+            viewModel.refreshResponse(preferences.getDeviceID())
         }
     }
 
@@ -205,11 +205,11 @@ class NewsDetailsFragment : Fragment() {
                                 activityOptions
                             )
 
-                        viewModel.postNewsShare(newsItem.newsId)
+                        viewModel.postNewsShare(newsItem.newsId,preferences.getDeviceID())
                     }
 
                     override fun likeClickListener(newsItem: NewsItem, imageView: View) {
-                        viewModel.postNewsLike(newsItem.newsId,"NEWS")
+                        viewModel.postNewsLike(newsItem.newsId,preferences.getDeviceID(),"NEWS")
 //                        viewModel.addAArticle(news_id = allNewsItem.newsId, article = allNewsItem)
                     }
 
@@ -233,7 +233,7 @@ class NewsDetailsFragment : Fragment() {
                     }
 
                     override fun voteClickListener(newsItem: NewsItem, pollOption: String) {
-                        viewModel.updateNewsVote(newsItem.pollDetails.pollId,newsItem.pollDetails.newsId,"",pollOption)
+                        viewModel.updateNewsVote(preferences.getDeviceID()?:"android",newsItem.pollDetails.pollId,newsItem.pollDetails.newsId,"",pollOption)
                     }
                 })
 

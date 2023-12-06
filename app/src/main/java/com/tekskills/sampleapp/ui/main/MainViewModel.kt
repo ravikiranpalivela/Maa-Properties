@@ -52,7 +52,7 @@ class MainViewModel(
     val appPreferences: SharedPrefManager
         get() = prefrences
 
-    fun refreshResponse() {
+    fun refreshResponse(builtId: String) {
         viewModelScope.launch {
             isLoading.value = true
             try {
@@ -62,7 +62,7 @@ class MainViewModel(
                     }
 
                     "News", "Wishes" -> {
-                        getNewsDetails()
+                        getNewsDetails(builtId)
                     }
 
                     "Posters" -> {
@@ -70,7 +70,7 @@ class MainViewModel(
                     }
 
                     else -> {
-                        getAllNewsDetails()
+                        getNewsDetails(builtId)
                     }
                 }
             } catch (e: Exception) {
@@ -87,8 +87,8 @@ class MainViewModel(
         }
     }
 
-    private suspend fun getNewsDetails() {
-        val response = ArticleProviderRepo().getNews(category.value!!)
+    private suspend fun getNewsDetails(builtId: String) {
+        val response = ArticleProviderRepo().getNews(category.value!!,builtId)
         if (response.isSuccessful) {
             responseLiveData.postValue(response)
         } else {
@@ -130,91 +130,91 @@ class MainViewModel(
         throw Exception("Failed to fetch video information")
     }
 
-    fun postNewsLike(newsID: Int, newsType: String) {
+    fun postNewsLike(newsID: Int,builtId: String, newsType: String) {
         viewModelScope.launch {
 //           val response = ArticleProviderRepo().checkLike()
             val response = when (category.value) {
-                "All" -> ArticleProviderRepo().updateNewsLike(newsID, newsType)
+                "All" -> ArticleProviderRepo().updateNewsLike(newsID, builtId,newsType)
 
-                "News" -> ArticleProviderRepo().updateNewsLike(newsID, "NEWS")
+                "News" -> ArticleProviderRepo().updateNewsLike(newsID, builtId,"NEWS")
 
-                "Wishes" -> ArticleProviderRepo().updateNewsLike(newsID, "WISH")
+                "Wishes" -> ArticleProviderRepo().updateNewsLike(newsID, builtId,"WISH")
 
-                "Posters" -> ArticleProviderRepo().updateNewsLike(newsID, "POSTER")
+                "Posters" -> ArticleProviderRepo().updateNewsLike(newsID, builtId,"POSTER")
 
-                else -> ArticleProviderRepo().updateNewsLike(newsID, "SORT")
+                else -> ArticleProviderRepo().updateNewsLike(newsID, builtId,"SORT")
             }
             if (response.isSuccessful) {
-                refreshUpdatedResponse()
+                refreshUpdatedResponse(prefrences.getDeviceID())
             } else {
                 message.value = Event(response.errorBody().toString())
             }
         }
     }
 
-    fun updateNewsVote(pollID: Int, articleID: Int, desc: String, pollOption: String) {
+    fun updateNewsVote(deviceId: String,pollID: Int, articleID: Int, desc: String, pollOption: String) {
         viewModelScope.launch {
-            val response = ArticleProviderRepo().updateNewsVote(pollID, articleID, desc, pollOption)
+            val response = ArticleProviderRepo().updateNewsVote(deviceId?:appPreferences.getDeviceID(),pollID, articleID, desc, pollOption)
             if (response.isSuccessful) {
-                refreshUpdatedResponse()
+                refreshUpdatedResponse(prefrences.getDeviceID())
             } else {
                 message.value = Event(response.errorBody().toString())
             }
         }
     }
 
-    fun postNewsShare(newsID: Int, newsType: String) {
-        viewModelScope.launch {
-//           val response = ArticleProviderRepo().checkLike()
-            val response = when (category.value) {
-                "All" -> ArticleProviderRepo().updateNewsShare(newsID, newsType)
-
-                "News" -> ArticleProviderRepo().updateNewsShare(newsID, "NEWS")
-
-                "Wishes" -> ArticleProviderRepo().updateNewsShare(newsID, "WISH")
-
-                "Posters" -> ArticleProviderRepo().updateNewsShare(newsID, "POSTER")
-
-                else -> ArticleProviderRepo().updateNewsShare(newsID, "SORT")
-            }
-            if (response.isSuccessful) {
-                refreshUpdatedResponse()
-            } else {
-                message.value = Event(response.errorBody().toString())
-            }
-        }
-    }
-
-    fun postNewsShare(newsID: Int) {
+    fun postNewsShare(newsID: Int,builtId: String, newsType: String) {
         viewModelScope.launch {
 //           val response = ArticleProviderRepo().checkLike()
             val response = when (category.value) {
-                "All" -> ArticleProviderRepo().updateNewsShare(newsID, "NEWS")
+                "All" -> ArticleProviderRepo().updateNewsShare(newsID,builtId, newsType)
 
-                "News" -> ArticleProviderRepo().updateNewsShare(newsID, "NEWS")
+                "News" -> ArticleProviderRepo().updateNewsShare(newsID, builtId,"NEWS")
 
-                "Wishes" -> ArticleProviderRepo().updateNewsShare(newsID, "WISH")
+                "Wishes" -> ArticleProviderRepo().updateNewsShare(newsID,builtId, "WISH")
 
-                "Posters" -> ArticleProviderRepo().updateNewsShare(newsID, "POSTER")
+                "Posters" -> ArticleProviderRepo().updateNewsShare(newsID, builtId,"POSTER")
 
-                else -> ArticleProviderRepo().updateNewsShare(newsID, "SORT")
+                else -> ArticleProviderRepo().updateNewsShare(newsID, builtId,"SORT")
             }
             if (response.isSuccessful) {
-                refreshUpdatedResponse()
+                refreshUpdatedResponse(prefrences.getDeviceID())
             } else {
                 message.value = Event(response.errorBody().toString())
             }
         }
     }
 
-    suspend fun refreshUpdatedResponse() {
+    fun postNewsShare(newsID: Int,builtId: String) {
+        viewModelScope.launch {
+//           val response = ArticleProviderRepo().checkLike()
+            val response = when (category.value) {
+                "All" -> ArticleProviderRepo().updateNewsShare(newsID, builtId,"NEWS")
+
+                "News" -> ArticleProviderRepo().updateNewsShare(newsID, builtId,"NEWS")
+
+                "Wishes" -> ArticleProviderRepo().updateNewsShare(newsID, builtId,"WISH")
+
+                "Posters" -> ArticleProviderRepo().updateNewsShare(newsID, builtId,"POSTER")
+
+                else -> ArticleProviderRepo().updateNewsShare(newsID, builtId,"SORT")
+            }
+            if (response.isSuccessful) {
+                refreshUpdatedResponse(prefrences.getDeviceID())
+            } else {
+                message.value = Event(response.errorBody().toString())
+            }
+        }
+    }
+
+    suspend fun refreshUpdatedResponse(builtId: String) {
         when (category.value!!) {
             "All" -> {
                 getAllNewsDetails()
             }
 
             "News", "Wishes" -> {
-                getNewsDetails()
+                getNewsDetails(builtId)
             }
 
             "Posters" -> {
@@ -242,7 +242,7 @@ class MainViewModel(
                 else -> ArticleProviderRepo().postComments(newsID, "SORT", comment)
             }
             if (response.isSuccessful) {
-                refreshUpdatedResponse()
+                refreshUpdatedResponse(prefrences.getDeviceID())
             } else {
                 message.value = Event(response.errorBody().toString())
             }
@@ -260,7 +260,7 @@ class MainViewModel(
     }
 
     private suspend fun getAllNewsDetails() {
-        val response = ArticleProviderRepo().getAllNewsDetails()
+        val response = ArticleProviderRepo().getAllNewsDetails(prefrences.getDeviceID())
         if (response.isSuccessful) {
             responseAllNewsLiveData.postValue(response)
         } else {
@@ -305,7 +305,7 @@ class MainViewModel(
             }
         }
 
-        refreshResponse()
+        refreshResponse(prefrences.getDeviceID())
     }
 
     fun changeLanguage(id: Int) {
@@ -323,7 +323,7 @@ class MainViewModel(
                 }
             }
         }
-        refreshResponse()
+        refreshResponse(prefrences.getDeviceID())
     }
 
     fun saveBannerData(dataModel: BannerItem) {

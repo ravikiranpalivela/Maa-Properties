@@ -23,7 +23,9 @@ import com.tekskills.sampleapp.databinding.ActivityArticleDetailsBinding
 import com.tekskills.sampleapp.model.NewsItem
 import com.tekskills.sampleapp.ui.base.BaseActivity
 import com.tekskills.sampleapp.ui.main.MainViewModel
+import com.tekskills.sampleapp.utils.AppConstant.ADS_IMAGE_URL
 import com.tekskills.sampleapp.utils.AppConstant.ARTICLE
+import com.tekskills.sampleapp.utils.AppUtil
 import com.tekskills.sampleapp.utils.ObjectSerializer
 import com.tekskills.sampleapp.utils.ShareLayout
 import com.tekskills.sampleapp.utils.video.changeDateFormat
@@ -81,7 +83,7 @@ class ArticleDetailsActivity :
             }
 
             val BANNER_SAMPLE =
-                "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
+                ADS_IMAGE_URL
             displayImage(BANNER_SAMPLE,ivBannerShare)
 
             ivBannerShare.visibility = View.GONE
@@ -254,7 +256,7 @@ class ArticleDetailsActivity :
             webView.addJavascriptInterface(object : Any() {
                 @JavascriptInterface
                 fun performClick(value: String) {
-                    Toast.makeText(this@ArticleDetailsActivity, "clicked $value", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(this@ArticleDetailsActivity, "clicked $value", Toast.LENGTH_SHORT).show()
                 }
             }, "ok")
 
@@ -294,11 +296,13 @@ class ArticleDetailsActivity :
 
     fun displayImage(videoUrl: String?,view: ImageView?)
     {
-        Glide.with(this@ArticleDetailsActivity)
-            .asBitmap()
-            .load(videoUrl)
-            .error(R.drawable.place_holder)
-            .into(view!!)
+//        Glide.with(this@ArticleDetailsActivity)
+//            .asBitmap()
+//            .load(videoUrl)
+//            .error(R.drawable.place_holder)
+//            .into(view!!)
+        AppUtil.loadGlideImage(Glide.with(this@ArticleDetailsActivity), videoUrl!!, view)
+
     }
 
     private fun validateOneValue(first: String?, second: String?): String {

@@ -41,4 +41,5 @@ object AppConstant {
 
     const val ADS_COUNT :Int = 5
     const val ARTICLE = "article"
+    const val ADS_IMAGE_URL = "https://news.maaproperties.com/assets/img/ads-img/add1f90f2d43.jpg"
 }

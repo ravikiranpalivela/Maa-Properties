@@ -4,8 +4,8 @@
         android:id="@android:id/background"
         android:gravity="center_vertical|fill_horizontal">
         <shape android:shape="rectangle">
-            <corners android:radius="8dp" />
-            <size android:height="12dp" />
+            <corners android:radius="@dimen/widget_size_8" />
+            <size android:height="@dimen/widget_size_10" />
             <solid android:color="?attr/colorSurfaceVariant" />
         </shape>
     </item>
@@ -14,8 +14,8 @@
         android:gravity="center_vertical|fill_horizontal">
         <scale android:scaleWidth="100%">
             <shape android:shape="rectangle">
-                <corners android:radius="8dp" />
-                <size android:height="12dp" />
+                <corners android:radius="@dimen/widget_size_8" />
+                <size android:height="@dimen/widget_size_10" />
                 <solid android:color="?attr/colorPrimary" />
             </shape>
         </scale>

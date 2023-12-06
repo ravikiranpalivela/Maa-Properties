@@ -45,6 +45,90 @@
         <item name="singleLine">true</item>
     </style>
 
+    <style name="stlTxtKey">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_margin">@dimen/widget_size_2</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">@dimen/font_size_14</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:padding">@dimen/widget_size_2</item>
+        <item name="android:fontFamily">@font/poppins</item>
+    </style>
+
+    <style name="stlTxtValue">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_margin">@dimen/widget_size_2</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:layout_gravity">right|center_vertical</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">@dimen/font_size_14</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:padding">@dimen/widget_size_2</item>
+        <item name="android:fontFamily">@font/poppins</item>
+    </style>
+
+    <style name="stlTxtHeadingAccent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/widget_size_1</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textSize">@dimen/font_size_14</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/poppins</item>
+    </style>
+
+    <style name="stlTxtHeading">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/widget_size_1</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textSize">@dimen/font_size_14</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/poppins</item>
+    </style>
+
+    <style name="stlTxtSubHeading">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">@dimen/font_size_12</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:fontFamily">@font/poppins</item>
+    </style>
+
+    <style name="stlTxtDesc">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">@dimen/font_size_12</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:fontFamily">@font/poppins</item>
+    </style>
+
+    <style name="stlTxtSubHeadingAccent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">@dimen/font_size_12</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:fontFamily">@font/poppins</item>
+    </style>
+
     <style name="SplashTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/colorRed</item>
         <item name="colorPrimaryDark">@color/colorPrimary</item>
@@ -63,6 +147,4 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents">
         <item name="android:fontFamily">@font/google_sans</item>
     </style>
-
-
 </resources>

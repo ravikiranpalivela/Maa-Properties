@@ -50,6 +50,8 @@ import com.tekskills.sampleapp.ui.poster.costumDialog.TextInputDialog
 import com.tekskills.sampleapp.ui.poster.helper.PipFilters
 import com.tekskills.sampleapp.ui.poster.sticker.BubbleTextView
 import com.tekskills.sampleapp.ui.poster.sticker.StickerView
+import com.tekskills.sampleapp.utils.AppConstant.ADS_IMAGE_URL
+import com.tekskills.sampleapp.utils.AppUtil
 import com.tekskills.sampleapp.utils.ShareLayout
 import com.tekskills.sampleapp.utils.like.LikeButton
 import com.tekskills.sampleapp.utils.like.OnAnimationEndListener
@@ -140,7 +142,7 @@ class PosterEditorFragment : Fragment() {
         })
 
         binding.swipeRefreshLayoutEditor.setOnRefreshListener {
-            viewModel.refreshResponse()
+            viewModel.refreshResponse(preferences.getDeviceID())
         }
     }
 
@@ -208,7 +210,7 @@ class PosterEditorFragment : Fragment() {
         getBannerInfo(sharedPrefManager.bannerSelect)
 
 //        val BANNER_SAMPLE =
-//            "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
+//            ADS_IMAGE_URL
 //        displayImage(BANNER_SAMPLE, binding.ivBannerShare)
 
         binding.ivBannerShare.visibility = View.GONE
@@ -233,7 +235,7 @@ class PosterEditorFragment : Fragment() {
 
         binding.heartButton.setOnAnimationEndListener(object : OnAnimationEndListener {
             override fun onAnimationEnd(likeButton: LikeButton?) {
-                viewModel.postNewsLike(posterItem!!.posterId,"POSTER")
+                viewModel.postNewsLike(posterItem!!.posterId,preferences.getDeviceID(),"POSTER")
 //                if (posterItem != null)
 //                    updateViewCount(posterItem!!.posterId)
             }
@@ -315,11 +317,15 @@ class PosterEditorFragment : Fragment() {
                 requireActivity().runOnUiThread(Runnable {
                     binding.apply {
                         var count = bannerSelect + 1
-                        if (count < banners.size) {
+                        if (banners.size == 0) {
+                            val BANNER_SAMPLE =
+                                ADS_IMAGE_URL
+                            displayImage(BANNER_SAMPLE, ivBannerShare)
+                        } else if (count < banners.size) {
                             val updatedData = banners[count].link
                             displayImage(updatedData, ivBannerShare)
                         } else if (count > banners.size) {
-                            val num = count / banners.size
+                            val num = count % banners.size
                             val updatedData = banners[num].link
                             displayImage(updatedData, ivBannerShare)
                         } else if (banners.isNotEmpty()) {
@@ -327,7 +333,7 @@ class PosterEditorFragment : Fragment() {
                             displayImage(updatedData, ivBannerShare)
                         } else {
                             val BANNER_SAMPLE =
-                                "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
+                                ADS_IMAGE_URL
                             displayImage(BANNER_SAMPLE, ivBannerShare)
                         }
                     }
@@ -337,11 +343,13 @@ class PosterEditorFragment : Fragment() {
     }
 
     fun displayImage(videoUrl: String?, itemView: ImageView?) {
-        Glide.with(requireContext())
-            .asBitmap()
-            .load(videoUrl)
-            .error(R.drawable.place_holder)
-            .into(itemView!!)
+//        Glide.with(requireContext())
+//            .asBitmap()
+//            .load(videoUrl)
+//            .error(R.drawable.place_holder)
+//            .into(itemView!!)
+        AppUtil.loadGlideImage(Glide.with(requireContext()), videoUrl!!, itemView!!)
+
     }
 
     private fun applyEffectOnBack(whichFilter: Int) {

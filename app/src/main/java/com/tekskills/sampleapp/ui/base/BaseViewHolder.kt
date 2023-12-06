@@ -20,6 +20,8 @@ import com.tekskills.sampleapp.R
 import com.tekskills.sampleapp.databinding.ItemArticleViewtypeListBinding
 import com.tekskills.sampleapp.model.NewsItem
 import com.tekskills.sampleapp.ui.main.MainActivity
+import com.tekskills.sampleapp.utils.AppConstant.ADS_IMAGE_URL
+import com.tekskills.sampleapp.utils.AppUtil
 import com.tekskills.sampleapp.utils.video.changeDateFormat
 import com.tekskills.sampleapp.utils.video.getThumbnail
 import com.tekskills.sampleapp.utils.video.getVideoId
@@ -67,15 +69,17 @@ abstract class BaseViewHolder<viewDataBinding : ViewDataBinding>(
             titleArticle.setOnClickListener {
                 clickListener(article, articleImage)
             }
+            article.websiteUrl?.let {
+                readMoreArticle.visibility = if (article.websiteUrl.isValidUrl())
+                    View.VISIBLE else View.GONE
+            }
 
             readMoreArticle.setOnClickListener {
                 longClickListener(article, articleImage)
                 true
             }
 
-            val BANNER_SAMPLE =
-                "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
-            displayImage(BANNER_SAMPLE,ivBannerShare)
+            displayImage(ADS_IMAGE_URL,ivBannerShare)
 
             ivBannerShare.visibility = View.GONE
             ivBannerLogo.visibility = View.GONE
@@ -214,7 +218,7 @@ abstract class BaseViewHolder<viewDataBinding : ViewDataBinding>(
             binding.webView.addJavascriptInterface(object : Any() {
                 @JavascriptInterface
                 fun performClick(value: String) {
-                    Toast.makeText(activity, "clicked $value", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(activity, "clicked $value", Toast.LENGTH_SHORT).show()
                 }
             }, "ok")
 
@@ -274,17 +278,18 @@ abstract class BaseViewHolder<viewDataBinding : ViewDataBinding>(
 
     fun displayImage(videoUrl: String?,view: ImageView?)
     {
-        Glide.with(activity)
-            .asBitmap()
-            .load(videoUrl)
-            .error(R.drawable.place_holder)
-            .into(view!!)
+//        Glide.with(activity)
+//            .asBitmap()
+//            .load(videoUrl)
+//            .error(R.drawable.place_holder)
+//            .into(view!!)
+        AppUtil.loadGlideImage(Glide.with(activity), videoUrl!!, view)
     }
 
     private fun validateOneValue(first: String?, second: String?): String {
         return when {
-            !first.isNullOrEmpty() && first.isValidUrl() -> first.isValidURL()
-            !second.isNullOrEmpty() && second.isValidUrl() -> second.isValidURL()
+            !first.isNullOrEmpty() && first.isValidUrl() -> first
+            !second.isNullOrEmpty() && second.isValidUrl() -> second
             else -> "null"
         }
     }

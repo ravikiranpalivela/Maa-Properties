@@ -24,9 +24,9 @@
             android:id="@+id/cl_article_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="4dp"
+            android:layout_margin="@dimen/widget_size_4"
             android:background="@color/colorPrimary"
-            android:padding="4dp"
+            android:padding="@dimen/widget_size_4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -36,7 +36,7 @@
                 android:id="@+id/card_container"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                app:cardCornerRadius="16dp"
+                app:cardCornerRadius="@dimen/widget_size_16"
                 app:cardUseCompatPadding="true"
                 app:layout_constraintBottom_toTopOf="@+id/articleTitle"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -89,10 +89,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginBottom="8dp"
+                        android:layout_marginStart="@dimen/widget_size_8"
+                        android:layout_marginTop="@dimen/widget_size_8"
+                        android:layout_marginEnd="@dimen/widget_size_8"
+                        android:layout_marginBottom="@dimen/widget_size_8"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -103,26 +103,26 @@
 
                 <ImageView
                     android:id="@+id/iv_banner_logo"
-                    android:layout_width="75dp"
-                    android:layout_height="75dp"
+                    android:layout_width="@dimen/app_bar_height"
+                    android:layout_height="@dimen/app_bar_height"
                     android:layout_gravity="end|top"
-                    android:layout_marginStart="2dp"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginEnd="2dp"
+                    android:layout_marginStart="@dimen/widget_size_2"
+                    android:layout_marginTop="@dimen/widget_size_2"
+                    android:layout_marginEnd="@dimen/widget_size_2"
                     android:background="@mipmap/ic_launcher_round"
-                    android:minHeight="50dp"
+                    android:minHeight="@dimen/app_bar_height"
                     android:scaleType="fitXY"
                     android:visibility="gone" />
 
                 <ImageView
                     android:id="@+id/iv_banner_share"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="@dimen/app_bar_height"
                     android:layout_gravity="bottom"
-                    android:layout_marginStart="2dp"
-                    android:layout_marginEnd="2dp"
-                    android:layout_marginBottom="2dp"
-                    android:minHeight="50dp"
+                    android:layout_marginStart="@dimen/widget_size_2"
+                    android:layout_marginEnd="@dimen/widget_size_2"
+                    android:layout_marginBottom="@dimen/widget_size_2"
+                    android:minHeight="@dimen/app_bar_height"
                     android:scaleType="fitXY"
                     android:visibility="gone" />
 
@@ -130,14 +130,7 @@
 
             <TextView
                 android:id="@+id/articleTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_weight="1"
-                android:background="@color/colorPrimary"
-                android:fontFamily="@font/google_sans"
-                android:padding="4dp"
-                android:singleLine="true"
+                style="@style/stlTxtHeadingAccent"
                 android:text="Coronavirus India LIVE Updates: 30,548 Fresh COVID-19 Cases In India, Lowest Daily Cases In 4 Months"
                 android:textColor="@color/colorAccent"
                 android:textSize="14sp"
@@ -159,27 +152,20 @@
 
                 <TextView
                     android:id="@+id/articleContent"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:background="@color/colorPrimary"
-                    android:fontFamily="@font/google_sans"
+                    style="@style/stlTxtSubHeading"
                     android:justificationMode="inter_word"
-                    android:maxHeight="200dp"
-                    android:textColor="@color/desc_color"
-                    android:textSize="16sp"
-                    android:textStyle="normal" />
+                    android:maxHeight="200dp"/>
 
             </ScrollView>
             <!--            <TextView-->
             <!--                android:id="@+id/articleContent"-->
             <!--                android:layout_width="match_parent"-->
             <!--                android:layout_height="wrap_content"-->
-            <!--                android:layout_marginTop="4dp"-->
+            <!--                android:layout_marginTop="@dimen/widget_size_4"-->
             <!--                android:background="@color/colorPrimary"-->
             <!--                android:fontFamily="@font/google_sans"-->
             <!--                android:justificationMode="inter_word"-->
-            <!--                android:padding="4dp"-->
+            <!--                android:padding="@dimen/widget_size_4"-->
             <!--                android:textColor="@color/desc_color"-->
             <!--                android:textSize="16sp"-->
             <!--                android:textStyle="normal"-->
@@ -192,11 +178,11 @@
             <!--                android:id="@+id/read_more_article"-->
             <!--                android:layout_width="wrap_content"-->
             <!--                android:layout_height="wrap_content"-->
-            <!--                android:layout_margin="4dp"-->
+            <!--                android:layout_margin="@dimen/widget_size_4"-->
             <!--                android:layout_weight="1"-->
             <!--                android:background="@color/colorAccent"-->
             <!--                android:fontFamily="@font/google_sans"-->
-            <!--                android:padding="4dp"-->
+            <!--                android:padding="@dimen/widget_size_4"-->
             <!--                android:singleLine="true"-->
             <!--                android:text="Read More"-->
             <!--                android:textColor="@color/white"-->
@@ -209,7 +195,7 @@
             <!--                android:id="@+id/cl_published_info"-->
             <!--                android:layout_width="match_parent"-->
             <!--                android:layout_height="wrap_content"-->
-            <!--                android:layout_margin="4dp"-->
+            <!--                android:layout_margin="@dimen/widget_size_4"-->
             <!--                app:layout_constraintBottom_toBottomOf="parent"-->
             <!--                app:layout_constraintEnd_toEndOf="parent"-->
             <!--                app:layout_constraintHorizontal_bias="0.5"-->
@@ -219,16 +205,8 @@
             <TextView
                 android:id="@+id/published_at"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_margin="4dp"
-                android:layout_weight="1"
-                android:fontFamily="@font/google_sans"
-                android:gravity="start"
-                android:padding="4dp"
-                android:text="At 28"
-                android:textColor="#676767"
-                android:textSize="12sp"
-                android:textStyle="bold"
+                android:layout_height="wrap_content"
+                style="@style/stlTxtSubHeading"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -243,11 +221,11 @@
             <!--                    android:layout_weight="1"-->
             <!--                    android:fontFamily="@font/google_sans"-->
             <!--                    android:gravity="center|start"-->
-            <!--                    android:padding="4dp"-->
-            <!--                    android:paddingLeft="14dp"-->
-            <!--                    android:paddingTop="3dp"-->
-            <!--                    android:paddingRight="14dp"-->
-            <!--                    android:paddingBottom="3dp"-->
+            <!--                    android:padding="@dimen/widget_size_4"-->
+            <!--                    android:paddingLeft="@dimen/widget_size_10"-->
+            <!--                    android:paddingTop="@dimen/widget_size_2"-->
+            <!--                    android:paddingRight="@dimen/widget_size_10"-->
+            <!--                    android:paddingBottom="@dimen/widget_size_2"-->
             <!--                    android:text="NDTV"-->
             <!--                    android:textColor="#676767"-->
             <!--                    android:textSize="12sp"-->
@@ -263,10 +241,10 @@
 
         <ImageView
             android:id="@+id/iv_share"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_width="@dimen/default_icon_size"
+            android:layout_height="@dimen/default_icon_size"
+            android:layout_marginEnd="@dimen/widget_size_8"
+            android:layout_marginBottom="@dimen/widget_size_8"
             android:background="@drawable/ic_round_share"
             android:backgroundTint="@color/colorAccent"
             app:layout_constraintBottom_toBottomOf="@+id/cl_article_view"

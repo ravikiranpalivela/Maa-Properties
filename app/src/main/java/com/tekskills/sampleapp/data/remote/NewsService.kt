@@ -24,10 +24,10 @@ interface NewsService {
     suspend fun getWishes(): Response<NewsDetails>
 
     @GET(APIEndPoint.GET_ALL_NEWS_LIST)
-    suspend fun getAllNews(): Response<AllNewsDetailsData>
+    suspend fun getAllNews(@Query("builtId") builtId: String = "android",): Response<AllNewsDetailsData>
 
-    @GET(APIEndPoint.GET_MAIN_NEWS_LIST)
-    suspend fun getMainNews(): Response<NewsDetails>
+    @GET("${APIEndPoint.GET_MAIN_NEWS_LIST}/{id}")
+    suspend fun getMainNews(@Path("id") builtId: String = "android"): Response<NewsDetails>
 
     @GET(APIEndPoint.GET_POSTERS_LIST)
     suspend fun getPosters(): Response<PosterDetails>
@@ -47,11 +47,12 @@ interface NewsService {
     @PUT(APIEndPoint.PUT_LIKES_COMMON)
     suspend fun updateNewsLike(
         @Query("id") id: Int = 0,
+        @Query("builtId") builtId: String = "android",
         @Query("type") type: String = "news"
     ): Response<LikeResponse>
 
     @POST(APIEndPoint.POST_VOTE)
-    suspend fun updatePollingVote(
+    suspend fun updatePollingVote(@Query("ipAddress") deviceId: String = "android",
         @Query("pollId") pollId: Int = 0,
         @Query("pollOption") pollOption: String = "news",
         @Query("description") description: String = "news",
@@ -67,6 +68,7 @@ interface NewsService {
     @PUT(APIEndPoint.PUT_SHARE_COMMON)
     suspend fun updateNewsShare(
         @Query("id") id: Int = 0,
+        @Query("builtId") builtId: String = "android",
         @Query("type") type: String = "news"
     ): Response<LikeResponse>
 

@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="viewModel"
             type="com.tekskills.sampleapp.ui.main.MainViewModel" />
@@ -80,13 +79,13 @@
 
                 <ImageView
                     android:id="@+id/iv_banner_logo"
-                    android:layout_width="75dp"
-                    android:layout_height="75dp"
+                    android:layout_width="@dimen/app_bar_height"
+                    android:layout_height="@dimen/app_bar_height"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentEnd="true"
                     android:layout_gravity="end|top"
                     android:background="@mipmap/ic_launcher_round"
-                    android:minHeight="50dp"
+                    android:minHeight="@dimen/app_bar_height"
                     android:scaleType="fitXY"
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="@+id/editor_frame_image"
@@ -96,19 +95,18 @@
                 <ImageView
                     android:id="@+id/iv_banner_share"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="@dimen/app_bar_height"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentBottom="true"
                     android:layout_gravity="bottom"
-                    android:minHeight="50dp"
+                    android:minHeight="@dimen/app_bar_height"
                     android:scaleType="fitXY"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="@+id/editor_frame_image"
                     app:layout_constraintEnd_toEndOf="@+id/editor_frame_image"
                     app:layout_constraintStart_toStartOf="@+id/editor_frame_image"
                     tools:visibility="visible" />
-
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -117,17 +115,17 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
-                android:layout_margin="2dp"
+                android:layout_margin="@dimen/widget_size_2"
                 android:layout_weight="1.0"
                 android:gravity="center"
-                android:padding="4dp"
+                android:padding="@dimen/widget_size_4"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageButton
                     android:id="@+id/iv_cancel"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:layout_width="@dimen/app_bar_Icon_height"
+                    android:layout_height="@dimen/app_bar_Icon_height"
                     android:background="@drawable/del" />
 
             </LinearLayout>
@@ -138,32 +136,32 @@
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/editor_view_to_save"
                 android:layout_alignParentBottom="true"
-                android:padding="4dp"
+                android:padding="@dimen/widget_size_4"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
 
                 <ImageButton
                     android:id="@+id/editor_text"
-                    android:layout_width="@dimen/widget_size_40"
-                    android:layout_height="@dimen/widget_size_40"
-                    android:layout_marginStart="10dp"
+                    android:layout_width="@dimen/app_bar_Icon_height"
+                    android:layout_height="@dimen/app_bar_Icon_height"
+                    android:layout_marginStart="@dimen/widget_size_4"
                     android:background="@drawable/text" />
 
                 <com.tekskills.sampleapp.utils.like.LikeButton
                     android:id="@+id/heart_button"
                     android:layout_width="@dimen/widget_size_30"
                     android:layout_height="@dimen/widget_size_30"
-                    app:icon_size="25dp"
+                    app:icon_size="@dimen/default_icon_size"
                     android:layout_toEndOf="@id/editor_text"
                     app:anim_scale_factor="3"
                     app:icon_type="heart" />
 
                 <ImageView
-                    android:layout_width="@dimen/widget_size_40"
-                    android:layout_height="@dimen/widget_size_40"
+                    android:layout_width="@dimen/app_bar_Icon_height"
+                    android:layout_height="@dimen/app_bar_Icon_height"
                     android:id="@+id/like"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="@dimen/widget_size_4"
                     android:visibility="gone"
                     android:layout_toEndOf="@id/heart_button"
                     android:background="@drawable/ic_like"
@@ -173,7 +171,7 @@
                     android:id="@+id/likes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="@dimen/widget_size_4"
                     android:layout_toEndOf="@id/like"
                     android:gravity="center"
                     android:text="0"
@@ -183,9 +181,9 @@
 
                 <ImageView
                     android:id="@+id/comment"
-                    android:layout_width="@dimen/widget_size_40"
-                    android:layout_height="@dimen/widget_size_40"
-                    android:layout_marginStart="10dp"
+                    android:layout_width="@dimen/app_bar_Icon_height"
+                    android:layout_height="@dimen/app_bar_Icon_height"
+                    android:layout_marginStart="@dimen/widget_size_4"
                     android:layout_toEndOf="@id/likes"
                     android:background="@drawable/icons_comment" />
 
@@ -193,7 +191,7 @@
                     android:id="@+id/comments"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="@dimen/widget_size_4"
                     android:layout_toEndOf="@id/comment"
                     android:text="0"
                     android:textColor="#C3CBCE"
@@ -202,19 +200,18 @@
 
                 <ImageView
                     android:id="@+id/save"
-                    android:layout_width="@dimen/widget_size_30"
-                    android:layout_height="@dimen/widget_size_30"
-                    android:layout_marginEnd="@dimen/widget_size_8"
+                    android:layout_width="@dimen/app_bar_Icon_height"
+                    android:layout_height="@dimen/app_bar_Icon_height"
+                    android:layout_marginEnd="@dimen/widget_size_4"
                     android:layout_toStartOf="@id/iv_share"
                     android:background="@drawable/ic_save"
                     android:backgroundTint="@color/black" />
 
                 <ImageView
                     android:id="@+id/iv_share"
-                    android:layout_width="@dimen/widget_size_30"
-                    android:layout_height="@dimen/widget_size_30"
-                    android:layout_marginStart="@dimen/widget_size_8"
-                    android:layout_marginBottom="8dp"
+                    android:layout_width="@dimen/app_bar_Icon_height"
+                    android:layout_height="@dimen/app_bar_Icon_height"
+                    android:layout_marginVertical="@dimen/widget_size_4"
                     android:layout_toStartOf="@id/shares"
                     android:background="@drawable/ic_round_share"
                     android:backgroundTint="@color/colorAccent" />
@@ -223,8 +220,7 @@
                     android:id="@+id/shares"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/widget_size_8"
-                    android:layout_marginEnd="@dimen/widget_size_16"
+                    android:layout_margin="@dimen/widget_size_8"
                     android:layout_alignParentEnd="true"
                     android:text="0"
                     android:textColor="#C3CBCE"
@@ -232,8 +228,6 @@
                     android:textStyle="bold" />
 
             </RelativeLayout>
-
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -252,7 +246,7 @@
                 android:id="@+id/editor_pager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingTop="5dp" />
+                android:paddingVertical="@dimen/widget_size_4" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

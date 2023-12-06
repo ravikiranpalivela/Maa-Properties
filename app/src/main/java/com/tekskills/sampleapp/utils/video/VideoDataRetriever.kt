@@ -3,6 +3,7 @@ package com.tekskills.sampleapp.utils.video
 import android.util.Log
 import android.util.Patterns
 import android.webkit.URLUtil
+import java.lang.NullPointerException
 import java.net.MalformedURLException
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -29,8 +30,16 @@ fun String.isYoutubeUrl(): Boolean {
 
 fun String.isValidUrl(): Boolean {
     try {
-        return URLUtil.isValidUrl(this) && Patterns.WEB_URL.matcher(this).matches()
+        return if(this.isNotEmpty())
+            URLUtil.isValidUrl(this) && Patterns.WEB_URL.matcher(this).matches()
+        else
+            false
     } catch (ignored: MalformedURLException) {
+        return false
+    }
+    catch (e:NullPointerException)
+    {
+        return false
     }
     return false
 }

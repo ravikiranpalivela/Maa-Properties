@@ -1,6 +1,7 @@
 package com.tekskills.sampleapp.ui.base
 
 import android.app.Activity
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.CountDownTimer
@@ -10,22 +11,31 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.widget.ImageView
+import android.widget.RadioButton
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Lifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.android.material.chip.Chip
+import com.google.android.material.radiobutton.MaterialRadioButton
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.tekskills.sampleapp.R
 import com.tekskills.sampleapp.data.prefrences.SharedPrefManager
 import com.tekskills.sampleapp.databinding.ItemArticleViewtypeListBinding
 import com.tekskills.sampleapp.model.AllNewsItem
 import com.tekskills.sampleapp.model.BannerItem
-import com.tekskills.sampleapp.model.NewsItem
+import com.tekskills.sampleapp.model.ItemOption
+import com.tekskills.sampleapp.model.PollDetails
 import com.tekskills.sampleapp.model.PublicAdsDetails
 import com.tekskills.sampleapp.ui.adapter.OnAllNewsClickListener
+import com.tekskills.sampleapp.ui.adapter.OptionsAdapter
 import com.tekskills.sampleapp.ui.main.MainActivity
 import com.tekskills.sampleapp.ui.main.MainViewModel
+import com.tekskills.sampleapp.utils.AppConstant.ADS_IMAGE_URL
+import com.tekskills.sampleapp.utils.AppUtil.loadGlideImage
 import com.tekskills.sampleapp.utils.like.LikeButton
 import com.tekskills.sampleapp.utils.like.OnAnimationEndListener
 import com.tekskills.sampleapp.utils.like.OnLikeListener
@@ -50,6 +60,9 @@ abstract class AllNewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
     private var playbackPosition = 0L
     private var playWhenReady = true
     private var initializedYouTubePlayer: YouTubePlayer? = null
+    private val optionAdapter by lazy {
+        OptionsAdapter(activity)
+    }
 
     fun bind(
         article: AllNewsItem,
@@ -64,10 +77,10 @@ abstract class AllNewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
 
             getBannerInfo(sharedPrefManager.getBannerDetailsData(), sharedPrefManager.bannerSelect)
 
-            if (validateValue(article.description) == "null")
+            if (validateOneValue(article.description, article.videoDescription) == "null")
                 descArticle.visibility = View.GONE
             else {
-                descArticle.text = article.description
+                descArticle.text = validateOneValue(article.description, article.videoDescription)
                 descArticle.visibility = View.VISIBLE
             }
 
@@ -92,6 +105,11 @@ abstract class AllNewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                 onClickListener.clickListener(article, articleImage)
             }
 
+            article.websiteUrl?.let {
+                readMoreArticle.visibility = if (article.websiteUrl.isValidUrl())
+                    View.VISIBLE else View.GONE
+            }
+
             readMoreArticle.setOnClickListener {
                 onClickListener.readMoreClickListener(article, articleImage)
             }
@@ -106,12 +124,16 @@ abstract class AllNewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                 }
             })
 
+            heartButton.isLiked = article.likeByUser
+            heartButton.isEnabled = !article.likeByUser
+
             heartButton.setOnAnimationEndListener(object : OnAnimationEndListener {
                 override fun onAnimationEnd(likeButton: LikeButton?) {
                     onClickListener.likeClickListener(article, articleImage)
 //                    updateViewCount(article.newsId, article)
                 }
             })
+
 
             comment.setOnClickListener {
                 onClickListener.commentClickListener(article, articleImage)
@@ -170,9 +192,8 @@ abstract class AllNewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                 onClickListener.doubleClickListener(article, articleImage)
             }
 
-//            val BANNER_SAMPLE =
-//                "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
-//            displayImage(BANNER_SAMPLE, ivBannerShare)
+//            displayImage(ADS_IMAGE_URL, ivBannerShare)
+            setupRecyclerView()
 
             ivBannerShare.visibility = View.GONE
             ivBannerLogo.visibility = View.GONE
@@ -201,14 +222,47 @@ abstract class AllNewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                 }.start()
             }
 
+            article.pollDetails?.let {
+                article.pollDetails?.options?.let { poll ->
+                    if (poll.isNotEmpty()) {
+                        binding.llPolling.visibility = View.VISIBLE
+                        setupSurveyUi(article.pollDetails, article.submittedAnswer ?: "")
+                        chipVote.isClickable = article.submittedAnswer.isNullOrEmpty()
+                        chipVote.isEnabled = article.submittedAnswer.isNullOrEmpty()
+                    } else binding.llPolling.visibility = View.GONE
+                }
+            }
+
+            binding.chipVote.setOnCheckedStateChangeListener { group, checkedIds ->
+                if (article.submittedAnswer.isNullOrEmpty() && article.submittedAnswer == null) {
+                    val id = checkedIds[0]
+                    val chip = group.findViewById(id) as Chip
+                    onClickListener.voteClickListener(article, chip.text.toString())
+                } else
+                    Toast.makeText(activity, "You Voted Thank you", Toast.LENGTH_SHORT).show()
+            }
+
+            binding.radioGroup.setOnCheckedChangeListener { radioGroup, i ->
+                Log.d("TAG", "onCheckedChanged")
+                val chip = radioGroup.findViewById(i) as RadioButton
+                if (chip.text == "Yes") {
+                    binding.llPolling.visibility = View.VISIBLE
+                    setupSurveyUi(article.pollDetails, article.submittedAnswer)
+                } else binding.llPolling.visibility = View.GONE
+            }
+
             if (validateUrlValue(article.videoPath) != "null"
+                && validateUrlValue(article.videoFilePath) != "null"
                 && validateUrlValue(article.videoUrl) != "null"
             ) {
                 if (article.videoUrl.isValidUrl())
                     playVideoUrlData(article.videoUrl)
                 else if (article.videoPath?.isValidUrl()!!)
                     playVideoUrlData(article.videoPath!!)
+                else if (article.videoFilePath?.isValidUrl()!!)
+                    playVideoUrlData(article.videoFilePath!!)
             } else if (validateUrlValue(article.videoPath) == "null"
+                && validateUrlValue(article.videoFilePath) == "null"
                 && validateUrlValue(article.videoUrl) != "null"
             ) {
                 if (article.videoUrl.isValidUrl())
@@ -239,10 +293,17 @@ abstract class AllNewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                     }
                 }
             } else if (validateUrlValue(article.videoPath) != "null"
+                && validateUrlValue(article.videoFilePath) == "null"
                 && validateUrlValue(article.videoUrl) == "null"
             ) {
                 if (article.videoPath.isValidUrl()!!)
                     playPathUrlVideo(article.videoPath!!)
+            } else if (validateUrlValue(article.videoFilePath) != "null"
+                && validateUrlValue(article.videoPath) == "null"
+                && validateUrlValue(article.videoUrl) == "null"
+            ) {
+                if (article.videoFilePath.isValidUrl()!!)
+                    playPathUrlVideo(article.videoFilePath!!)
             } else {
                 if (validateUrlValue(article.imagePath) != "null"
                     && validateUrlValue(article.imageUrl) != "null"
@@ -268,6 +329,90 @@ abstract class AllNewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                     displayImage(article.imageUrl, articleImage)
                 }
             }
+        }
+    }
+
+    private fun setupSurveyUi(survey: PollDetails, submittedAnswer: String) {
+        binding.apply {
+            binding.tvPoleTitle.text = survey.title
+            if (survey.noOfPolling > 0)
+                binding.tvNoVotesPole.text = "No of votes Polled: ${survey.noOfPolling}"
+
+            val options = mutableListOf<ItemOption>()
+            if (submittedAnswer.isNotEmpty()) {
+                binding.chipVote.visibility = View.GONE
+                binding.rvList.visibility = View.VISIBLE
+                if (survey.optionDetails != null) {
+                    val totalVotes = survey.optionDetails.sumOf { it.count }
+                    survey.optionDetails.filter { it.option != null && it.option.isNotEmpty() }
+                        .forEach { option ->
+                            val percentage =
+                                if (totalVotes > 0) (option.count * 100) / totalVotes else 0
+                            options.add(
+                                ItemOption(
+                                    title = option.option,
+                                    percentage = percentage,
+                                    vote = option.count,
+                                    voted = option.option == submittedAnswer
+                                )
+                            )
+                        }
+                    optionAdapter.submitList(options)
+                }
+            } else {
+                binding.chipVote.visibility = View.VISIBLE
+                binding.rvList.visibility = View.GONE
+                optionAdapter.submitList(options)
+            }
+            binding.chipVote.removeAllViews()
+            binding.chipVote.isSingleSelection = true
+
+            survey.options.forEach { option ->
+                if (option != null && option.isNotEmpty()) {
+                    MaterialRadioButton(activity)
+                        .apply { text = option }
+                        .also {
+//                        binding.radioGroup.addView(it)
+                        }
+                    binding.chipVote.addView(
+                        createTagChip(
+                            activity,
+                            option,
+                            submittedAnswer == option
+                        )
+                    )
+                }
+//                MaterialRadioButton(activity)
+//                    .apply { text = option }
+//                    .also { binding.chipVote.addView(it) }
+            }
+        }
+    }
+
+    private fun setupRecyclerView() {
+        val linearLayoutManager = LinearLayoutManager(
+            /* context */ activity,
+            /* orientation */ RecyclerView.VERTICAL,
+            /* reverseLayout */ false
+        )
+        binding.rvList.apply {
+            adapter = optionAdapter
+            layoutManager = linearLayoutManager
+        }
+    }
+
+    private fun createTagChip(context: Context, chipName: String, checkedData: Boolean): Chip {
+        return Chip(context).apply {
+            text = chipName
+            isCloseIconVisible = false
+            isCheckable = true
+            isCheckedIconVisible = true
+            if (checkedData)
+                isChecked = checkedData
+            chipIcon = ContextCompat.getDrawable(context, R.drawable.chip_selector)
+            setChipBackgroundColorResource(R.color.bg_chip_state_list)
+            setChipIconResource(R.drawable.chip_selector)
+            setTextColor(ContextCompat.getColor(context, R.color.black))
         }
     }
 
@@ -304,12 +449,9 @@ abstract class AllNewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                 activity.runOnUiThread(Runnable {
                     binding.apply {
                         var count = bannerSelect + 1
-                        if(banners.size == 0)
-                        {
-                            val BANNER_SAMPLE =
-                                "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
-                            displayImage(BANNER_SAMPLE, ivBannerShare)
-                        }else if (count < banners.size) {
+                        if (banners.size == 0) {
+                            displayImage(ADS_IMAGE_URL, ivBannerShare)
+                        } else if (count < banners.size) {
                             val updatedData = banners[count].link
                             displayImage(updatedData, ivBannerShare)
                         } else if (count > banners.size) {
@@ -320,9 +462,7 @@ abstract class AllNewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                             val updatedData = banners[0].link
                             displayImage(updatedData, ivBannerShare)
                         } else {
-                            val BANNER_SAMPLE =
-                                "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
-                            displayImage(BANNER_SAMPLE, ivBannerShare)
+                            displayImage(ADS_IMAGE_URL, ivBannerShare)
                         }
                     }
                 })
@@ -333,20 +473,13 @@ abstract class AllNewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
     private fun getBannerAdsInfo(banners: PublicAdsDetails?, bannerSelect: Int) {
         val executor = Executors.newSingleThreadExecutor()
         executor.execute {
-            // Update the view count in the Room database
-
-            // Fetch the updated data from the database
-
             if (banners != null)
                 activity.runOnUiThread(Runnable {
                     binding.apply {
                         var count = bannerSelect + 1
-                        if(banners.size == 0)
-                        {
-                            val BANNER_SAMPLE =
-                                "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
-                            displayImage(BANNER_SAMPLE, ivBannerShare)
-                        }else if (count < banners.size) {
+                        if (banners.size == 0) {
+                            displayImage(ADS_IMAGE_URL, ivBannerShare)
+                        } else if (count < banners.size) {
                             val updatedData = banners[count].filePath
                             displayImage(updatedData, ivBannerAds)
                         } else if (count > banners.size) {
@@ -357,9 +490,7 @@ abstract class AllNewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                             val updatedData = banners[0].filePath
                             displayImage(updatedData, ivBannerAds)
                         } else {
-                            val BANNER_SAMPLE =
-                                "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
-                            displayImage(BANNER_SAMPLE, ivBannerAds)
+                            displayImage(ADS_IMAGE_URL, ivBannerAds)
                         }
                     }
                 })
@@ -412,7 +543,7 @@ abstract class AllNewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
             binding.webView.addJavascriptInterface(object : Any() {
                 @JavascriptInterface
                 fun performClick(value: String) {
-                    Toast.makeText(activity, "clicked $value", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(activity, "clicked $value", Toast.LENGTH_SHORT).show()
                 }
             }, "ok")
 
@@ -448,7 +579,7 @@ abstract class AllNewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
             binding.webView.addJavascriptInterface(object : Any() {
                 @JavascriptInterface
                 fun performClick(value: String) {
-                    Toast.makeText(activity, "clicked $value", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(activity, "clicked $value", Toast.LENGTH_SHORT).show()
                 }
             }, "ok")
 
@@ -575,16 +706,17 @@ abstract class AllNewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
 //    }
 
     fun displayImage(videoUrl: String?, view: ImageView?) {
-        Glide.with(activity)
-            .asBitmap()
-            .load(videoUrl)
-            .error(R.drawable.place_holder)
-            .into(view!!)
+//        Glide.with(activity)
+//            .asBitmap()
+//            .load(videoUrl)
+//            .error(R.drawable.place_holder)
+//            .into(view!!)
+        loadGlideImage(Glide.with(activity),videoUrl!!,view!!)
     }
 
     private fun validateUrlValue(first: String?): String {
         return when {
-            !first.isNullOrEmpty() && first != "null" && first.isValidUrl() -> first.isValidURL()
+            !first.isNullOrEmpty() && first != "null" && first.isValidUrl() -> first
             else -> "null"
         }
     }
@@ -592,6 +724,15 @@ abstract class AllNewsBaseViewHolder<viewDataBinding : ViewDataBinding>(
     private fun validateValue(first: String?): String {
         return when {
             !first.isNullOrEmpty() && first != "null" -> first
+            else -> "null"
+        }
+    }
+
+
+    private fun validateOneValue(first: String?, second: String?): String {
+        return when {
+            !first.isNullOrEmpty() && first != "null" -> first
+            !second.isNullOrEmpty() && second != "null" -> second
             else -> "null"
         }
     }

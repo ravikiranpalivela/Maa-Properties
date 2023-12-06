@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/rounded_top_background"
-    android:padding="8dp">
+    android:padding="@dimen/widget_size_8">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_comments"
@@ -34,7 +34,7 @@
         android:id="@+id/userInputFrame"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="2dp"
+        android:padding="@dimen/widget_size_2"
         android:background="@drawable/rounded_grey_frame"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rv_comments">
@@ -43,7 +43,7 @@
             android:id="@+id/userInput"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="16dp"
+            android:layout_margin="@dimen/widget_size_16"
             android:background="@android:color/transparent"
             android:gravity="start"
             android:hint="@string/write_comment"
@@ -59,10 +59,10 @@
         android:id="@+id/doneButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="32dp"
+        android:layout_marginVertical="@dimen/widget_size_30"
         android:backgroundTint="@color/colorAccent"
         android:text="@string/submit"
-        app:cornerRadius="8dp"
+        app:cornerRadius="@dimen/widget_size_8"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/userInputFrame" />

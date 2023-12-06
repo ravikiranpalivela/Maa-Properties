@@ -51,7 +51,7 @@
         <Constraint
             android:id="@+id/toolBar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="@dimen/app_bar_height"
             android:visibility="visible"
             motion:layout_constraintBottom_toTopOf="@+id/tabLayout"
             motion:layout_constraintLeft_toLeftOf="parent"
@@ -60,7 +60,7 @@
         <Constraint
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="@dimen/app_bar_height"
             android:visibility="visible"
             motion:layout_constraintRight_toRightOf="parent"
             motion:layout_constraintTop_toBottomOf="@+id/toolBar"
@@ -83,7 +83,7 @@
         <Constraint
             android:id="@+id/toolBar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="@dimen/app_bar_height"
             android:visibility="gone"
             motion:layout_constraintBottom_toTopOf="@+id/tabLayout"
             motion:layout_constraintLeft_toLeftOf="parent"
@@ -92,7 +92,7 @@
         <Constraint
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="@dimen/app_bar_height"
             android:visibility="visible"
             motion:layout_constraintRight_toRightOf="parent"
             motion:layout_constraintTop_toBottomOf="@+id/toolBar"
@@ -101,7 +101,7 @@
         <Constraint
             android:id="@+id/pager"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="@dimen/app_bar_height"
             android:visibility="visible"
             motion:layout_constraintRight_toRightOf="parent"
             motion:layout_constraintTop_toBottomOf="@+id/toolBar"

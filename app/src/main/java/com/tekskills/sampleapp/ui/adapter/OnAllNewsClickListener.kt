@@ -3,6 +3,7 @@ package com.tekskills.sampleapp.ui.adapter
 import android.view.View
 import android.widget.ImageView
 import com.tekskills.sampleapp.model.AllNewsItem
+import com.tekskills.sampleapp.model.NewsItem
 
 interface OnAllNewsClickListener {
     fun clickListener(newsItem: AllNewsItem, imageView: ImageView)
@@ -11,4 +12,7 @@ interface OnAllNewsClickListener {
     fun shareClickListener(newsItem: AllNewsItem, imageView: View)
     fun likeClickListener(newsItem: AllNewsItem, imageView: View)
     fun commentClickListener(newsItem: AllNewsItem, imageView: View)
+
+    fun voteClickListener(newsItem: AllNewsItem, pollOption: String)
+
 }

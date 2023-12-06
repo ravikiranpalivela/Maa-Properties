@@ -24,13 +24,13 @@
             android:gravity="center"
             android:text="Type..."
             android:textColor="@android:color/white"
-            android:textSize="24dp" />
+            android:textSize="24sp" />
 
         <EditText
             android:id="@+id/custom_dialog_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_margin="@dimen/widget_size_16"
             android:gravity="center"
             android:textAlignment="center"
             android:ems="10"
@@ -42,7 +42,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="@dimen/widget_size_16"
             android:gravity="center"
             android:orientation="horizontal"
             android:weightSum="1.0">
@@ -51,18 +51,18 @@
                 android:id="@+id/custom_dialog_text_color"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="2dp"
-                android:layout_marginRight="32dp"
-                android:layout_marginStart="2dp"
+                android:layout_marginLeft="@dimen/widget_size_2"
+                android:layout_marginRight="@dimen/widget_size_30"
+                android:layout_marginStart="@dimen/widget_size_2"
                 android:background="@drawable/color" />
 
             <Button
                 android:id="@+id/custom_dialog_text_type_face"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="2dp"
-                android:layout_marginLeft="32dp"
-                android:layout_marginRight="2dp"
+                android:layout_marginEnd="@dimen/widget_size_2"
+                android:layout_marginLeft="@dimen/widget_size_30"
+                android:layout_marginRight="@dimen/widget_size_2"
                 android:background="@drawable/textformat" />
         </LinearLayout>
 
@@ -77,18 +77,18 @@
                 android:id="@+id/costum_dialog_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="2dp"
-                android:layout_marginRight="32dp"
-                android:layout_marginStart="2dp"
+                android:layout_marginLeft="@dimen/widget_size_2"
+                android:layout_marginRight="@dimen/widget_size_30"
+                android:layout_marginStart="@dimen/widget_size_2"
                 android:background="@drawable/cross" />
 
             <Button
                 android:id="@+id/costum_dialog_ok"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="2dp"
-                android:layout_marginLeft="32dp"
-                android:layout_marginRight="2dp"
+                android:layout_marginEnd="@dimen/widget_size_2"
+                android:layout_marginLeft="@dimen/widget_size_30"
+                android:layout_marginRight="@dimen/widget_size_2"
                 android:background="@drawable/tik" />
         </LinearLayout>
 

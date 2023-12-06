@@ -252,7 +252,7 @@ class NavigationActivity : BaseActivity<ActivityNavigationBinding, MainViewModel
                 } else {
                     binding.includeHome.textViewNetworkStatus.text = "Back Online"
 
-                    viewModel.refreshResponse()
+                    viewModel.refreshResponse(prefrences.getDeviceID())
 
                     binding.includeHome.networkStatusLayout.apply {
                         animate()
@@ -279,7 +279,7 @@ class NavigationActivity : BaseActivity<ActivityNavigationBinding, MainViewModel
         viewModel.errorMessage.observe(this, Observer {
             if (it != null) {
                 it.getContentIfNotHandled().let {
-                    Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
                 }
             }
         })
@@ -295,7 +295,7 @@ class NavigationActivity : BaseActivity<ActivityNavigationBinding, MainViewModel
         override fun onPageSelected(position: Int) {
             super.onPageSelected(position)
             viewModel.category.value = getTitle(position)
-            viewModel.refreshResponse()
+            viewModel.refreshResponse(prefrences.getDeviceID())
         }
 
         override fun onPageScrollStateChanged(state: Int) {

@@ -22,6 +22,8 @@ import com.tekskills.sampleapp.model.NewsItem
 import com.tekskills.sampleapp.model.PublicAdsDetails
 import com.tekskills.sampleapp.ui.adapter.ShortsAdapter
 import com.tekskills.sampleapp.ui.main.MainActivity
+import com.tekskills.sampleapp.utils.AppConstant.ADS_IMAGE_URL
+import com.tekskills.sampleapp.utils.AppUtil
 import com.tekskills.sampleapp.utils.like.LikeButton
 import com.tekskills.sampleapp.utils.like.OnAnimationEndListener
 import com.tekskills.sampleapp.utils.like.OnLikeListener
@@ -75,6 +77,11 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                 onClickListener.clickListener(article, articleImage)
             }
 
+            article.websiteUrl?.let {
+                readMoreArticle.visibility = if (article.websiteUrl.isValidUrl())
+                    View.VISIBLE else View.GONE
+            }
+
             readMoreArticle.setOnClickListener {
                 onClickListener.readMoreClickListener(article, articleImage)
                 true
@@ -89,7 +96,8 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
 //                    Toast.makeText(activity, "unLiked!", Toast.LENGTH_SHORT).show();
                 }
             })
-
+            heartButton.isLiked = article.likeByUser
+            heartButton.isEnabled = !article.likeByUser
             heartButton.setOnAnimationEndListener(object : OnAnimationEndListener {
                 override fun onAnimationEnd(likeButton: LikeButton?) {
                     onClickListener.likeClickListener(article, articleImage)
@@ -100,7 +108,6 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
             comment.setOnClickListener {
                 onClickListener.commentClickListener(article, articleImage)
             }
-
 
 //            root.setOnClickListener(object : DoubleClickListener() {
 //                override fun onDoubleClick(v: View) {
@@ -114,13 +121,10 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                 onClickListener.doubleClickListener(article, articleImage)
             }
 
-//            val BANNER_SAMPLE =
-//                "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
-//            displayImage(BANNER_SAMPLE, ivBannerShare)
+//            displayImage(ADS_IMAGE_URL, ivBannerShare)
 
             ivBannerShare.visibility = View.GONE
             ivBannerLogo.visibility = View.GONE
-
 
             ivShare.setOnClickListener {
                 (activity as MainActivity?)!!.appBarLayoutHandle(true)
@@ -146,20 +150,53 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                 }.start()
             }
 
-            if (validateUrlValue(article.videoFilePath) != "null"
+//            if (validateUrlValue(article.videoFilePath) != "null"
+//                && validateUrlValue(article.videoUrl) != "null"
+//            ) {
+//                if (article.videoUrl.isValidUrl())
+//                    playVideoUrlData(article.videoUrl)
+//                else if (article.videoFilePath?.isValidUrl()!!)
+//                    playVideoUrlData(article.videoFilePath!!)
+//            } else if (validateUrlValue(article.videoFilePath) == "null"
+//                && validateUrlValue(article.videoUrl) != "null"
+//            ) {
+//                if (article.videoUrl.isValidUrl())
+//                    playVideoUrlData(article.videoUrl)
+//            } else if (validateUrlValue(article.videoFilePath) != "null" && validateUrlValue(article.videoUrl) == "null") {
+//                if (article.videoFilePath?.isValidUrl()!!)
+//                    playPathUrlVideo(article.videoFilePath!!)
+//            }
+
+
+            if (validateUrlValue(article.videoPath) != "null"
+                && validateUrlValue(article.videoPath) != "null"
                 && validateUrlValue(article.videoUrl) != "null"
             ) {
                 if (article.videoUrl.isValidUrl())
                     playVideoUrlData(article.videoUrl)
+                else if (article.videoPath?.isValidUrl()!!)
+                    playVideoUrlData(article.videoPath!!)
                 else if (article.videoFilePath?.isValidUrl()!!)
                     playVideoUrlData(article.videoFilePath!!)
-            } else if (validateUrlValue(article.videoFilePath) == "null"
+            } else if (validateUrlValue(article.videoPath) == "null"
+                && validateUrlValue(article.videoFilePath) == "null"
                 && validateUrlValue(article.videoUrl) != "null"
             ) {
                 if (article.videoUrl.isValidUrl())
                     playVideoUrlData(article.videoUrl)
-            } else if (validateUrlValue(article.videoFilePath) != "null" && validateUrlValue(article.videoUrl) == "null") {
-                if (article.videoFilePath?.isValidUrl()!!)
+            }
+            else if (validateUrlValue(article.videoPath) != "null"
+                && validateUrlValue(article.videoFilePath) == "null"
+                && validateUrlValue(article.videoUrl) == "null"
+            ) {
+                if (article.videoPath.isValidUrl()!!)
+                    playPathUrlVideo(article.videoPath!!)
+            }
+            else if (validateUrlValue(article.videoFilePath) != "null"
+                && validateUrlValue(article.videoPath) == "null"
+                && validateUrlValue(article.videoUrl) == "null"
+            ) {
+                if (article.videoFilePath.isValidUrl()!!)
                     playPathUrlVideo(article.videoFilePath!!)
             }
         }
@@ -205,9 +242,7 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                             val updatedData = banners[0].filePath
                             displayImage(updatedData, ivBannerAds)
                         } else {
-                            val BANNER_SAMPLE =
-                                "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
-                            displayImage(BANNER_SAMPLE, ivBannerAds)
+                            displayImage(ADS_IMAGE_URL, ivBannerAds)
                         }
                     }
                 })
@@ -225,9 +260,7 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                         var count = bannerSelect + 1
                         if(banners.size == 0)
                         {
-                            val BANNER_SAMPLE =
-                                "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
-                            displayImage(BANNER_SAMPLE, ivBannerShare)
+                            displayImage(ADS_IMAGE_URL, ivBannerShare)
                         }else if (count < banners.size) {
                             val updatedData = banners[count].link
                             displayImage(updatedData, ivBannerShare)
@@ -239,9 +272,7 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
                             val updatedData = banners[0].link
                             displayImage(updatedData, ivBannerShare)
                         } else {
-                            val BANNER_SAMPLE =
-                                "https://news.maaproperties.com/assets/img/ads-img/Maproperty_Banner.gif"
-                            displayImage(BANNER_SAMPLE, ivBannerShare)
+                            displayImage(ADS_IMAGE_URL, ivBannerShare)
                         }
                     }
                 })
@@ -296,7 +327,7 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
             binding.webView.addJavascriptInterface(object : Any() {
                 @JavascriptInterface
                 fun performClick(value: String) {
-                    Toast.makeText(activity, "clicked $value", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(activity, "clicked $value", Toast.LENGTH_SHORT).show()
                 }
             }, "ok")
 
@@ -332,7 +363,7 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
             binding.webView.addJavascriptInterface(object : Any() {
                 @JavascriptInterface
                 fun performClick(value: String) {
-                    Toast.makeText(activity, "clicked $value", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(activity, "clicked $value", Toast.LENGTH_SHORT).show()
                 }
             }, "ok")
 
@@ -391,16 +422,17 @@ abstract class ShortsBaseViewHolder<viewDataBinding : ViewDataBinding>(
 //    }
 
     fun displayImage(videoUrl: String?, view: ImageView?) {
-        Glide.with(activity)
-            .asBitmap()
-            .load(videoUrl)
-            .error(R.drawable.place_holder)
-            .into(view!!)
+//        Glide.with(activity)
+//            .asBitmap()
+//            .load(videoUrl)
+//            .error(R.drawable.place_holder)
+//            .into(view!!)
+        AppUtil.loadGlideImage(Glide.with(activity), videoUrl!!, view!!)
     }
 
     private fun validateUrlValue(first: String?): String {
         return when {
-            !first.isNullOrEmpty() && first != "null" && first.isValidUrl() -> first.isValidURL()
+            !first.isNullOrEmpty() && first != "null" && first.isValidUrl() -> first
             else -> "null"
         }
     }

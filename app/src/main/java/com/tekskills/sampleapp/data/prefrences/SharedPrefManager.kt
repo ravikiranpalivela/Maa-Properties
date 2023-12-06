@@ -1,7 +1,9 @@
 package com.tekskills.sampleapp.data.prefrences
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.provider.Settings
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -78,6 +80,11 @@ class SharedPrefManager private constructor(private val mCtx: Context) {
 
     fun saveBannerData(jsonString: String) {
         sharedPreferences.edit().putString("BannerData", jsonString).apply()
+    }
+
+    @SuppressLint("HardwareIds")
+    fun getDeviceID():String {
+        return Settings.Secure.getString(mCtx.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
     // Retrieve the data from SharedPreferences

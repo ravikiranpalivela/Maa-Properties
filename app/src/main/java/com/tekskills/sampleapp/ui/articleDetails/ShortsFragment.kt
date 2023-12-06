@@ -114,7 +114,7 @@ class ShortsFragment : Fragment() {
         })
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.refreshResponse()
+            viewModel.refreshResponse(preferences.getDeviceID())
         }
     }
 
@@ -231,12 +231,12 @@ class ShortsFragment : Fragment() {
                                 newsItem.title,
                                 activityOptions
                             )
-                        viewModel.postNewsShare(newsItem.id)
+                        viewModel.postNewsShare(newsItem.id,preferences.getDeviceID())
 
                     }
 
                     override fun likeClickListener(newsItem: NewsItem, imageView: View) {
-                        viewModel.postNewsLike(newsItem.id,"SORT")
+                        viewModel.postNewsLike(newsItem.id,preferences.getDeviceID(),"SORT")
 //                        viewModel.addAArticle(news_id = allNewsItem.newsId, article = allNewsItem)
                     }
 

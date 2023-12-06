@@ -90,7 +90,7 @@ class WishesDetailsFragment : Fragment() {
         })
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.refreshResponse()
+            viewModel.refreshResponse(preferences.getDeviceID())
         }
     }
 
@@ -211,12 +211,12 @@ class WishesDetailsFragment : Fragment() {
                                 activityOptions
                             )
 
-                        viewModel.postNewsShare(newsItem.newsId)
+                        viewModel.postNewsShare(newsItem.newsId,preferences.getDeviceID())
 
                     }
 
                     override fun likeClickListener(newsItem: NewsItem, imageView: View) {
-                        viewModel.postNewsLike(newsItem.newsId,"WISH")
+                        viewModel.postNewsLike(newsItem.newsId,preferences.getDeviceID(),"WISH")
 //                        viewModel.addAArticle(news_id = allNewsItem.newsId, article = allNewsItem)
                     }
 

@@ -54,10 +54,12 @@ data class NewsItem(
     val pollDetails: PollDetails,
 //    @SerializedName("pollOptions")
 //    val pollOptions: List<String>,
-//    @SerializedName("pollTitle")
-//    val pollTitle: String,
-//    @SerializedName("isPoll")
-//    val isPoll: String,
+    @SerializedName("submittedAnswer")
+    val submittedAnswer: String,
+    @SerializedName("isPoll")
+    val isPoll: String,
+    @SerializedName("likeByUser")
+    val likeByUser: Boolean,
 //    @SerializedName("source") val source: Source,
 ) : Serializable
 class CommentDetails : ArrayList<Comment>()

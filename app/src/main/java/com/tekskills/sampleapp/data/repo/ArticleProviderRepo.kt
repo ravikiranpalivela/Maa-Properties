@@ -17,24 +17,24 @@ class ArticleProviderRepo {
         NewsService::class.java
     )
 
-    suspend fun getNews(category: String): Response<NewsDetails> {
+    suspend fun getNews(category: String,builtId: String): Response<NewsDetails> {
 
         return when (category) {
 
-            "All" -> retService.getMainNews()
+            "All" -> retService.getMainNews(builtId)
 
-            "News" -> retService.getMainNews()
+            "News" -> retService.getMainNews(builtId)
 
             "Wishes" -> retService.getWishes()
 
-            "Posters" -> retService.getMainNews()
+            "Posters" -> retService.getMainNews(builtId)
 
             else -> retService.getShorts()
         }
     }
 
-    suspend fun getAllNewsDetails(): Response<AllNewsDetailsData> {
-        return retService.getAllNews()
+    suspend fun getAllNewsDetails(builtId: String): Response<AllNewsDetailsData> {
+        return retService.getAllNews(builtId)
     }
 
     suspend fun getPoster(): Response<PosterDetails> {
@@ -61,12 +61,12 @@ class ArticleProviderRepo {
         return retService.postComments(requestBody)
     }
 
-    suspend fun updateNewsLike(articleID: Int, type: String): Response<LikeResponse> {
-        return retService.updateNewsLike(articleID, type)
+    suspend fun updateNewsLike(articleID: Int,builtId: String, type: String): Response<LikeResponse> {
+        return retService.updateNewsLike(articleID,builtId, type)
     }
 
-    suspend fun updateNewsVote(pollID: Int, articleID: Int, desc: String, pollOption: String): Response<LikeResponse> {
-        return retService.updatePollingVote(pollID,pollOption,desc, articleID)
+    suspend fun updateNewsVote(deviceId: String,pollID: Int, articleID: Int, desc: String, pollOption: String): Response<LikeResponse> {
+        return retService.updatePollingVote(deviceId,pollID,pollOption,desc, articleID)
     }
 
     suspend fun postPollingVote(pollID: Int, articleID: Int, desc: String, pollOption: String): Response<LikeResponse> {
@@ -78,8 +78,8 @@ class ArticleProviderRepo {
         return retService.postPollingVote(requestBody)
     }
 
-    suspend fun updateNewsShare(articleID: Int, type: String): Response<LikeResponse> {
-        return retService.updateNewsShare(articleID, type)
+    suspend fun updateNewsShare(articleID: Int,builtId: String, type: String): Response<LikeResponse> {
+        return retService.updateNewsShare(articleID, builtId,type)
     }
 
 }
